@@ -25,16 +25,16 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="purchaseOrders.html">Purchase Orders</a>
+            <a class="nav-link" href="javascript:switchPage('purchaseOrders')">Purchase Orders</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="accounts.html">Accounts</a>
+            <a class="nav-link" href="javascript:switchPage('accounts')">Accounts</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="vendors.html">Vendors</a>
+            <a class="nav-link" href="javascript:switchPage('vendors')">Vendors</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="reports.html">Reports</a>
+            <a class="nav-link" href="javascript:switchPage('reports')">Reports</a>
           </li>
         </ul>
         <form class="d-flex">
@@ -44,6 +44,12 @@
       </div>
     </div>
   </nav>
+  <iframe id="policeFrame" src=""></iframe>
+  <script>
+	function switchPage(newPage) {
+		document.getElementById("policeFrame").src = newPage + ".html";
+	}
+  </script>
 </body>
 
 </html>
