@@ -7,10 +7,55 @@
     <title>Purchase Orders</title>
     <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/css/main.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/2.0.1/css/dataTables.dataTables.min.css" rel="stylesheet">
 </head>
 
 <body>
-    <h1>Purchase Orders Page</h1>
+    <div class="col-12 d-flex justify-content-center">
+        <div class="card col-12 col-md-10 col-lg-9">
+            <div class="card-header">
+                <h3>Purchase Orders</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped" id="tblPurchaseOrders">
+                    <thead>
+                        <tr>
+                            <th>Purchase Order</th>
+                            <th>Date Created</th>
+                            <th>Vendor</th>
+                            <th>Amount</th>
+                            <th>Created By</th>
+                            <th>Requested For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+                <button class="btn btn-primary col-12" id="btnFill" type="button">Fill</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.datatables.net/2.0.1/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.bootstrap5.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.dataTables.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.print.min.js"></script>
+    <script>
+        $('#tblPurchaseOrders').DataTable({
+                    layout: {
+                        topStart: {
+                            buttons: [
+                                'copy', 'excel', 'pdf'
+                            ]
+                        }
+                    },
+                })
+    </script>
 </body>
 
 </html>
