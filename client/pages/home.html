@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POModule</title>
+  <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/css/main.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/2.0.1/css/dataTables.dataTables.min.css" rel="stylesheet">
+</head>
+
+<body class="dark">
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand">POModule</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01"
+        aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="home.html">Home
+              <span class="visually-hidden">(current)</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:switchPage('purchaseOrders.html')">Purchase Orders</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:switchPage('accounts.html')">Accounts</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:switchPage('vendors.html')">Vendors</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:switchPage('reports.html')">Reports</a>
+          </li>
+        </ul>
+        <form class="d-flex">
+          <input class="form-control me-sm-2" type="search" placeholder="Search">
+          <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+  <div id="divMain">
+
+  </div>
+  <script src="../assets/js/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/2.0.1/js/dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.0.0/js/dataTables.buttons.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.bootstrap5.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.dataTables.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.print.min.js"></script>
+  <script>
+    function switchPage(pageName){
+      $('#divMain').load(pageName);
+    }
+  </script>
+
+</body>
+
+</html>

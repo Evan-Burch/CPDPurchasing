@@ -1,0 +1,40 @@
+<html lang="en">
+<body>
+    <div class="col-12 d-flex justify-content-center align-items-center mt-3">
+        <div class="card col-12 col-md-10 col-lg-9">
+            <div class="card-header">
+                <h3>Accounts</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped" id="tblAccounts">
+                    <thead>
+                        <tr>
+                            <th>Account Number</th>
+                            <th>Description</th>
+                            <th>Division</th>
+                            <th>Fiscal Authority</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#tblAccounts').DataTable({
+            layout: {
+                topStart: {
+                    buttons: [
+                        'copy', 'excel', 'pdf'
+                    ]
+                }
+            },
+            "autowidth": false
+        })
+    </script>
+</body>
+
+</html>
