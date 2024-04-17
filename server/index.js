@@ -1,13 +1,24 @@
 var express = require("express");
 var cors = require("cors");
+var mariadb = require("mariadb");
+require("dotenv").config();
 var { exec } = require('child_process');
+
+const db_pool = mariadb.createPool({
+	host: process.env["DB_HOST"],
+	user: process.env["MARIADB_USER"],
+	password: process.env["MARIADB_PASSWORD"],
+	idleTimeout: 5,
+	database: "hubble",
+	port: 4433
+});
 
 var app = express();
 app.use(express.json());
 app.use(cors());
 
-app.get("*", (req, res) => {
-	res.json({"message": "Backend Status: Running", "status": 200});
+app.get("/", (req, res) => {
+	res.json({"message": "Nothing interesting happens.", "status": 200});
 });
 
 var server = app.listen(8000, function() {
