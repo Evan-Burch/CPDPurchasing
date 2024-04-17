@@ -11,3 +11,12 @@ Software Engineering City of Cookeville
 - Make sure you can access the default apache page and then remove the index.html
 - run `npm run build` to compile your site code and move the contents of the resulting dist/ directory to apache with `mv -r dist/* /var/www/html`
 - For reference the configuration file for apache is at `/etc/apache2/apache2.conf`
+
+### Setting up and accessing the MariaDB database on Debian
+- Create an RDS MariaDB instance in AWS. Default port is 3306 but we will use 4433
+- Run `sudo apt install mariadb-client` to install tools on Debian
+- Run `mariadb -u admin -p -P 4433 -h hubble.cp0eq8aqg0c7.us-east-1.rds.amazonaws.com` to log in
+- to create a backup file using mariadb-dump run:
+`mariadb-dump -u admin -p -P 4433 -h hubble.cp0eq8aqg0c7.us-east-1.rds.amazonaws.com hubble > maria_dump.sql`
+- to restore a backup using mariadb-dump:
+`mariadb -u admin -p -P 4433 -h hubble.cp0eq8aqg0c7.us-east-1.rds.amazonaws.com hubble < maria_dump.sql`
