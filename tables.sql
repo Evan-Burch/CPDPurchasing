@@ -15,6 +15,22 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+-- 
+-- Table structure for table `tblSessions
+--
+DROP TABLE IF EXISTS `tblSessions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tblSessions` (
+	`ID` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+	`UserID` int(9) NOT NULL,
+	`TimeIn` datetime NOT NULL,
+	PRIMARY KEY (`ID`),
+	KEY `UserID` (`UserID`),
+	CONSTRAINT `tblSessions_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `tblUser` (`EmployeeID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 --
 -- Table structure for table `tblAccount`
 --
@@ -30,7 +46,9 @@ CREATE TABLE `tblAccount` (
   `Status` tinyint(4) NOT NULL,
   PRIMARY KEY (`AccountID`),
   KEY `DivisionID` (`DivisionID`),
-  CONSTRAINT `tblAccount_ibfk_1` FOREIGN KEY (`DivisionID`) REFERENCES `tblDivision` (`ID`)
+  KEY `FiscalAuthority` (`FiscalAuthority`),
+  CONSTRAINT `tblAccount_ibfk_1` FOREIGN KEY (`DivisionID`) REFERENCES `tblDivision` (`ID`),
+  CONSTRAINT `tblAccount_ibfk_2` FOREIGN KEY (`FiscalAuthority`) REFERENCES `tblUser` (`EmployeeID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -171,7 +189,11 @@ CREATE TABLE `tblAccountTransaction` (
   `CreatedBy` int(9) NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `AccountType` (`AccountType`),
-  CONSTRAINT `tblAccountTransaction_ibfk_1` FOREIGN KEY (`AccountType`) REFERENCES `tblAccountTransactionType` (`ID`)
+  KEY `CreatedBy` (`CreatedBy`),
+  KEY `AccountID` (`AccountID`),
+  CONSTRAINT `tblAccountTransaction_ibfk_1` FOREIGN KEY (`AccountType`) REFERENCES `tblAccountTransactionType` (`ID`),
+  CONSTRAINT `tblAccountTransaction_ibfk_2` FOREIGN KEY (`CreatedBy`) REFERENCES `tblUser` (`EmployeeID`),
+  CONSTRAINT `tblAccountTransaction_ibfk_3` FOREIGN KEY (`AccountID`) REFERENCES `tblAccount` (`AccountID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=783 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1001,9 +1023,11 @@ CREATE TABLE `tblPurchaseOrder` (
   `Notes` varchar(228) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   PRIMARY KEY (`PurchaseOrderID`),
   KEY `VendorID` (`VendorID`),
+  KEY `VendorContactID` (`VendorContactID`),
   KEY `CreatedBy` (`CreatedBy`),
   CONSTRAINT `tblPurchaseOrder_ibfk_1` FOREIGN KEY (`VendorID`) REFERENCES `tblVendor` (`VendorID`),
-  CONSTRAINT `tblPurchaseOrder_ibfk_2` FOREIGN KEY (`CreatedBy`) REFERENCES `tblUser` (`EmployeeID`)
+  CONSTRAINT `tblPurchaseOrder_ibfk_2` FOREIGN KEY (`VendorContactID`) REFERENCES `tblVendorContact` (`ID`),
+  CONSTRAINT `tblPurchaseOrder_ibfk_3` FOREIGN KEY (`CreatedBy`) REFERENCES `tblUser` (`EmployeeID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -18815,7 +18839,7 @@ CREATE TABLE `tblUser` (
   `MiddleName` varchar(3) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `LastName` varchar(12) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `DisplayName` varchar(19) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `UserName` varchar(13) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `UserName` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `password` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   PRIMARY KEY (`EmployeeID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
