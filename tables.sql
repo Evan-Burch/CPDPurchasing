@@ -1,6 +1,6 @@
--- CREATE DATABASE POModule;
+-- CREATE DATABASE Hubble;
 
-USE POModule;
+USE Hubble;
 
 CREATE TABLE tbl__EFMigrationsHistory(
 	`MigrationId` NVARCHAR(150) NOT NULL,
@@ -27,6 +27,12 @@ CREATE TABLE tblDivision(
 );
 
 INSERT INTO tblDivision VALUES ('DEP','Departmental'),('ASD','Administrative Services Divison'),('CID','Criminal Investigation Divison'),('TED','Traffic Enforcement Divison'),('USD','Uniform Services Divison'),('', 'Other Equipment');
+
+CREATE TABLE tblSessions(
+	`ID` NVARCHAR(250) PRIMARY KEY,
+	`UserID` INTEGER(9) NOT NULL,
+	FOREIGN KEY (UserID) REFERENCES User(EmployeeID)
+);
 
 CREATE TABLE tblAccountTransactionType(
 	`ID` TINYINT(4) PRIMARY KEY,
