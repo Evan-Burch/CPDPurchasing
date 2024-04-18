@@ -19,6 +19,8 @@ var app = express();
 app.use(express.json());
 app.use(cors());
 
+/******************************************HELPER FUNCTIONS******************************************/
+
 //delete unwanted characters
 function clean(str) {
 	if (str === undefined || typeof str !== 'string') {
@@ -26,6 +28,24 @@ function clean(str) {
 	}
 	return str.replace(/[^0-9a-zA-Z_\-@.\s]/gi, "");
 }
+
+//This function is used at the start of all requests to make sure a user is logged in.
+async function getUserIDBySessionToken(uuidSessionToken) {
+	const dbConnection = await db_pool.getConnection();
+	try {
+		const result = await dbConnection.query("SELECT userID FROM tblUserSession WHERE sessionToken=?;", [uuidSessionToken]);
+		
+		if (result.length == 0) {
+			console.log("Session token " + uuidSessionToken + " does not belong to any user.");
+			return -1;
+		}
+		return result[0].userID;
+	} finally {
+		await dbConnection.end();
+	}
+}
+
+/******************************************REQUESTS******************************************/
 
 app.post("/login", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
@@ -56,6 +76,26 @@ app.post("/login", async (req, res) => {
 		//await dbConnection.query("INSERT INTO tblUserSession (userID, sessionToken, timeIn, active, farmID) VALUE (?, ?, NOW(), TRUE, ?);", [intUserId, uuidSessionToken, intUserFarmID]);
 	} finally {
 		await dbConnection.end();
+	}
+});
+
+app.post("/logout", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Session token " + uuidSessionToken + " wants to log out.");
+
+		await dbConnection.query("DELETE FROM tblUserSession where sessionToken=?;", [uuidSessionToken]);
+
+		res.json({"message": "Goodbye!", "status": 200});
+	} finally {
+		await dbConnection.close();
 	}
 });
 
