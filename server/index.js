@@ -33,13 +33,13 @@ function clean(str) {
 async function getUserIDBySessionToken(uuidSessionToken) {
 	const dbConnection = await db_pool.getConnection();
 	try {
-		const result = await dbConnection.query("SELECT userID FROM tblUserSession WHERE sessionToken=?;", [uuidSessionToken]);
+		const result = await dbConnection.query("SELECT UserID FROM tblSessions WHERE ID=?;", [uuidSessionToken]);
 		
 		if (result.length == 0) {
 			console.log("Session token " + uuidSessionToken + " does not belong to any user.");
 			return -1;
 		}
-		return result[0].userID;
+		return result[0].UserID;
 	} finally {
 		await dbConnection.end();
 	}
@@ -57,7 +57,7 @@ app.post("/login", async (req, res) => {
 	console.log("Got a login attempt from " + strUserName + ", communicating with DB...");
 
 	try {
-		var usersQuery = await dbConnection.query("SELECT * FROM User WHERE UserName=? AND password=?;", [strUserName, strHashedPassword]);
+		var usersQuery = await dbConnection.query("SELECT * FROM tblUser WHERE UserName=? AND password=?;", [strUserName, strHashedPassword]);
 			
 		if (usersQuery.length == 0) {
 			console.error("Failed login attempt for user " + strUserName);
@@ -71,9 +71,9 @@ app.post("/login", async (req, res) => {
 
 		res.json({"message": "Success. Logging you in.", "uuidSessionToken": uuidSessionToken, "status": 200});
 
-		//const intUserId = usersQuery[0].ID;
+		const intUserId = usersQuery[0].ID;
 
-		//await dbConnection.query("INSERT INTO tblUserSession (userID, sessionToken, timeIn, active, farmID) VALUE (?, ?, NOW(), TRUE, ?);", [intUserId, uuidSessionToken, intUserFarmID]);
+		await dbConnection.query("INSERT INTO tblSessions (UserID, ID, timeIn) VALUE (?, ?, NOW());", [intUserId, uuidSessionToken]);
 	} finally {
 		await dbConnection.end();
 	}
@@ -91,7 +91,7 @@ app.post("/logout", async (req, res) => {
 
 		console.log("Session token " + uuidSessionToken + " wants to log out.");
 
-		await dbConnection.query("DELETE FROM tblUserSession where sessionToken=?;", [uuidSessionToken]);
+		await dbConnection.query("DELETE FROM tblSessions where ID=?;", [uuidSessionToken]);
 
 		res.json({"message": "Goodbye!", "status": 200});
 	} finally {
