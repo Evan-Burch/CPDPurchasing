@@ -1,9 +1,16 @@
 <html lang="en">
+
 <body>
-    <div class="col-12 d-flex justify-content-center align-items-center mt-3">
+    <div class="col-12 d-flex justify-content-center mt-2">
         <div class="card col-12 col-md-10 col-lg-9">
             <div class="card-header">
-                <h3>Purchase Orders</h3>
+                <div class="row">
+                    <h3 class="col-8">Purchase Orders</h3>
+                    <button type="button" class="btn btn-secondary col-4" data-bs-toggle="modal"
+                        data-bs-target="#newPO">
+                        Create New Purchase Order
+                    </button>
+                </div>
             </div>
             <div class="card-body">
                 <table class="table table-striped" id="tblPurchaseOrders">
@@ -24,16 +31,54 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="newPO" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Create New Purchase Order</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="txtVendor" class="form-label">Vendor</label>
+                    <select class="form-select" id="txtVendor" aria-label="Vendor">
+                        <option selected>Select Vendor</option>
+                    </select>
+                    <label for="txtVendorContact" class="form-label">Vendor Contact</label>
+                    <select class="form-select" id="txtVendorContact" aria-label="Vendor Contact">
+                        <option selected>Select Vendor Contact</option>
+                    </select>
+                    <label for="txtSelectedFor" class="form-label">Requested For</label>
+                    <select class="form-select" id="txtSelectedFor" aria-label="Requested For">
+                        <option selected>Select Requested For</option>
+                    </select>
+                    <label for="txtNotes" class="form-label">Notes</label>
+                    <input type="text" class="form-control" id="txtNotes" placeholder="Notes">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
+        integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
+        crossorigin="anonymous"></script>
     <script>
         $('#tblPurchaseOrders').DataTable({
             layout: {
                 topStart: {
                     buttons: [
-                        'copy', 'excel', 'pdf'
+                        'copy', 'excel', 'pdf',
                     ]
                 }
             },
-            "autowidth": false
+            "autowidth": false,
+        })
+        $('#myModal').on('shown.bs.modal', function () {
+            $('#myInput').trigger('focus')
         })
     </script>
 </body>
