@@ -6,8 +6,7 @@
             <div class="card-header">
                 <div class="row">
                     <h3 class="col-8">Purchase Orders</h3>
-                    <button type="button" class="btn btn-secondary col-4" data-bs-toggle="modal"
-                        data-bs-target="#newPO">
+                    <button type="button" class="btn btn-primary col-4" data-bs-toggle="modal" data-bs-target="#newPO">
                         Create New Purchase Order
                     </button>
                 </div>
@@ -58,6 +57,7 @@
                     <input type="text" class="form-control" id="txtNotes" placeholder="Notes">
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-success">Create</button>
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -67,14 +67,15 @@
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
     <script>
-        $('#tblPurchaseOrders').DataTable({
+        new DataTable('#tblPurchaseOrders', {
             layout: {
-                topStart: {
-                    buttons: [
-                        'copy', 'excel', 'pdf',
-                    ]
-                }
+                topStart: 'buttons'
             },
+            buttons: [
+                { extend: 'pdf', className: 'btn-datatable' },
+                { extend: 'excel', className: 'btn btn-primary' },
+                { extend: 'print', className: 'btn btn-primary' },
+            ],
             "autowidth": false,
         })
         $('#myModal').on('shown.bs.modal', function () {
