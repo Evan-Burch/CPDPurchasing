@@ -1,0 +1,162 @@
+<html lang="en">
+
+<body>
+    <div class="col-12 d-flex justify-content-center mt-2">
+        <div class="card col-12 col-md-10 col-lg-9">
+            <div class="card-header">
+                <div class="row">
+                    <h3 class="col-8">Purchase Order (add PO Number here)</h3>
+                    <button type="button" class="btn btn-primary col-2 offset-2"
+                        onclick="javascript:switchPage('purchaseOrders.html')">Return</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="card col-9 mx-2">
+                        <div class="row">
+                            <div class="col-3 p-3">
+                                <p><b> Vendor: </b></p>
+                                <p><b> Created By:</b> </b></p>
+                                <p><b> Requested For: </b></p>
+                            </div>
+                            <div class="col-3 p-3">
+                                <p> placeholder </p>
+                                <p> placeholder </p>
+                                <p> placeholder </p>
+                            </div>
+                            <div class="col-3 p-3">
+                                <p><b> Date: </b></p>
+                                <p><b> Status: </b></p>
+                                <p><b> Route: </b></p>
+                            </div>
+                            <div class="col-3 p-3">
+                                <p> placeholder </p>
+                                <p> placeholder </p>
+                                <p> placeholder </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <button type="button" class="btn btn-primary col-12 offset-3 mb-2"><!-- Add Functionality -->
+                            Print
+                        </button>
+                        <button type="button" class="btn btn-info col-12 offset-3 mb-2" data-bs-toggle="modal"
+                            data-bs-target="#editPO"><!-- Add Functionality -->
+                            Edit PO
+                        </button>
+                        <button type="button" class="btn btn-success col-12 offset-3 mb-2" data-bs-toggle="modal"
+                            data-bs-target="#addPOItem"><!-- Add Functionality -->
+                            Add Item
+                        </button>
+                        <button type="button" class="btn btn-danger col-12 offset-3 mb-2"><!-- Add Functionality -->
+                            Delete PO
+                        </button>
+                    </div>
+                </div>
+
+                <label for="txtNotes" class="form-label mt-3"><b>Notes</b></label>
+                <textarea id="txtNotes" class="form-control mb-2">Notes</textarea>
+
+                <table class="table table-striped" id="tblPOItems">
+                    <thead>
+                        <tr>
+                            <th>Account ID</th>
+                            <th>Item Description</th>
+                            <th>Quantity</th>
+                            <th>Price Each</th>
+                            <th>Total Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                <hr>
+                <div class="col-4">
+                    <label for="formFile" class="form-label mt-2"><b>Attachments</b></label>
+                    <input class="form-control col-4" type="file" id="formFile">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit PO Modal -->
+    <div class="modal fade" id="editPO" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Purchase Order</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="txtEditVendor" class="form-label">Vendor</label>
+                    <select class="form-select" id="txtEditVendor" aria-label="Vendor">
+                        <option selected>Select Vendor</option>
+                    </select>
+                    <label for="txtEditVendorContact" class="form-label">Vendor Contact</label>
+                    <select class="form-select" id="txtEditVendorContact" aria-label="Vendor Contact">
+                        <option selected>Select Vendor Contact</option>
+                    </select>
+                    <label for="txtEditSelectedFor" class="form-label">Requested For</label>
+                    <select class="form-select" id="txtEditSelectedFor" aria-label="Requested For">
+                        <option selected>Select Requested For</option>
+                    </select>
+                    <label for="txtEditNotes" class="form-label">Notes</label>
+                    <input type="text" class="form-control" id="txtEditNotes" placeholder="Notes">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success">Edit</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add PO Item Modal -->
+    <div class="modal fade" id="addPOItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Add PO Item</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="txtEditVendor" class="form-label">Account</label>
+                    <select class="form-select" id="txtEditVendor" aria-label="Vendor">
+                        <option selected>Select Account</option>
+                    </select>
+
+                    <label for="txtItemDescription" class="form-label">Item Description</label>
+                    <input type="text" class="form-control" id="txtItemDescription" placeholder="Item Description">
+
+                    <label for="txtEditSelectedFor" class="form-label">Requested For</label>
+                    <select class="form-select" id="txtEditSelectedFor" aria-label="Requested For">
+                        <option selected>Select Requested For</option>
+                    </select>
+
+                    <label for="txtEditNotes" class="form-label">Notes</label>
+                    <input type="text" class="form-control" id="txtEditNotes" placeholder="Notes">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success">Add</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
+        integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
+        crossorigin="anonymous"></script>
+    <script>
+        $('#tblPOItems').DataTable({
+            responsive: true,
+        })
+
+
+    </script>
+</body>
+
+</html>
