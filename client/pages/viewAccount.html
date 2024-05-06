@@ -5,22 +5,20 @@
         <div class="card col-12 col-md-10 col-lg-9">
             <div class="card-header">
                 <div class="row">
-                    <h3 class="col-8">Purchase Order (add PO Number here)</h3>
+                    <h3 class="col-8">(Account ID here)</h3>
                     <button type="button" class="btn btn-primary col-2 offset-2"
                         onclick="javascript:switchPage('accounts.html')">Return</button>
                 </div>
             </div>
             <div class="card-body">
-                <div class="row">
+                <div class="row mb-5">
                     <div class="card col-9 mx-2">
                         <div class="row">
                             <div class="col-3 p-3">
-                                <p><b> Account Number: </b></p>
                                 <p><b> Description:</b> </b></p>
                                 <p><b> Division: </b></p>
                             </div>
                             <div class="col-3 p-3">
-                                <p> placeholder </p>
                                 <p> placeholder </p>
                                 <p> placeholder </p>
                             </div>
@@ -39,37 +37,54 @@
                             data-bs-target="#editAccount"><!-- Add Functionality -->
                             Edit Account
                         </button>
+
                         <button type="button" class="btn btn-danger col-12 offset-3 mb-2"><!-- Add Functionality -->
                             Delete Account
                         </button>
                     </div>
                 </div>
-                <label for="txtNotes" class="form-label mt-3"><b>Notes</b></label>
-                <textarea id="txtNotes" class="form-control mb-2">Notes</textarea>
-                <table class="table table-striped" id="tblPOItems">
+                <!-- DECIDE HOW WE WANT TO SHOW THE BUDGET, SPENT, AND REMAINING HERE (CARDS LIKE THEY HAVE, PROGRESS BARS, ETC) -->
+                <table class="table table-stripe" id="tblAccountYearlyBudgets">
                     <thead>
                         <tr>
-                            <th>Account ID</th>
-                            <th>Item Description</th>
-                            <th>Quantity</th>
-                            <th>Price Each</th>
-                            <th>Total Price</th>
+                            <th>Fiscal Year</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Date</th>
                         </tr>
                     </thead>
                     <tbody>
 
                     </tbody>
                 </table>
+
                 <hr>
-                <div class="col-4">
+
+                <table class="table table-striped" id="tblAccountPOs">
+                    <thead>
+                        <tr>
+                            <th>Purchase Order ID</th>
+                            <th>Date</th>
+                            <th>Vendor</th>
+                            <th>Creeated By</th>
+                            <th>Amount</th>
+                            <th>Fiscal Year</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+
+                <!-- <div class="col-4">
                     <label for="formFile" class="form-label mt-2"><b>Attachments</b></label>
                     <input class="form-control col-4" type="file" id="formFile">
-                </div>
+                </div>   NOT SURE IF WE WANT THIS ON THE ACCOUNT OR JUST PO-->
             </div>
         </div>
     </div>
 
-    <!-- Edit PO Modal -->
+    <!-- Edit Account Modal -->
     <div class="modal fade" id="editAccount" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -106,11 +121,13 @@
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
     <script>
-        $('#tblPOItems').DataTable({
+        $('#tblAccountYearlyBudgets').DataTable({
             responsive: true,
         })
 
-
+        $('#tblAccountPOs').DataTable({
+            responsive: true,
+        })
     </script>
 </body>
 

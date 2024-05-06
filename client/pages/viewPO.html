@@ -48,14 +48,15 @@
                             data-bs-target="#addPOItem"><!-- Add Functionality -->
                             Add Item
                         </button>
-                        <button type="button" class="btn btn-danger col-12 offset-3 mb-2" data-bs-toggle="modal"
-                            data-bs-target="#addPOItem"><!-- Add Functionality -->
+                        <button type="button" class="btn btn-danger col-12 offset-3 mb-2"><!-- Add Functionality -->
                             Delete PO
                         </button>
                     </div>
                 </div>
+
                 <label for="txtNotes" class="form-label mt-3"><b>Notes</b></label>
                 <textarea id="txtNotes" class="form-control mb-2">Notes</textarea>
+
                 <table class="table table-striped" id="tblPOItems">
                     <thead>
                         <tr>
@@ -112,7 +113,7 @@
         </div>
     </div>
 
-    <!-- Add Item Modal -->
+    <!-- Add PO Item Modal -->
     <div class="modal fade" id="addPOItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">

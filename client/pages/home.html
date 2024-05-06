@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
+<html lang="en" data-bs-theme="dark">
 
 <head>
   <meta charset="UTF-8">
@@ -43,6 +43,7 @@
     <!--Decide what goes in here for home page-->
     <button class="btn btn-primary" onclick="switchPage('viewPO.html')">View Purchase Orders</button> <!--Will be moved, just here so I can view the page-->
     <button class="btn btn-primary" onclick="switchPage('viewAccount.html')">View Account</button> <!--Will be moved, just here so I can view the page-->
+    <button class="btn btn-primary" onclick="switchPage('viewVendor.html')">View Vendor</button> <!--Will be moved, just here so I can view the page-->
   </div>
 
   <script src="../assets/js/jquery-3.7.1.min.js"></script>
@@ -60,6 +61,7 @@
       $('#divMain').load(pageName);
     }
 
+    // This needs to store what the current setting is in the db
     $('#btnSwitch').click(function() {
         if ($('html').attr('data-bs-theme') === 'dark') {
             $('html').attr('data-bs-theme', 'light');
