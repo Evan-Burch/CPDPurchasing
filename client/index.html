@@ -36,16 +36,16 @@
       let strUserName = $('#txtUsername').val();
       let strPassword = $('#txtPassword').val();
 
-      // if(strEmail.length < 1 || strPassword.length < 1){
-      //   // HALEY TODO: add validation for email/password
-      //   console.log("invalid username/password")
-      // } else{
-      //           $.post('https://url.here.com',{strUserName:strUserName,Password:strPassword},function(results){
-      //               results = JSON.parse(results);
-      //               console.log(results);
-      //               sessionStorage.setItem('SimpleSession',results.SessionID)
-      //           })
-      //       }
+      if(strEmail.length < 1 || strPassword.length < 1){
+        // HALEY TODO: add validation for email/password
+        console.log("invalid username/password")
+      } else{
+                $.post('54.144.91.83/login',{strUserName:strUserName,Password:strPassword},function(results){
+                    results = JSON.parse(results);
+                    console.log(results);
+                    sessionStorage.setItem('SimpleSession',results.SessionID)
+                })
+            }
 
 
       console.log("username: ", strUserName);
