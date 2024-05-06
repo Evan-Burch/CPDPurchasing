@@ -13,33 +13,29 @@
   <div class="col-12 d-flex justify-content-center align-items-center">
     <div class="col-8 vh-100" style="background-image: url(assets/images/pd-hero-image.jpg); background-size: cover;">
     </div>
-    <div class="col-4 vh-100 d-flex justify-content-center align-items-center" style="background-color:skyblue;">
-      <div class="card col-6">
-          <div class="form-group">
-            <h3>login</h3>
-            <br>
-            <label for="txtUsername" class="form-label">username</label>
-            <input id="txtUsername" type="email" class="form-control">
-          </div>
-          <br>
-          <div class="form-group">
-            <label for="txtPassword" class="form-label">password</label>
-            <input id="txtPassword" type="password" class="form-control">
-          </div>
-
-          <button type="button" class="col-12 btn-success" id="btnSubmitLogin" onclick="">login</button>
-          <button type="button" class="col-12 btn-success" id="btnSubmitLoginSAML" onclick="">login with SAML</button>
-
-      </div>
+    <div class="col-4 vh-100 text-white bg-primary">
+      <h1 class="login-header col-10 mt-5 offset-1">Cookeville Police Department</h1>
+      <form>
+        <div class="form-group col-8 offset-2 mb-3">
+          <label for="txtUsername">Username</label>
+          <input type="text" class="form-control" id="txtUsername" aria-label="Username">
+        </div>
+        <div class="form-group col-8 offset-2 mb-3">
+          <label for="txtPassword">Password</label>
+          <input type="password" class="form-control" id="txtPassword" aria-label="Password">
+        </div>
+        <button type="button" class="btn btn-secondary col-6 offset-3 mb-2" id="btnLogin">Login</button>
+        <button type="button" class="btn btn-secondary col-6 offset-3" id="btnSAMLLogin">Login with SAML</button>
+      </form>
     </div>
   </div>
   <script src="./assets/js/jquery-3.7.1.min.js"></script>
 
   <script>
-    $('#btnSubmitLogin').on('click', function(){
+    $('#btnSubmitLogin').on('click', function () {
       let strUserName = $('#txtUsername').val();
       let strPassword = $('#txtPassword').val();
-      
+
       // if(strEmail.length < 1 || strPassword.length < 1){
       //   // HALEY TODO: add validation for email/password
       //   console.log("invalid username/password")
@@ -50,13 +46,14 @@
       //               sessionStorage.setItem('SimpleSession',results.SessionID)
       //           })
       //       }
-      
 
-      console.log("username: ",strUserName);
+
+      console.log("username: ", strUserName);
       console.log("Password: ", strPassword);
 
     })
   </script>
 
 </body>
+
 </html>
