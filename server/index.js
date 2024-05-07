@@ -4,7 +4,6 @@ var mariadb = require("mariadb");
 require("dotenv").config();
 var { exec } = require('child_process');
 var bodyParser = require("body-parser");
-app.use(bodyParser.json());
 
 
 const crypto = require("crypto");
@@ -21,6 +20,7 @@ const db_pool = mariadb.createPool({
 var app = express();
 app.use(express.json());
 app.use(cors());
+app.use(bodyParser.json());
 
 /******************************************HELPER FUNCTIONS******************************************/
 
