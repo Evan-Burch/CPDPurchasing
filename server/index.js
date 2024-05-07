@@ -53,6 +53,7 @@ async function getUserIDBySessionToken(uuidSessionToken) {
 app.post("/login", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	console.log("username is " + req.body.strUserName);
+	console.log("password is " + req.body.strPassword);
 	const strUserName = clean(req.body.strUserName);
 	const strPassword = clean(req.body.strPassword);
 
