@@ -3,6 +3,9 @@ var cors = require("cors");
 var mariadb = require("mariadb");
 require("dotenv").config();
 var { exec } = require('child_process');
+var bodyParser = require("body-parser");
+app.use(bodyParser.json());
+
 
 const crypto = require("crypto");
 
