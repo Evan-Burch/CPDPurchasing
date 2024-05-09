@@ -52,10 +52,10 @@ async function getUserIDBySessionToken(uuidSessionToken) {
 
 app.post("/login", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
-	console.log("username is " + req.body.strUserName);
-	console.log("password is " + req.body.strPassword);
-	const strUserName = clean(req.body.strUserName);
-	const strPassword = clean(req.body.strPassword);
+	console.log("username is " + req.params.strUserName);
+	console.log("password is " + req.params.strPassword);
+	const strUserName = clean(req.params.strUserName);
+	const strPassword = clean(req.params.strPassword);
 
 	var strHashedPassword = crypto.createHash("sha256").update(strPassword).digest("hex");
 
