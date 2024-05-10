@@ -58,7 +58,7 @@ app.post("/login", async (req, res) => {
 	const strPassword = clean(req.body.strPassword);
 
 	var strHashedPassword = crypto.createHash("sha256").update(strPassword).digest("hex");
-	console.log("hashedpassword is " + req.body.strHashedPassword);
+	console.log("hashedpassword is " + strHashedPassword);
 	console.log("Got a login attempt from " + strUserName + ", communicating with DB...");
 
 	try {
