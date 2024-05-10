@@ -76,7 +76,7 @@ app.post("/login", async (req, res) => {
 
 		res.json({"message": "Success. Logging you in.", "uuidSessionToken": uuidSessionToken, "status": 200});
 
-		const intUserId = usersQuery[0].ID;
+		const intUserId = usersQuery[0].EmployeeID;
 
 		await dbConnection.query("INSERT INTO tblSessions (UserID, ID, timeIn) VALUE (?, ?, NOW());", [intUserId, uuidSessionToken]);
 	} finally {
