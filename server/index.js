@@ -20,7 +20,7 @@ const db_pool = mariadb.createPool({
 var app = express();
 app.use(express.json());
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.bodyParser());
 
 /******************************************HELPER FUNCTIONS******************************************/
 
@@ -52,10 +52,10 @@ async function getUserIDBySessionToken(uuidSessionToken) {
 
 app.post("/login", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
-	console.log("username is " + req.params.strUserName);
-	console.log("password is " + req.params.strPassword);
-	const strUserName = clean(req.params.strUserName);
-	const strPassword = clean(req.params.strPassword);
+	console.log("username is " + req.body.strUserName);
+	console.log("password is " + req.body.strPassword);
+	const strUserName = clean(req.body.strUserName);
+	const strPassword = clean(req.body.strPassword);
 
 	var strHashedPassword = crypto.createHash("sha256").update(strPassword).digest("hex");
 
