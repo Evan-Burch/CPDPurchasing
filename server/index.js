@@ -20,7 +20,7 @@ const db_pool = mariadb.createPool({
 var app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.bodyParser());
+app.use(bodyParser.json());
 
 /******************************************HELPER FUNCTIONS******************************************/
 
@@ -58,7 +58,7 @@ app.post("/login", async (req, res) => {
 	const strPassword = clean(req.body.strPassword);
 
 	var strHashedPassword = crypto.createHash("sha256").update(strPassword).digest("hex");
-
+	console.log("hashedpassword is " + strHashedPassword);
 	console.log("Got a login attempt from " + strUserName + ", communicating with DB...");
 
 	try {
@@ -76,7 +76,7 @@ app.post("/login", async (req, res) => {
 
 		res.json({"message": "Success. Logging you in.", "uuidSessionToken": uuidSessionToken, "status": 200});
 
-		const intUserId = usersQuery[0].ID;
+		const intUserId = usersQuery[0].EmployeeID;
 
 		await dbConnection.query("INSERT INTO tblSessions (UserID, ID, timeIn) VALUE (?, ?, NOW());", [intUserId, uuidSessionToken]);
 	} finally {
