@@ -104,6 +104,25 @@ app.post("/logout", async (req, res) => {
 	}
 });
 
+app.get("/fillPOTable", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Filling the PO Table");
+
+		await dbConnection.query("SELECT * FROM tblSessions", [uuidSessionToken]);
+
+		res.json({"message": "Goodbye!", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
 app.get("/", (req, res) => {
 	res.json({"message": "Nothing interesting happens.", "status": 200});
 });
