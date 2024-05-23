@@ -106,6 +106,7 @@ app.post("/logout", async (req, res) => {
 
 app.get("/fillPOTable", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
 	
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
@@ -115,9 +116,17 @@ app.get("/fillPOTable", async (req, res) => {
 
 		console.log("Filling the PO Table");
 
-		await dbConnection.query("SELECT * FROM tblSessions", [uuidSessionToken]);
+		const POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder;");
 
-		res.json({"message": "Goodbye!", "status": 200});
+		if (POTable.length == 0) {
+			return res.json({"message": "There are no purchase orders.", "status": 500});
+		} else {
+			// If there are POs, list them
+			console.log(POTable);
+			res.json({"message": "Success.", "status": 200, "POTable": POTable});
+		}
+
+		//res.json({"message": "Success. PO Table information returned", "PurchaseOrderID": PurchaseOrderID, "CreatedDateTime": CreatedDateTime, "VendorName": VendorName, "Amount": 0, "CreatedBy": CreatedBy, "RequestedFor": RequestedFor, "status": 200});
 	} finally {
 		await dbConnection.close();
 	}
