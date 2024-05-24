@@ -67,6 +67,18 @@
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
     <script>
+        $.ajax({
+            type: 'GET',
+            url: 'http://54.144.91.83:8000/fillPOTable',
+            data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession')}),
+            success: function(results){
+                results.forEach(result => {
+                    let strRow = '<tr><td>' + result['PurchaseOrderID'] + '</td><td>' + result['createdByDate'] + '</td><td>' + result['vendorName'] + '</td><td>' + result['amount'] + '</td><td>' + result['createdBy'] + '</td><td>' + result['requestedBy'] + '</td></tr>';
+                    $('#tblPurchaseOrders tbody').append(strRow);
+                });
+            }
+        });
+
         new DataTable('#tblPurchaseOrders', {
             layout: {
                 topStart: 'buttons'
@@ -78,16 +90,6 @@
             ],
             "autowidth": false,
         })
-
-
-        $.ajax({
-            type: 'GET',
-            url: 'http://54.144.91.83:8000/fillPOTable',
-            data: JSON.stringify({ uuidSessionToken: sessionStorage.gettIem('SimpleSession')}),
-            success: function(results){
-                
-            }
-        });
     </script>
 </body>
 
