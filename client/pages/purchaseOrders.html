@@ -83,6 +83,7 @@
         $.ajax({
             type: 'GET',
             url: 'http://54.144.91.83:8000/fillPOTable',
+            data: JSON.stringify({ uuidSessionToken: sessionStorage.gettIem('SimpleSession')}),
             success: function(results){
                 
             }
