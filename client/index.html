@@ -47,8 +47,7 @@
           contentType: 'application/json',
           success: 
             function(results) {
-              console.log(results);
-              sessionStorage.setItem('SimpleSession', results.SessionID)
+              sessionStorage.setItem('SimpleSession', results.uuidSessionToken);
               window.location.href = "pages/home.html";
             }
         });
