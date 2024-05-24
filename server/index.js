@@ -52,13 +52,10 @@ async function getUserIDBySessionToken(uuidSessionToken) {
 
 app.post("/login", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
-	console.log("username is " + req.body.strUserName);
-	console.log("password is " + req.body.strPassword);
 	const strUserName = clean(req.body.strUserName);
 	const strPassword = clean(req.body.strPassword);
 
 	var strHashedPassword = crypto.createHash("sha256").update(strPassword).digest("hex");
-	console.log("hashedpassword is " + strHashedPassword);
 	console.log("Got a login attempt from " + strUserName + ", communicating with DB...");
 
 	try {
@@ -106,6 +103,8 @@ app.post("/logout", async (req, res) => {
 
 app.get("/fillPOTable", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
+	console.log(req.body.uuidSessionToken);
+	console.log(typeof req.body.uuidSessionToken);
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 	
 	try {
