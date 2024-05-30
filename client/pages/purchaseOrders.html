@@ -67,30 +67,41 @@
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
     <script>
-        $.ajax({
-            type: 'POST',
-            url: 'http://54.144.91.83:8000/fillPOTable',
-            data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession')}),
-            contentType: 'application/json',
-            success: function(results){
-                results.POTable.forEach(result => {
-                    let strRow = '<tr><td>' + result['PurchaseOrderID'] + '</td><td>' + result['CreatedDateTime'] + '</td><td>' + result['VendorID'] + '</td><td>' + result['amount'] + '</td><td>' + result['CreatedBy'] + '</td><td>' + result['RequestedFor'] + '</td></tr>';
-                    $('#tblPurchaseOrders tbody').append(strRow);
-                });
-            }
+        $(document).ready(function () {
+            $.ajax({
+                type: 'POST',
+                url: 'http://54.144.91.83:8000/fillPOTable',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log('Response:', results);
+                    if (results.status === 200 && Array.isArray(results.POTable)) {
+                        results.POTable.forEach(result => {
+                            let strRow = '<tr><td>' + result['PurchaseOrderID'] + '</td><td>' + result['CreatedDateTime'] + '</td><td>' + result['VendorID'] + '</td><td>' + result['Amount'] + '</td><td>' + result['CreatedBy'] + '</td><td>' + result['RequestedFor'] + '</td></tr>';
+                            $('#tblPurchaseOrders tbody').append(strRow);
+                        });
+
+                        // Initialize DataTable after data is appended
+                        $('#tblPurchaseOrders').DataTable({
+                            layout: {
+                                topStart: {
+                                    buttons: [
+                                        'copy', 'excel', 'pdf'
+                                    ]
+                                }
+                            },
+                            "autowidth": false
+                        });
+                    } else {
+                        console.error('Unexpected response format or status:', results);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                }
+            });
         });
 
-        new DataTable('#tblPurchaseOrders', {
-            layout: {
-                topStart: 'buttons'
-            },
-            buttons: [
-                { extend: 'pdf', className: 'btn-datatable' },
-                { extend: 'excel', className: 'btn btn-primary' },
-                { extend: 'print', className: 'btn btn-primary' },
-            ],
-            "autowidth": false,
-        })
     </script>
 </body>
 
