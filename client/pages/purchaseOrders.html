@@ -68,12 +68,13 @@
         crossorigin="anonymous"></script>
     <script>
         $.ajax({
-            type: 'GET',
+            type: 'POST',
             url: 'http://54.144.91.83:8000/fillPOTable',
             data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession')}),
+            contentType: 'application/json',
             success: function(results){
-                results.forEach(result => {
-                    let strRow = '<tr><td>' + result['PurchaseOrderID'] + '</td><td>' + result['createdByDate'] + '</td><td>' + result['vendorName'] + '</td><td>' + result['amount'] + '</td><td>' + result['createdBy'] + '</td><td>' + result['requestedBy'] + '</td></tr>';
+                results.POTable.forEach(result => {
+                    let strRow = '<tr><td>' + result['PurchaseOrderID'] + '</td><td>' + result['CreatedDateTime'] + '</td><td>' + result['VendorID'] + '</td><td>' + result['amount'] + '</td><td>' + result['CreatedBy'] + '</td><td>' + result['RequestedFor'] + '</td></tr>';
                     $('#tblPurchaseOrders tbody').append(strRow);
                 });
             }
