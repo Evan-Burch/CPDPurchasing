@@ -101,7 +101,7 @@ app.post("/logout", async (req, res) => {
 	}
 });
 
-app.get("/fillPOTable", async (req, res) => {
+app.post("/fillPOTable", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	console.log(req.body.uuidSessionToken);
 	console.log(typeof req.body.uuidSessionToken);
