@@ -131,6 +131,35 @@ app.get("/fillPOTable", async (req, res) => {
 	}
 });
 
+app.get("/fillAccountTable", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	console.log(req.body.uuidSessionToken);
+	console.log(typeof req.body.uuidSessionToken);
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Filling the Accounts Table");
+
+		const AccountTable = await dbConnection.query("SELECT * FROM tblAccount;");
+
+		if (AccountTable.length == 0) {
+			return res.json({"message": "There are no accounts.", "status": 500});
+		} else {
+			// If there are Accounts, list them
+			console.log(AccountTable);
+			res.json({"message": "Success.", "status": 200, "AccountTable": AccountTable});
+		}
+		
+	} finally {
+		await dbConnection.close();
+	}
+});
+
 app.get("/", (req, res) => {
 	res.json({"message": "Nothing interesting happens.", "status": 200});
 });
