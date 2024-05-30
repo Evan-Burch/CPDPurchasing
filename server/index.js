@@ -105,7 +105,7 @@ app.get("/fillPOTable", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	console.log(req.body.uuidSessionToken);
 	console.log(typeof req.body.uuidSessionToken);
-	const uuidSessionToken = clean(req.data.uuidSessionToken);
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
 	
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
