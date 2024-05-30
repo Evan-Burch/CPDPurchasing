@@ -103,8 +103,6 @@ app.post("/logout", async (req, res) => {
 
 app.post("/fillPOTable", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
-	console.log(req.body.uuidSessionToken);
-	console.log(typeof req.body.uuidSessionToken);
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 	
 	try {
@@ -121,7 +119,6 @@ app.post("/fillPOTable", async (req, res) => {
 			return res.json({"message": "There are no purchase orders.", "status": 500});
 		} else {
 			// If there are POs, list them
-			console.log(POTable);
 			res.json({"message": "Success.", "status": 200, "POTable": POTable});
 		}
 
@@ -131,10 +128,8 @@ app.post("/fillPOTable", async (req, res) => {
 	}
 });
 
-app.get("/fillAccountTable", async (req, res) => {
+app.post("/fillAccountTable", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
-	console.log(req.body.uuidSessionToken);
-	console.log(typeof req.body.uuidSessionToken);
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 	
 	try {
@@ -151,8 +146,34 @@ app.get("/fillAccountTable", async (req, res) => {
 			return res.json({"message": "There are no accounts.", "status": 500});
 		} else {
 			// If there are Accounts, list them
-			console.log(AccountTable);
 			res.json({"message": "Success.", "status": 200, "AccountTable": AccountTable});
+		}
+
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.post("/fillVendorTable", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Filling the Vendors Table");
+
+		const VendorTable = await dbConnection.query("SELECT * FROM tblVendor;");
+
+		if (VendorTable.length == 0) {
+			return res.json({"message": "There are no vendors.", "status": 500});
+		} else {
+			// If there are Vendors, list them
+			console.log(VendorTable);
+			res.json({"message": "Success.", "status": 200, "VendorTable": VendorTable});
 		}
 
 	} finally {
