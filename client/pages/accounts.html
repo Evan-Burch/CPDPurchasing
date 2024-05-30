@@ -68,16 +68,40 @@
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
     <script>
-        $('#tblAccounts').DataTable({
-            layout: {
-                topStart: {
-                    buttons: [
-                        'copy', 'excel', 'pdf'
-                    ]
+        $(document).ready(function () {
+            $.ajax({
+                type: 'POST',
+                url: 'http://54.144.91.83:8000/fillAccountTable',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log('Response:', results);
+                    if (results.status === 200 && Array.isArray(results.POTable)) {
+                        results.POTable.forEach(result => {
+                            let strRow = '<tr><td>' + result['AccountID'] + '</td><td>' + result['Description'] + '</td><td>' + result['DivisionID'] + '</td><td>' + result['FiscalAuthority'] + '</td><td>' + result['Status'] + '</td></tr>';
+                            $('#tblAccounts tbody').append(strRow);
+                        });
+
+                        // Initialize DataTable after data is appended
+                        $('#tblAccounts').DataTable({
+                            layout: {
+                                topStart: {
+                                    buttons: [
+                                        'copy', 'excel', 'pdf'
+                                    ]
+                                }
+                            },
+                            "autowidth": false
+                        });
+                    } else {
+                        console.error('Unexpected response format or status:', results);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
                 }
-            },
-            "autowidth": false
-        })
+            });
+        });
     </script>
 </body>
 
