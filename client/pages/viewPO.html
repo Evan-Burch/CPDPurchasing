@@ -151,11 +151,12 @@
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
     <script>
+        const PurchaseOrderID = $.urlParam('puchaseOrderID');
+
         $('#tblPOItems').DataTable({
             responsive: true,
         })
-
-
+        console.log(PurchaseOrderID);
     </script>
 </body>
 

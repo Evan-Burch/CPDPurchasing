@@ -77,7 +77,13 @@
                     console.log('Response:', results);
                     if (results.status === 200 && Array.isArray(results.POTable)) {
                         results.POTable.forEach(result => {
-                            let strRow = '<tr><td>' + result['PurchaseOrderID'] + '</td><td>' + result['CreatedDateTime'] + '</td><td>' + result['VendorID'] + '</td><td>' + result['Amount'] + '</td><td>' + result['CreatedBy'] + '</td><td>' + result['RequestedFor'] + '</td></tr>';
+                            let strRow = 
+                            '<tr><td><a href=viewPO.html?purchaseOrderID=' + result['PurchaseOrderID'] + '">' + result['PurchaseOrderID'] + 
+                            '</td><td>' + result['CreatedDateTime'] + 
+                            '</td><td>' + result['VendorID'] + 
+                            '</td><td>' + result['Amount'] + 
+                            '</td><td>' + result['CreatedBy'] + 
+                            '</td><td>' + result['RequestedFor'] + '</td></tr>';
                             $('#tblPurchaseOrders tbody').append(strRow);
                         });
 
