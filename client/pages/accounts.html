@@ -76,8 +76,8 @@
                 contentType: 'application/json',
                 success: function (results) {
                     console.log('Response:', results);
-                    if (results.status === 200 && Array.isArray(results.POTable)) {
-                        results.POTable.forEach(result => {
+                    if (results.status === 200 && Array.isArray(results.AccountTable)) {
+                        results.AccountTable.forEach(result => {
                             let strRow = '<tr><td>' + result['AccountID'] + '</td><td>' + result['Description'] + '</td><td>' + result['DivisionID'] + '</td><td>' + result['FiscalAuthority'] + '</td><td>' + result['Status'] + '</td></tr>';
                             $('#tblAccounts tbody').append(strRow);
                         });

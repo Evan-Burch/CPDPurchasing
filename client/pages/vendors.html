@@ -1,11 +1,13 @@
 <html lang="en">
+
 <body>
     <div class="col-12 d-flex justify-content-center mt-2">
         <div class="card col-12 col-md-10 col-lg-9">
             <div class="card-header">
                 <div class="row">
                     <h3 class="col-8">Vendors</h3>
-                    <button type="button" class="btn btn-primary col-4" data-bs-toggle="modal" data-bs-target="#newVendor">
+                    <button type="button" class="btn btn-primary col-4" data-bs-toggle="modal"
+                        data-bs-target="#newVendor">
                         Create New Vendor
                     </button>
                 </div>
@@ -53,16 +55,38 @@
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
     <script>
-        $('#tblVendors').DataTable({
-            responsive: true,
-            layout: {
-                topStart: {
-                    buttons: [
-                        'copy', 'excel', 'pdf'
-                    ]
+        $.ajax({
+            type: 'POST',
+            url: 'http://54.144.91.83:8000/fillVendorTable',
+            data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+            contentType: 'application/json',
+            success: function (results) {
+                console.log('Response:', results);
+                if (results.status === 200 && Array.isArray(results.VendorTable)) {
+                    results.VendorTable.forEach(result => {
+                        let strRow = '<tr><td>' + result['VendorName'] + '</td><td>' + result['Website'] + '</td><td>' + result['Status']  + '</td></tr>';
+                        $('#tblVendors tbody').append(strRow);
+                    });
+
+                    // Initialize DataTable after data is appended
+                    $('#tblVendors').DataTable({
+                        layout: {
+                            topStart: {
+                                buttons: [
+                                    'copy', 'excel', 'pdf'
+                                ]
+                            }
+                        },
+                        "autowidth": false
+                    });
+                } else {
+                    console.error('Unexpected response format or status:', results);
                 }
             },
-        })
+            error: function (xhr, status, error) {
+                console.error('AJAX Error:', status, error);
+            }
+        });
 
     </script>
 </body>
