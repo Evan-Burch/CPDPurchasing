@@ -67,6 +67,11 @@
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
     <script>
+        function switchPage(pageName, purchaseOrderId) {
+            sessionStorage.setItem('PurchaseOrderID', purchaseOrderId);
+            $('#divMain').load(pageName);
+        }
+
         $(document).ready(function () {
             $.ajax({
                 type: 'POST',
@@ -77,13 +82,12 @@
                     console.log('Response:', results);
                     if (results.status === 200 && Array.isArray(results.POTable)) {
                         results.POTable.forEach(result => {
-                            let strRow = 
-                            '<tr><td><a href=viewPO.html?purchaseOrderID=' + result['PurchaseOrderID'] + '">' + result['PurchaseOrderID'] + 
-                            '</td><td>' + result['CreatedDateTime'] + 
-                            '</td><td>' + result['VendorID'] + 
-                            '</td><td>' + result['Amount'] + 
-                            '</td><td>' + result['CreatedBy'] + 
-                            '</td><td>' + result['RequestedFor'] + '</td></tr>';
+                            let strRow =
+                                '<tr><td><a href="#" onclick="switchPage(\'viewPO.html\', \'' + result['PurchaseOrderID'] + '\')">' + result['PurchaseOrderID'] +                                '</td><td>' + result['CreatedDateTime'] +
+                                '</td><td>' + result['VendorID'] +
+                                '</td><td>' + result['Amount'] +
+                                '</td><td>' + result['CreatedBy'] +
+                                '</td><td>' + result['RequestedFor'] + '</td></tr>';
                             $('#tblPurchaseOrders tbody').append(strRow);
                         });
 
