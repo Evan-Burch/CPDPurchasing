@@ -32,24 +32,30 @@
   <script src="./assets/js/jquery-3.7.1.min.js"></script>
 
   <script>
-    $('#btnSubmitLogin').on('click', function () {
+    $('#btnLogin').on('click', function () {
       let strUserName = $('#txtUsername').val();
       let strPassword = $('#txtPassword').val();
 
-      // if(strEmail.length < 1 || strPassword.length < 1){
-      //   // HALEY TODO: add validation for email/password
-      //   console.log("invalid username/password")
-      // } else{
-      //           $.post('https://url.here.com',{strUserName:strUserName,Password:strPassword},function(results){
-      //               results = JSON.parse(results);
-      //               console.log(results);
-      //               sessionStorage.setItem('SimpleSession',results.SessionID)
-      //           })
-      //       }
+      if (strUserName.length < 1 || strPassword.length < 1) {
+        // HALEY TODO: add validation for email/password
+        console.log("invalid username/password")
+      } else {
+        $.ajax({
+          type: 'POST',
+          url: 'http://54.144.91.83:8000/login',
+          data: JSON.stringify({ strUserName: strUserName, strPassword: strPassword }),
+          contentType: 'application/json',
+          success: 
+            function(results) {
+              sessionStorage.setItem('SimpleSession', results.uuidSessionToken);
+              window.location.href = "pages/home.html";
+            }
+        });
+      }
 
 
-      console.log("username: ", strUserName);
-      console.log("Password: ", strPassword);
+      // console.log("username: ", strUserName);
+      // console.log("Password: ", strPassword);
 
     })
   </script>
