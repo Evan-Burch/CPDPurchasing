@@ -5,7 +5,7 @@
         <div class="card col-12 col-md-10 col-lg-9">
             <div class="card-header">
                 <div class="row">
-                    <h3 class="col-8">(Vendor Name here)</h3>
+                    <h3 id="vendorTitle" class="col-8">(Vendor Name here)</h3>
                     <button type="button" class="btn btn-primary col-2 offset-2"
                         onclick="javascript:switchPage('vendors.html')">Return</button>
                 </div>
@@ -142,6 +142,10 @@
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
     <script>
+        $(document).ready(function () {
+            const VendorName = sessionStorage.getItem('VendorName');
+            $('#vendorTitle').text(VendorName);
+        })
 
         $('#tblVendorContacts').DataTable({
             responsive: true,
