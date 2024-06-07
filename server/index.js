@@ -143,9 +143,9 @@ app.post("/fillPOTable", async (req, res) => {
 
 		for (let i = 0; i < POTable.length; i++) {
 			const VendorQuery = dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [POTable[i].VendorID]);
-			if (i = 0) {
-				console.log(VendorQuery);
-			}
+			console.log("1" + VendorQuery);
+			console.log("2" + VendorQuery[0]);
+			console.log("3" + VendorQuery[0].VendorName);
 			const newProperty = { "VendorName": VendorQuery[0].VendorName };
 			POTable = POTable.map(item => ({
 				...item,
