@@ -72,6 +72,11 @@
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
     <script>
+        function switchPage(pageName, vendorName) {
+            sessionStorage.setItem('VendorName', vendorName);
+            $('#divMain').load(pageName);
+        }
+
         $.ajax({
             type: 'POST',
             url: 'http://54.144.91.83:8000/fillVendorTable',
@@ -81,7 +86,7 @@
                 console.log('Response:', results);
                 if (results.status === 200 && Array.isArray(results.VendorTable)) {
                     results.VendorTable.forEach(result => {
-                        let strRow = '<tr><td>' + result['VendorName'] + '</td><td>' + result['Website'] + '</td><td>' + result['Status'] + '</td></tr>';
+                        let strRow = '<tr><td><a href="#" onclick="switchPage(\'viewVendor.html\', \'' + result['VendorName'] + '\')">' + result['VendorName'] + '</td><td><a href="http://' + result['Website'] + '" target="_blank">' + result['Website'] + '</a></td><td>' + result['Status'] + '</td></tr>';
                         $('#tblVendors tbody').append(strRow);
                     });
 
