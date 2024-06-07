@@ -140,12 +140,10 @@ app.post("/fillPOTable", async (req, res) => {
 		console.log("Filling the PO Table");
 
 		POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder;");
-		// const VendorNames = [];
+
 		for (let i = 0; i < POTable.length; i++) {
-			console.log(POTable[i].VendorID);
-			const VendorName = dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [POTable[i].VendorID]);
-			// VendorNames.push({VVendorName);
-			const newProperty = { "VendorName": VendorName };
+			const VendorQuery = dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [POTable[i].VendorID]);
+			const newProperty = { "VendorName": VendorQuery[0].VendorName };
 			POTable = POTable.map(item => ({
 				...item,
 				...newProperty
