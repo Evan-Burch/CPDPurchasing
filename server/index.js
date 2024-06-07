@@ -85,6 +85,10 @@ app.post("/login", async (req, res) => {
 	console.log("Got a login attempt from " + strUserName + ", communicating with DB...");
 
 	try {
+		var contactQuery = await dbConnection.query("SELECT VendorID, VendorContactID FROM tblPurchaseOrder;");
+		for (let i = 0; i < contactQuery.length; i++) {
+			await dbConnection.query("UPDATE tblVendor SET VendorContactID=? WHERE VendorID=?;", [contactQuery[i].VendorContactID, contactQuery[i].VendorID]);
+		}
 		var usersQuery = await dbConnection.query("SELECT * FROM tblUser WHERE UserName=? AND password=?;", [strUserName, strHashedPassword]);
 			
 		if (usersQuery.length == 0) {
@@ -143,8 +147,6 @@ app.post("/fillPOTable", async (req, res) => {
 
 		for (let i = 0; i < POTable.length; i++) {
 			const VendorQuery = await dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [POTable[i].VendorID]);
-
-			//const newProperty = { "VendorName": VendorQuery[0].VendorName };
 			POTable[i].VendorName = VendorQuery[0].VendorName
 		}
 
