@@ -156,7 +156,7 @@ app.post("/fillPOTable", async (req, res) => {
 			return res.json({"message": "There are no purchase orders.", "status": 500});
 		} else {
 			// If there are POs, list them
-			res.json({"message": "Success.", "status": 200, "POTable": POTable, "VendorName": VendorNames});
+			res.json({"message": "Success.", "status": 200, "POTable": POTable});
 		}
 
 	} finally {
