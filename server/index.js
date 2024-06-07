@@ -142,7 +142,7 @@ app.post("/fillPOTable", async (req, res) => {
 		POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder;");
 		// const VendorNames = [];
 		for (let i = 0; i < POTable.length; i++) {
-			console.log(item[i].VendorID);
+			console.log(POTable[i].VendorID);
 			const VendorName = dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [item[i].VendorID]);
 			// VendorNames.push({VVendorName);
 			const newProperty = { "VendorName": VendorName };
