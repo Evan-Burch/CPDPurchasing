@@ -139,11 +139,18 @@ app.post("/fillPOTable", async (req, res) => {
 
 		console.log("Filling the PO Table");
 
-		const POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder;");
-		jsonArray.map(item => {
-			console.log(item.name);
-			const VendorNames = dbConnection.query("SELECT VendorName FROM tblVendor;");
-		});
+		POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder;");
+		// const VendorNames = [];
+		for (let i = 0; i < POTable.length; i++) {
+			console.log(item[i].VendorID);
+			const VendorName = dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [item[i].VendorID]);
+			// VendorNames.push({VVendorName);
+			const newProperty = { "VendorName": VendorName };
+			POTable = POTable.map(item => ({
+				...item,
+				...newProperty
+			}));
+		}
 
 		if (POTable.length == 0) {
 			return res.json({"message": "There are no purchase orders.", "status": 500});
