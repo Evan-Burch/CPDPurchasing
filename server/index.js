@@ -107,7 +107,7 @@ app.post("/login", async (req, res) => {
 	}
 });
 
-app.post("/logout", async (req, res) => {
+app.delete("/logout", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 	
