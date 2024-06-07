@@ -48,7 +48,33 @@ async function getUserIDBySessionToken(uuidSessionToken) {
 	}
 }
 
+async function getUserNameBySessionToken(uuidSessionToken) {
+	const dbConnection = await db_pool.getConnection();
+
+	var userID = await getUserIDBySessionToken(uuidSessionToken);
+	try {
+		const result = await dbConnection.query("SELECT UserName FROM tblUser WHERE UserID=?;", [userID]);
+		
+		if (result.length == 0) {
+			console.log("UserID " + userID + " does not belong to any user.");
+			return -1;
+		}
+		return result[0].UserName;
+	} finally {
+		await dbConnection.end();
+	}
+}
+
 /******************************************REQUESTS******************************************/
+
+app.post("/getUserName", async (req, res) => {
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const UserName = await getUserNameBySessionToken(uuidSessionToken);
+	if (UserName == -1) {
+		return res.json({"message": "No UserName for that sessiontoken or UserID", "status": 400});
+	}
+	res.json({"message": "Success.", "status": 200, "UserName": UserName});
+});
 
 app.post("/login", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
@@ -114,15 +140,18 @@ app.post("/fillPOTable", async (req, res) => {
 		console.log("Filling the PO Table");
 
 		const POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder;");
+		jsonArray.map(item => {
+			console.log(item.name);
+			const VendorNames = dbConnection.query("SELECT VendorName FROM tblVendor;");
+		});
 
 		if (POTable.length == 0) {
 			return res.json({"message": "There are no purchase orders.", "status": 500});
 		} else {
 			// If there are POs, list them
-			res.json({"message": "Success.", "status": 200, "POTable": POTable});
+			res.json({"message": "Success.", "status": 200, "POTable": POTable, "VendorName": VendorNames});
 		}
 
-		//res.json({"message": "Success. PO Table information returned", "PurchaseOrderID": PurchaseOrderID, "CreatedDateTime": CreatedDateTime, "VendorName": VendorName, "Amount": 0, "CreatedBy": CreatedBy, "RequestedFor": RequestedFor, "status": 200});
 	} finally {
 		await dbConnection.close();
 	}
