@@ -99,7 +99,7 @@
                         results.POTable.forEach(result => {
                             let strRow =
                                 '<tr><td><a href="#" onclick="switchPage(\'viewPO.html\', \'' + result['PurchaseOrderID'] + '\')">' + result['PurchaseOrderID'] + '</td><td>' + result['CreatedDateTime'] +
-                                '</td><td>' + result['VendorID'] +
+                                '</td><td>' + result['VendorName'] +
                                 '</td><td>' + result['Amount'] +
                                 '</td><td>' + result['CreatedBy'] +
                                 '</td><td>' + result['RequestedFor'] + '</td></tr>';
