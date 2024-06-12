@@ -5,3 +5,11 @@ function handleBrowserNav() {
         this.history.pushState(null, document.title, location.href);
     });
 }
+
+function cacheJSON(key, json) {
+    localStorage.setItem(key, JSON.stringify(json));
+}
+
+function recallJSON(key) {
+    return localStorage.getItem(key);
+}

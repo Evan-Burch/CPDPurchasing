@@ -61,8 +61,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
   <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.html5.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.print.min.js"></script>
-  <script src="../assets/js/navigation_handler.js"></script>
+  <script src="../assets/js/utils.js"></script>
   <script>
+
     $(document).ready(function () {
       handleBrowserNav(); // stop the user from going back/forwards/whatever
 
@@ -75,9 +76,51 @@
           $('#username').text(results.UserName);
         }
       });
+
+      doBackgroundCalls();
     })
     function switchPage(pageName) {
       $('#divMain').load(pageName);
+    }
+
+    function doBackgroundCalls() {
+      $.ajax({
+          type: 'POST',
+          url: 'http://54.144.91.83:8000/fillPOTable',
+          data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+          contentType: 'application/json',
+          success: function (results) {
+              console.log('Response:', results);
+              if (results.status === 200) {
+                cacheJSON("POTable", results);
+                console.log("cached PO table");
+              } else {
+                  console.error('Unexpected response format or status:', results);
+              }
+          },
+          error: function (xhr, status, error) {
+              console.error('AJAX Error:', status, error);
+          }
+      });
+
+      $.ajax({
+          type: 'POST',
+          url: 'http://54.144.91.83:8000/fillVendorTable',
+          data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+          contentType: 'application/json',
+          success: function (results) {
+              console.log('Response:', results);
+              if (results.status === 200) {
+                  cacheJSON("VendorTable", results);
+                  console.log("cached vendor table");
+              } else {
+                  console.error('Unexpected response format or status:', results);
+              }
+          },
+          error: function (xhr, status, error) {
+              console.error('AJAX Error:', status, error);
+          }
+      });
     }
 
     // This needs to store what the current setting is in the db
