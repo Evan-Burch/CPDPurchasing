@@ -141,8 +141,8 @@ app.post("/fillPOTable", async (req, res) => {
         console.log("Filling the PO Table");
 
         // Calculate offset for pagination
-        const limit = req.query.limit || 10;
-        const offset = req.skip;
+        const limit = 10;
+        const offset = 50;
 
         const [POTable, countResult] = await Promise.all([
             dbConnection.query("SELECT * FROM tblPurchaseOrder LIMIT ? OFFSET ?", [limit, offset]),
