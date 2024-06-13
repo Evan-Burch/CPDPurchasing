@@ -133,44 +133,27 @@ app.post("/fillPOTable", async (req, res) => {
     const uuidSessionToken = clean(req.body.uuidSessionToken);
     
     try {
-        const userID = await getUserIDBySessionToken(uuidSessionToken);
+        var userID = await getUserIDBySessionToken(uuidSessionToken);
         if (userID == -1) {
-            return res.status(400).json({"message": "You must be logged in to do that"});
+            return res.json({"message": "You must be logged in to do that", "status": 400});
         }
 
         console.log("Filling the PO Table");
 
-        // Calculate offset for pagination
-        const limit = 10;
-        const offset = 50;
+        POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder LIMIT 10;");
 
-        var [POTable, countResult] = await Promise.all([
-            dbConnection.query("SELECT * FROM tblPurchaseOrder LIMIT ? OFFSET ?", [limit, offset]),
-            dbConnection.query("SELECT COUNT(*) as count FROM tblPurchaseOrder")
-        ]);
-
-		var POTable = dbConnection.query("SELECT * FROM tblPurchaseOrder LIMIT 10 OFFSET 50");
-		var countResult = dbConnection.query("SELECT COUNT(*) as count FROM tblPurchaseOrder");
-
-        const itemCount = int(countResult[0].count);
-        const pageCount = Math.ceil(itemCount / limit);
-
-        if (POTable.length == 0) {
-            return res.status(500).json({"message": "There are no purchase orders."});
-        } else {
-            res.json({
-                "message": "Success.",
-                "status": 200,
-                "POTable": POTable,
-                "pageCount": pageCount,
-                "itemCount": itemCount,
-                "pages": paginate.getArrayPages(req)(3, pageCount, req.query.page)
-            });
+        for (let i = 0; i < POTable.length; i++) {
+            const VendorQuery = await dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [POTable[i].VendorID]);
+            POTable[i].VendorName = VendorQuery[0].VendorName
         }
 
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({"message": "Internal Server Error"});
+        if (POTable.length == 0) {
+            return res.json({"message": "There are no purchase orders.", "status": 500});
+        } else {
+            // If there are POs, list them
+            res.json({"message": "Success.", "status": 200, "POTable": POTable});
+        }
+
     } finally {
         await dbConnection.close();
     }
