@@ -9,7 +9,7 @@ Software Engineering City of Cookeville
 - Run `sudo systemctl status apache2` again to make sure it is now active.
 - `cd /var/www/html` to see the location of the index.html used for the default page
 - Make sure you can access the default apache page and then remove the index.html
-- run `npm run build` to compile your site code and move the contents of the resulting dist/ directory to apache with `mv -r dist/* /var/www/html`
+- run `npm run build` to compile your site code and move the contents of the resulting dist/ directory to apache with `mv dist/* /var/www/html`
 - For reference the configuration file for apache is at `/etc/apache2/apache2.conf`
 
 ### Setting up and accessing the MariaDB database on Debian
