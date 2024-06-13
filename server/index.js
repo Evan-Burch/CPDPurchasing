@@ -4,6 +4,7 @@ var mariadb = require("mariadb");
 require("dotenv").config();
 var { exec } = require('child_process');
 var bodyParser = require("body-parser");
+var paginate = require('express-paginate');
 
 
 const crypto = require("crypto");
@@ -128,35 +129,55 @@ app.delete("/logout", async (req, res) => {
 });
 
 app.post("/fillPOTable", async (req, res) => {
-	const dbConnection = await db_pool.getConnection();
-	const uuidSessionToken = clean(req.body.uuidSessionToken);
-	
-	try {
-		var userID = await getUserIDBySessionToken(uuidSessionToken);
-		if (userID == -1) {
-			return res.json({"message": "You must be logged in to do that", "status": 400});
-		}
+    const dbConnection = await db_pool.getConnection();
+    const uuidSessionToken = clean(req.body.uuidSessionToken);
+    
+    try {
+        const userID = await getUserIDBySessionToken(uuidSessionToken);
+        if (userID == -1) {
+            return res.status(400).json({"message": "You must be logged in to do that"});
+        }
 
-		console.log("Filling the PO Table");
+        console.log("Filling the PO Table");
 
-		POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder LIMIT 10;");
+        // Calculate offset for pagination
+        const limit = req.query.limit || 10;
+        const offset = req.skip;
 
-		for (let i = 0; i < POTable.length; i++) {
-			const VendorQuery = await dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [POTable[i].VendorID]);
-			POTable[i].VendorName = VendorQuery[0].VendorName
-		}
+        const [POTable, countResult] = await Promise.all([
+            dbConnection.query("SELECT * FROM tblPurchaseOrder LIMIT ? OFFSET ?", [limit, offset]),
+            dbConnection.query("SELECT COUNT(*) as count FROM tblPurchaseOrder")
+        ]);
 
-		if (POTable.length == 0) {
-			return res.json({"message": "There are no purchase orders.", "status": 500});
-		} else {
-			// If there are POs, list them
-			res.json({"message": "Success.", "status": 200, "POTable": POTable});
-		}
+        const itemCount = countResult[0].count;
+        const pageCount = Math.ceil(itemCount / limit);
 
-	} finally {
-		await dbConnection.close();
-	}
+        for (let i = 0; i < POTable.length; i++) {
+            const VendorQuery = await dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?", [POTable[i].VendorID]);
+            POTable[i].VendorName = VendorQuery[0].VendorName;
+        }
+
+        if (POTable.length == 0) {
+            return res.status(500).json({"message": "There are no purchase orders."});
+        } else {
+            res.json({
+                "message": "Success.",
+                "status": 200,
+                "POTable": POTable,
+                "pageCount": pageCount,
+                "itemCount": itemCount,
+                "pages": paginate.getArrayPages(req)(3, pageCount, req.query.page)
+            });
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({"message": "Internal Server Error"});
+    } finally {
+        await dbConnection.close();
+    }
 });
+
 
 app.post("/fillAccountTable", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
