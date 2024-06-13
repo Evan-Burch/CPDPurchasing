@@ -202,7 +202,6 @@ app.post("/fillVendorTable", async (req, res) => {
 			return res.json({"message": "There are no vendors.", "status": 500});
 		} else {
 			// If there are Vendors, list them
-			console.log(VendorTable);
 			res.json({"message": "Success.", "status": 200, "VendorTable": VendorTable});
 		}
 
