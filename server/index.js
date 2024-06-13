@@ -140,10 +140,20 @@ app.post("/fillPOTable", async (req, res) => {
 
         console.log("Filling the PO Table");
 
-        const [POTable, countResult] = await Promise.all([
-            dbConnection.query("SELECT * FROM tblPurchaseOrder LIMIT 10 OFFSET 50"),
+        // Calculate offset for pagination
+        const limit = 10;
+        const offset = 50;
+
+        var [POTable, countResult] = await Promise.all([
+            dbConnection.query("SELECT * FROM tblPurchaseOrder LIMIT ? OFFSET ?", [limit, offset]),
             dbConnection.query("SELECT COUNT(*) as count FROM tblPurchaseOrder")
         ]);
+
+		var POTable = dbConnection.query("SELECT * FROM tblPurchaseOrder LIMIT 10 OFFSET 50");
+		var countResult = dbConnection.query("SELECT COUNT(*) as count FROM tblPurchaseOrder");
+
+        const itemCount = int(countResult[0].count);
+        const pageCount = Math.ceil(itemCount / limit);
 
         if (POTable.length == 0) {
             return res.status(500).json({"message": "There are no purchase orders."});
@@ -151,7 +161,10 @@ app.post("/fillPOTable", async (req, res) => {
             res.json({
                 "message": "Success.",
                 "status": 200,
-                "POTable": POTable
+                "POTable": POTable,
+                "pageCount": pageCount,
+                "itemCount": itemCount,
+                "pages": paginate.getArrayPages(req)(3, pageCount, req.query.page)
             });
         }
 
@@ -162,6 +175,7 @@ app.post("/fillPOTable", async (req, res) => {
         await dbConnection.close();
     }
 });
+
 
 
 app.post("/fillAccountTable", async (req, res) => {
