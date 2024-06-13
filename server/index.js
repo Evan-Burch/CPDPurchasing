@@ -140,22 +140,10 @@ app.post("/fillPOTable", async (req, res) => {
 
         console.log("Filling the PO Table");
 
-        // Calculate offset for pagination
-        const limit = 10;
-        const offset = 50;
-
         const [POTable, countResult] = await Promise.all([
-            dbConnection.query("SELECT * FROM tblPurchaseOrder LIMIT ? OFFSET ?", [limit, offset]),
+            dbConnection.query("SELECT * FROM tblPurchaseOrder LIMIT 10 OFFSET 50"),
             dbConnection.query("SELECT COUNT(*) as count FROM tblPurchaseOrder")
         ]);
-
-        const itemCount = countResult[0].count;
-        const pageCount = Math.ceil(itemCount / limit);
-
-        for (let i = 0; i < POTable.length; i++) {
-            const VendorQuery = await dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?", [POTable[i].VendorID]);
-            POTable[i].VendorName = VendorQuery[0].VendorName;
-        }
 
         if (POTable.length == 0) {
             return res.status(500).json({"message": "There are no purchase orders."});
@@ -163,10 +151,7 @@ app.post("/fillPOTable", async (req, res) => {
             res.json({
                 "message": "Success.",
                 "status": 200,
-                "POTable": POTable,
-                "pageCount": pageCount,
-                "itemCount": itemCount,
-                "pages": paginate.getArrayPages(req)(3, pageCount, req.query.page)
+                "POTable": POTable
             });
         }
 
