@@ -23,6 +23,18 @@ app.use(express.json());
 app.use(cors());
 app.use(bodyParser.json());
 
+var server = app.listen(8000, function() {
+	var currentBranch = "missingno";
+	
+	exec('git branch --show-current', (err, stdout, stderr) => {
+		if (err) {
+			console.log("I couldn't figure out what branch I'm on!");
+	    	}
+	    	currentBranch = stdout.trim()
+	    	console.log("Backend is live on branch " + currentBranch);
+	});
+});
+
 /******************************************HELPER FUNCTIONS******************************************/
 
 //delete unwanted characters
@@ -66,7 +78,15 @@ async function getUserNameBySessionToken(uuidSessionToken) {
 	}
 }
 
-/******************************************REQUESTS******************************************/
+/******************************************CRUD REQUESTS******************************************/
+
+// ========================================================
+// 						 CREATE
+// ========================================================
+
+// ========================================================
+// 						 READ
+// ========================================================
 
 app.post("/getUserName", async (req, res) => {
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
@@ -108,26 +128,6 @@ app.post("/login", async (req, res) => {
 	}
 });
 
-app.delete("/logout", async (req, res) => {
-	const dbConnection = await db_pool.getConnection();
-	const uuidSessionToken = clean(req.body.uuidSessionToken);
-	
-	try {
-		var userID = await getUserIDBySessionToken(uuidSessionToken);
-		if (userID == -1) {
-			return res.json({"message": "You must be logged in to do that", "status": 400});
-		}
-
-		console.log("Session token " + uuidSessionToken + " wants to log out.");
-
-		await dbConnection.query("DELETE FROM tblSessions where ID=?;", [uuidSessionToken]);
-
-		res.json({"message": "Goodbye!", "status": 200});
-	} finally {
-		await dbConnection.close();
-	}
-});
-
 app.post("/fillPOTable", async (req, res) => {
     const dbConnection = await db_pool.getConnection();
     const uuidSessionToken = clean(req.body.uuidSessionToken);
@@ -158,8 +158,6 @@ app.post("/fillPOTable", async (req, res) => {
         await dbConnection.close();
     }
 });
-
-
 
 app.post("/fillAccountTable", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
@@ -213,18 +211,30 @@ app.post("/fillVendorTable", async (req, res) => {
 	}
 });
 
-app.get("/", (req, res) => {
-	res.json({"message": "Nothing interesting happens.", "status": 200});
-});
+// ========================================================
+// 						 UPDATE
+// ========================================================
 
-var server = app.listen(8000, function() {
-	var currentBranch = "missingno";
+// ========================================================
+// 						 DELETE
+// ========================================================
+
+app.delete("/logout", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
 	
-	exec('git branch --show-current', (err, stdout, stderr) => {
-		if (err) {
-			console.log("I couldn't figure out what branch I'm on!");
-	    	}
-	    	currentBranch = stdout.trim()
-	    	console.log("Backend is live on branch " + currentBranch);
-	});
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Session token " + uuidSessionToken + " wants to log out.");
+
+		await dbConnection.query("DELETE FROM tblSessions where ID=?;", [uuidSessionToken]);
+
+		res.json({"message": "Goodbye!", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
 });
