@@ -84,6 +84,32 @@ async function getUserNameBySessionToken(uuidSessionToken) {
 // 						 CREATE
 // ========================================================
 
+app.post("/addPO", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const VendorID = clean(req.body.VendorID);
+	const Status = clean(req.body.Status);
+	const RequestedFor = clean(req.body.RequestedFor); 
+	const CreatedBy = clean(req.body.CreatedBy);
+	const Notes = clean(req.body.Notes);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Creating a new PO");
+																																										//TODO fix PO ID
+		await dbConnection.query("INSERT INTO tblPurchaseOrder (PurchaseOrderID, VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (test, ?, ?, ?, NOW(), ?, ?, 0);", [VendorID, Status, RequestedFor, CreatedBy, Notes]);
+
+		res.json({"message": "Success.", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
 // ========================================================
 // 						 READ
 // ========================================================
