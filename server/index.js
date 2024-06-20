@@ -88,6 +88,7 @@ app.post("/addPO", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
+	const PurchaseOrderID = clean(req.body.PurchaseOrderID);
 	const VendorID = clean(req.body.VendorID);
 	const Status = clean(req.body.Status);
 	const RequestedFor = clean(req.body.RequestedFor); 
@@ -101,8 +102,8 @@ app.post("/addPO", async (req, res) => {
 		}
 
 		console.log("Creating a new PO");
-																																										//TODO fix PO ID
-		await dbConnection.query("INSERT INTO tblPurchaseOrder (PurchaseOrderID, VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (test, ?, ?, ?, NOW(), ?, ?, 0);", [VendorID, Status, RequestedFor, CreatedBy, Notes]);
+
+		await dbConnection.query("INSERT INTO tblPurchaseOrder (PurchaseOrderID, VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [PurchaseOrderID, VendorID, Status, RequestedFor, CreatedBy, Notes]);
 
 		res.json({"message": "Success.", "status": 200});
 	} finally {
