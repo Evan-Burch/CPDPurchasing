@@ -89,10 +89,10 @@ app.post("/addPO", async (req, res) => {
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
 	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
-	const intVendorID = clean(req.body.intVendorID);
-	const intStatus = clean(req.body.intStatus);
+	const intVendorID = req.body.intVendorID;
+	const intStatus = req.body.intStatus;
 	const strRequestedFor = clean(req.body.strRequestedFor); 
-	const intCreatedBy = clean(req.body.intCreatedBy);
+	const intCreatedBy = req.body.intCreatedBy;
 	const strNotes = clean(req.body.strNotes);
 
 	try {
