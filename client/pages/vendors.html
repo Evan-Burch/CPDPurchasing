@@ -79,28 +79,63 @@
         }
 
         $(document).ready(function () {
-            var results = recallJSON("VendorTable");
+            // var results = recallJSON("VendorTable");
 
-            if (Array.isArray(results.VendorTable)) {
-                results.VendorTable.forEach(result => {
-                    let strRow = '<tr><td><a href="#" onclick="switchPage(\'viewVendor.html\', \'' + result['VendorName'] + '\')">' + result['VendorName'] + '</td><td><a href="http://' + result['Website'] + '" target="_blank">' + result['Website'] + '</a></td><td>' + result['Status'] + '</td></tr>';
-                    $('#tblVendors tbody').append(strRow);
-                });
+            // if (Array.isArray(results.VendorTable)) {
+            //     results.VendorTable.forEach(result => {
+            //         let strRow = '<tr><td><a href="#" onclick="switchPage(\'viewVendor.html\', \'' + result['VendorName'] + '\')">' + result['VendorName'] + '</td><td><a href="http://' + result['Website'] + '" target="_blank">' + result['Website'] + '</a></td><td>' + result['Status'] + '</td></tr>';
+            //         $('#tblVendors tbody').append(strRow);
+            //     });
 
-                // Initialize DataTable after data is appended
-                $('#tblVendors').DataTable({
-                    layout: {
-                        topStart: {
-                            buttons: [
-                                { extend: 'copy', className: 'copyButton' },
-                                { extend: 'excel', className: 'excelButton' },
-                                { extend: 'print', className: 'printButton' }
-                            ]
-                        }
-                    },
-                    "autowidth": false
-                });
+            //     // Initialize DataTable after data is appended
+            //     $('#tblVendors').DataTable({
+            //         layout: {
+            //             topStart: {
+            //                 buttons: [
+            //                     { extend: 'copy', className: 'copyButton' },
+            //                     { extend: 'excel', className: 'excelButton' },
+            //                     { extend: 'print', className: 'printButton' }
+            //                 ]
+            //             }
+            //         },
+            //         "autowidth": false
+            //     });
+            // }
+
+            $.ajax({
+            type: 'POST',
+            url: 'http://54.144.91.83:8000/fillVendorTable',
+            data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+            contentType: 'application/json',
+            success: function (results) {
+                console.log('Response:', results);
+                if (results.status === 200 && Array.isArray(results.VendorTable)) {
+                    results.VendorTable.forEach(result => {
+                        let strRow = '<tr><td><a href="#" onclick="switchPage(\'viewVendor.html\', \'' + result['VendorName'] + '\')">' + result['VendorName'] + '</td><td><a href="http://' + result['Website'] + '" target="_blank">' + result['Website'] + '</a></td><td>' + result['Status'] + '</td></tr>';
+                        $('#tblVendors tbody').append(strRow);
+                    });
+
+                    // Initialize DataTable after data is appended
+                    $('#tblVendors').DataTable({
+                        layout: {
+                            topStart: {
+                                buttons: [
+                                    { extend: 'copy', className: 'copyButton' },
+                                    { extend: 'excel', className: 'excelButton' },
+                                    { extend: 'print', className: 'printButton' }
+                                ]
+                            }
+                        },
+                        "autowidth": false
+                    });
+                } else {
+                    console.error('Unexpected response format or status:', results);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX Error:', status, error);
             }
+        });
         });
 
     </script>
