@@ -11,3 +11,8 @@ body {
     border-radius: 5px;
     cursor: pointer;
 }
+
+.full-page{
+    display: flex;
+    flex-direction: row;
+}

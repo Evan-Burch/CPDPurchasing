@@ -156,34 +156,34 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/fillPOTable", async (req, res) => {
-    const dbConnection = await db_pool.getConnection();
-    const uuidSessionToken = clean(req.body.uuidSessionToken);
-    
-    try {
-        var userID = await getUserIDBySessionToken(uuidSessionToken);
-        if (userID == -1) {
-            return res.json({"message": "You must be logged in to do that", "status": 400});
-        }
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
 
-        console.log("Filling the PO Table");
+		console.log("Filling the PO Table");
 
-        POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder LIMIT 10;");
+		POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder");
 
-        for (let i = 0; i < POTable.length; i++) {
-            const VendorQuery = await dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [POTable[i].VendorID]);
-            POTable[i].VendorName = VendorQuery[0].VendorName
-        }
+		for (let i = 0; i < POTable.length; i++) {
+			const VendorQuery = await dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [POTable[i].VendorID]);
+			POTable[i].VendorName = VendorQuery[0].VendorName
+		}
 
-        if (POTable.length == 0) {
-            return res.json({"message": "There are no purchase orders.", "status": 500});
-        } else {
-            // If there are POs, list them
-            res.json({"message": "Success.", "status": 200, "POTable": POTable});
-        }
+		if (POTable.length == 0) {
+			return res.json({"message": "There are no purchase orders.", "status": 500});
+		} else {
+			// If there are POs, list them
+			res.json({"message": "Success.", "status": 200, "POTable": POTable});
+		}
 
-    } finally {
-        await dbConnection.close();
-    }
+	} finally {
+		await dbConnection.close();
+	}
 });
 
 app.post("/fillAccountTable", async (req, res) => {
