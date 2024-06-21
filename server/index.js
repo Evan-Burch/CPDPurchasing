@@ -139,7 +139,7 @@ app.post("/fillPOTable", async (req, res) => {
 
 		console.log("Filling the PO Table");
 
-		POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder LIMIT 10;");
+		POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder");
 
 		for (let i = 0; i < POTable.length; i++) {
 			const VendorQuery = await dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [POTable[i].VendorID]);
