@@ -101,7 +101,7 @@ app.post("/addPO", async (req, res) => {
 			return res.json({"message": "You must be logged in to do that", "status": 400});
 		}
 
-		var duplicate = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE strPurchaseOrderID=?;", [strPurchaseOrderID]);
+		var duplicate = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
 		if (duplicate.length != 0) {
 			return res.json({"message": "Purchase Order ${strPurchaseOrderID} already exists.", "status": 400});
 		}
