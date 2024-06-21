@@ -103,7 +103,7 @@ app.post("/addPO", async (req, res) => {
 
 		var duplicate = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
 		if (duplicate.length != 0) {
-			return res.json({"message": "Purchase Order ${strPurchaseOrderID} already exists.", "status": 400});
+			return res.json({"message": `Purchase Order ${strPurchaseOrderID} already exists.`, "status": 400});
 		}
 
 		console.log("Creating a new PO");
