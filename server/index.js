@@ -88,12 +88,12 @@ app.post("/addPO", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
-	const PurchaseOrderID = clean(req.body.PurchaseOrderID);
-	const VendorID = clean(req.body.VendorID);
-	const Status = clean(req.body.Status);
-	const RequestedFor = clean(req.body.RequestedFor); 
-	const CreatedBy = clean(req.body.CreatedBy);
-	const Notes = clean(req.body.Notes);
+	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
+	const intVendorID = clean(req.body.intVendorID);
+	const intStatus = clean(req.body.intStatus);
+	const strRequestedFor = clean(req.body.strRequestedFor); 
+	const intCreatedBy = clean(req.body.intCreatedBy);
+	const strNotes = clean(req.body.strNotes);
 
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
@@ -101,9 +101,14 @@ app.post("/addPO", async (req, res) => {
 			return res.json({"message": "You must be logged in to do that", "status": 400});
 		}
 
+		var duplicate = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE strPurchaseOrderID=?;", [strPurchaseOrderID]);
+		if (duplicate.length != 0) {
+			return res.json({"message": "Purchase Order ${strPurchaseOrderID} already exists.", "status": 400});
+		}
+
 		console.log("Creating a new PO");
 
-		await dbConnection.query("INSERT INTO tblPurchaseOrder (PurchaseOrderID, VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [PurchaseOrderID, VendorID, Status, RequestedFor, CreatedBy, Notes]);
+		await dbConnection.query("INSERT INTO tblPurchaseOrder (PurchaseOrderID, VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [strPurchaseOrderID, intVendorID, intStatus, strRequestedFor, intCreatedBy, strNotes]);
 
 		res.json({"message": "Success.", "status": 200});
 	} finally {
