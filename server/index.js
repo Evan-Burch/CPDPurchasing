@@ -4,6 +4,7 @@ var mariadb = require("mariadb");
 require("dotenv").config();
 var { exec } = require('child_process');
 var bodyParser = require("body-parser");
+var paginate = require('express-paginate');
 
 
 const crypto = require("crypto");
@@ -21,6 +22,18 @@ var app = express();
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.json());
+
+var server = app.listen(8000, function() {
+	var currentBranch = "missingno";
+	
+	exec('git branch --show-current', (err, stdout, stderr) => {
+		if (err) {
+			console.log("I couldn't figure out what branch I'm on!");
+	    	}
+	    	currentBranch = stdout.trim()
+	    	console.log("Backend is live on branch " + currentBranch);
+	});
+});
 
 /******************************************HELPER FUNCTIONS******************************************/
 
@@ -65,7 +78,42 @@ async function getUserNameBySessionToken(uuidSessionToken) {
 	}
 }
 
-/******************************************REQUESTS******************************************/
+/******************************************CRUD REQUESTS******************************************/
+
+// ========================================================
+// 						 CREATE
+// ========================================================
+
+app.post("/addPO", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const PurchaseOrderID = clean(req.body.PurchaseOrderID);
+	const VendorID = clean(req.body.VendorID);
+	const Status = clean(req.body.Status);
+	const RequestedFor = clean(req.body.RequestedFor); 
+	const CreatedBy = clean(req.body.CreatedBy);
+	const Notes = clean(req.body.Notes);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Creating a new PO");
+
+		await dbConnection.query("INSERT INTO tblPurchaseOrder (PurchaseOrderID, VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [PurchaseOrderID, VendorID, Status, RequestedFor, CreatedBy, Notes]);
+
+		res.json({"message": "Success.", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+// ========================================================
+// 						 READ
+// ========================================================
 
 app.post("/getUserName", async (req, res) => {
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
@@ -104,26 +152,6 @@ app.post("/login", async (req, res) => {
 		await dbConnection.query("INSERT INTO tblSessions (UserID, ID, timeIn) VALUE (?, ?, NOW());", [intUserId, uuidSessionToken]);
 	} finally {
 		await dbConnection.end();
-	}
-});
-
-app.delete("/logout", async (req, res) => {
-	const dbConnection = await db_pool.getConnection();
-	const uuidSessionToken = clean(req.body.uuidSessionToken);
-	
-	try {
-		var userID = await getUserIDBySessionToken(uuidSessionToken);
-		if (userID == -1) {
-			return res.json({"message": "You must be logged in to do that", "status": 400});
-		}
-
-		console.log("Session token " + uuidSessionToken + " wants to log out.");
-
-		await dbConnection.query("DELETE FROM tblSessions where ID=?;", [uuidSessionToken]);
-
-		res.json({"message": "Goodbye!", "status": 200});
-	} finally {
-		await dbConnection.close();
 	}
 });
 
@@ -202,7 +230,6 @@ app.post("/fillVendorTable", async (req, res) => {
 			return res.json({"message": "There are no vendors.", "status": 500});
 		} else {
 			// If there are Vendors, list them
-			console.log(VendorTable);
 			res.json({"message": "Success.", "status": 200, "VendorTable": VendorTable});
 		}
 
@@ -211,18 +238,30 @@ app.post("/fillVendorTable", async (req, res) => {
 	}
 });
 
-app.get("/", (req, res) => {
-	res.json({"message": "Nothing interesting happens.", "status": 200});
-});
+// ========================================================
+// 						 UPDATE
+// ========================================================
 
-var server = app.listen(8000, function() {
-	var currentBranch = "missingno";
+// ========================================================
+// 						 DELETE
+// ========================================================
+
+app.delete("/logout", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
 	
-	exec('git branch --show-current', (err, stdout, stderr) => {
-		if (err) {
-			console.log("I couldn't figure out what branch I'm on!");
-	    	}
-	    	currentBranch = stdout.trim()
-	    	console.log("Backend is live on branch " + currentBranch);
-	});
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Session token " + uuidSessionToken + " wants to log out.");
+
+		await dbConnection.query("DELETE FROM tblSessions where ID=?;", [uuidSessionToken]);
+
+		res.json({"message": "Goodbye!", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
 });
