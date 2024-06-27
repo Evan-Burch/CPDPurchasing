@@ -80,52 +80,52 @@
         }
       });
 
-      doBackgroundCalls();
+      // doBackgroundCalls();
     });
 
     function switchPage(pageName) {
       $('#divMain').load(pageName);
     }
 
-    function doBackgroundCalls() {
-      $.ajax({
-        type: 'POST',
-        url: 'http://54.144.91.83:8000/fillPOTable',
-        data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
-        contentType: 'application/json',
-        success: function (results) {
-          console.log('Response:', results);
-          if (results.status === 200) {
-            cacheJSON("POTable", results);
-            console.log("cached PO table");
-          } else {
-            console.error('Unexpected response format or status:', results);
-          }
-        },
-        error: function (xhr, status, error) {
-          console.error('AJAX Error:', status, error);
-        }
-      });
+    // function doBackgroundCalls() {
+    //   $.ajax({
+    //     type: 'POST',
+    //     url: 'http://54.144.91.83:8000/fillPOTable',
+    //     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+    //     contentType: 'application/json',
+    //     success: function (results) {
+    //       console.log('Response:', results);
+    //       if (results.status === 200) {
+    //         cacheJSON("POTable", results);
+    //         console.log("cached PO table");
+    //       } else {
+    //         console.error('Unexpected response format or status:', results);
+    //       }
+    //     },
+    //     error: function (xhr, status, error) {
+    //       console.error('AJAX Error:', status, error);
+    //     }
+    //   });
 
-      $.ajax({
-        type: 'POST',
-        url: 'http://54.144.91.83:8000/fillVendorTable',
-        data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
-        contentType: 'application/json',
-        success: function (results) {
-          console.log('Response:', results);
-          if (results.status === 200) {
-            cacheJSON("VendorTable", results);
-            console.log("cached vendor table");
-          } else {
-            console.error('Unexpected response format or status:', results);
-          }
-        },
-        error: function (xhr, status, error) {
-          console.error('AJAX Error:', status, error);
-        }
-      });
-    }
+    //   $.ajax({
+    //     type: 'POST',
+    //     url: 'http://54.144.91.83:8000/fillVendorTable',
+    //     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+    //     contentType: 'application/json',
+    //     success: function (results) {
+    //       console.log('Response:', results);
+    //       if (results.status === 200) {
+    //         cacheJSON("VendorTable", results);
+    //         console.log("cached vendor table");
+    //       } else {
+    //         console.error('Unexpected response format or status:', results);
+    //       }
+    //     },
+    //     error: function (xhr, status, error) {
+    //       console.error('AJAX Error:', status, error);
+    //     }
+    //   });
+    // }
 
     $('#btnSwitch').click(function () {
       if ($('html').attr('data-bs-theme') === 'dark') {
