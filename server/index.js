@@ -243,6 +243,29 @@ app.post("/fillVendorTable", async (req, res) => {
 	}
 });
 
+app.post("/fillNewPOModal", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Filling the New PO Modal");
+
+		const VendorNames = await dbConnection.query("SELECT VendorName FROM tblVendor;");
+		const VendorContacts = await dbConnection.query("SELECT Name FROM tblVendorContact;");
+		const Users = await dbConnection.query("SELECT DisplayName FROM tblUser;");
+
+		res.json({"message": "Success.", "status": 200, "VendorNames": VendorNames, "VendorContacts": VendorContacts, "Users": Users});
+
+	} finally {
+		await dbConnection.close();
+	}
+});
+
 // ========================================================
 // 						 UPDATE
 // ========================================================
