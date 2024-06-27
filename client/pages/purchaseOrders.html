@@ -72,7 +72,7 @@
                     <input type="text" class="form-control" id="txtNotes" placeholder="Notes">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success">Create</button>
+                    <button type="button" class="btn btn-success" id="btnCreatePO">Create</button>
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -126,6 +126,26 @@
                 error: function (xhr, status, error) {
                     console.error('AJAX Error:', status, error);
                 }
+            });
+        });
+
+        $('#btnCreatePO').on('click', function () {
+            let strPurchaseOrderID = "42-001";
+            let intVendorID = 100;
+            let intStatus = 1;
+            let strRequestedFor = "Evan";
+            let intCreatedBy = 79;
+            let strNotes = "Test PO";
+            
+            $.ajax({
+                type: 'POST',
+                url: 'http://54.144.91.83:8000/addPO',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: strPurchaseOrderID, intVendorID: intVendorID, intStatus: intStatus, strRequestedFor: strRequestedFor, intCreatedBy: intCreatedBy, strNotes: strNotes }),
+                contentType: 'application/json',
+                success: 
+                    function(results) {
+                        console.log('Response:', results);
+                    }
             });
         });
 
