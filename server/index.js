@@ -122,11 +122,11 @@ app.post("/addPO", async (req, res) => {
 
 app.post("/getUserName", async (req, res) => {
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	
 	const UserName = await getUserNameBySessionToken(uuidSessionToken);
-	if (UserName == -1) {
-		return res.json({"message": "No UserName for that sessiontoken or UserID", "status": 400});
-	}
-	res.json({"message": "Success.", "status": 200, "UserName": UserName});
+	var userID = await getUserIDBySessionToken(uuidSessionToken);
+	
+	res.json({"message": "Success.", "status": 200, "UserName": UserName, "UserID": userID});
 });
 
 app.post("/login", async (req, res) => {
@@ -256,10 +256,9 @@ app.post("/fillNewPOModal", async (req, res) => {
 		console.log("Filling the New PO Modal");
 
 		const VendorNames = await dbConnection.query("SELECT VendorName FROM tblVendor;");
-		const VendorContacts = await dbConnection.query("SELECT Name FROM tblVendorContact;");
 		const Users = await dbConnection.query("SELECT DisplayName FROM tblUser;");
 
-		res.json({"message": "Success.", "status": 200, "VendorNames": VendorNames, "VendorContacts": VendorContacts, "Users": Users});
+		res.json({"message": "Success.", "status": 200, "VendorNames": VendorNames, "Users": Users});
 
 	} finally {
 		await dbConnection.close();
