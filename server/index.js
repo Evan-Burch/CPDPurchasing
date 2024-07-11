@@ -295,3 +295,24 @@ app.delete("/logout", async (req, res) => {
 		await dbConnection.close();
 	}
 });
+
+app.delete("/deletePO", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Deleting PO " + strPurchaseOrderID);
+
+		await dbConnection.query("DELETE FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
+
+		res.json({"message": "Success.", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
+});
