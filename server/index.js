@@ -89,7 +89,7 @@ app.post("/addPO", async (req, res) => {
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
 	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
-	const intVendorID = req.body.intVendorID;
+	const strVendorName = clean(req.body.strVendorName);
 	const intStatus = req.body.intStatus;
 	const strRequestedFor = clean(req.body.strRequestedFor); 
 	const intCreatedBy = req.body.intCreatedBy;
@@ -108,7 +108,9 @@ app.post("/addPO", async (req, res) => {
 
 		console.log("Creating a new PO");
 
-		await dbConnection.query("INSERT INTO tblPurchaseOrder (PurchaseOrderID, VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [strPurchaseOrderID, intVendorID, intStatus, strRequestedFor, intCreatedBy, strNotes]);
+		const intVendorID = await dbConnection.query("SELECT VendorID FROM tblVendor WHERE VendorName=?;", [strVendorName]);
+
+		await dbConnection.query("INSERT INTO tblPurchaseOrder (PurchaseOrderID, VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [strPurchaseOrderID, intVendorID[0].intVendorID, intStatus, strRequestedFor, intCreatedBy, strNotes]);
 
 		res.json({"message": "Success.", "status": 200});
 	} finally {
