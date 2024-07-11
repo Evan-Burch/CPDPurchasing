@@ -111,7 +111,7 @@ app.post("/addPO", async (req, res) => {
 		const strRequestedForID = await dbConnection.query("SELECT EmployeeID FROM tblUser WHERE DisplayName=?;", [strRequestedFor]);
 		const intVendorID = await dbConnection.query("SELECT VendorID FROM tblVendor WHERE VendorName=?;", [strVendorName]);
 
-		await dbConnection.query("INSERT INTO tblPurchaseOrder (PurchaseOrderID, VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [strPurchaseOrderID, intVendorID[0].VendorID, intStatus, strRequestedForID[0].RequestedFor, intCreatedBy, strNotes]);
+		await dbConnection.query("INSERT INTO tblPurchaseOrder (PurchaseOrderID, VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [strPurchaseOrderID, intVendorID[0].VendorID, intStatus, strRequestedForID[0].EmployeeID, intCreatedBy, strNotes]);
 
 		res.json({"message": "Success.", "status": 200});
 	} finally {
