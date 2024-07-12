@@ -176,18 +176,24 @@ app.post("/fillPOTable", async (req, res) => {
 		console.log("Filling the PO Table");
 
 		POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder");
+		if (POTable.length == 0) 
+			return res.json({"message": "There are no purchase orders.", "status": 500});
 
+		// Replace the IDs with the actual names for Vendors, CreatedBy, and RequestedFor
 		for (let i = 0; i < POTable.length; i++) {
 			const VendorQuery = await dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [POTable[i].VendorID]);
 			POTable[i].VendorName = VendorQuery[0].VendorName
 		}
-
-		if (POTable.length == 0) {
-			return res.json({"message": "There are no purchase orders.", "status": 500});
-		} else {
-			// If there are POs, list them
-			res.json({"message": "Success.", "status": 200, "POTable": POTable});
+		for (let i = 0; i < POTable.length; i++) {
+			const CreatedByQuery = await dbConnection.query("SELECT DisplayName FROM tblUser WHERE EmployeeID=?;", [POTable[i].CreatedBy]);
+			POTable[i].CreatedBy = CreatedByQuery[0].DisplayName
 		}
+		for (let i = 0; i < POTable.length; i++) {
+			const RequestedForQuery = await dbConnection.query("SELECT DisplayName FROM tblUser WHERE EmployeeID=?;", [POTable[i].RequestedFor]);
+			POTable[i].RequestedFor = RequestedForQuery[0].DisplayName
+		}
+
+		res.json({"message": "Success.", "status": 200, "POTable": POTable});
 
 	} finally {
 		await dbConnection.close();
