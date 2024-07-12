@@ -7,7 +7,7 @@
                 <div class="row">
                     <h3 class="col-8" id="poTitle"></h3>
                     <button type="button" class="btn btn-primary col-2 offset-2"
-                        onclick="javascript:switchPage('purchaseOrders.html')">Return</button>
+                        onclick="javascript:switchPage('./pages/purchaseOrders.html')">Return</button>
                 </div>
             </div>
             <div class="card-body">
@@ -48,7 +48,7 @@
                             data-bs-target="#addPOItem"><!-- Add Functionality -->
                             Add Item
                         </button>
-                        <button type="button" class="btn btn-danger col-12 offset-3 mb-2"><!-- Add Functionality -->
+                        <button id="btnDelete" type="button" class="btn btn-danger col-12 offset-3 mb-2"><!-- Add Functionality -->
                             Delete PO
                         </button>
                     </div>
@@ -158,6 +158,19 @@
 
         $('#tblPOItems').DataTable({
             responsive: true,
+        })
+
+        $('#btnDelete').on('click', function(){
+            // Add functionality to delete PO
+            $.ajax({
+                type: 'DELETE',
+                url: 'http://54.144.91.83:8000/deletePO',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: sessionStorage.getItem('PurchaseOrderID') }),
+                contentType: 'application/json',
+                success: function(results){
+                    javascript:switchPage('./pages/purchaseOrders.html')
+                }
+            })
         })
     </script>
 </body>

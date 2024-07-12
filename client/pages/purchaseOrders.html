@@ -50,7 +50,7 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="newPO" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    <div class="modal" id="newPO" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -60,14 +60,17 @@
                 </div>
                 <form>
                     <div class="modal-body">
+                        <label for="txtPurchaseID" class="form-label">Purchase Order ID</label>
+                        <input type="text" class="form-control" id="txtPurchaseID" placeholder="Purchase Order ID" required>
+
                         <label for="txtVendor" class="form-label">Vendor</label>
                         <select class="form-select" id="txtVendor" aria-label="Vendor" required>
                             <option selected>Select Vendor</option>
                         </select>
-                        <label for="txtVendorContact" class="form-label">Vendor Contact</label>
+                        <!-- <label for="txtVendorContact" class="form-label">Vendor Contact</label>
                         <select class="form-select" id="txtVendorContact" aria-label="Vendor Contact" required>
                             <option selected>Select Vendor Contact</option>
-                        </select>
+                        </select> -->
                         <label for="txtSelectedFor" class="form-label">Requested For</label>
                         <select class="form-select" id="txtSelectedFor" aria-label="Requested For" required>
                             <option selected>Select Requested For</option>
@@ -146,9 +149,9 @@
                         results.VendorNames.forEach(element => {
                             $('#txtVendor').append('<option value="' + element.VendorName + '">' + element.VendorName + '</option>');
                         });
-                        results.VendorContacts.forEach(element => {
-                            $('#txtVendorContact').append('<option value="' + element.Name + '">' + element.Name + '</option>');
-                        })
+                        // results.VendorContacts.forEach(element => {
+                        //     $('#txtVendorContact').append('<option value="' + element.Name + '">' + element.Name + '</option>');
+                        // })
                         results.Users.forEach(element => {
                             $('#txtSelectedFor').append('<option value="' + element.DisplayName + '">' + element.DisplayName + '</option>');
                         })
@@ -157,21 +160,22 @@
         });
 
         $('#btnCreatePO').on('click', function () {
-            let strPurchaseOrderID = "42-001";
-            let intVendorID = $('#txtVendor');
+            let strPurchaseOrderID = $('#txtPurchaseID').val();
+            let strVendorName = $('#txtVendor').val();
             let intStatus = 1;
-            let strRequestedFor = "Evan";
-            let intCreatedBy = 79;
-            let strNotes = "Test PO";
+            let strRequestedFor = $('#txtSelectedFor').val();
+            let intCreatedBy = parseInt(sessionStorage.getItem('userId'));
+            let strNotes = $('#txtNotes').val();
 
             $.ajax({
                 type: 'POST',
                 url: 'http://54.144.91.83:8000/addPO',
-                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: strPurchaseOrderID, intVendorID: intVendorID, intStatus: intStatus, strRequestedFor: strRequestedFor, intCreatedBy: intCreatedBy, strNotes: strNotes }),
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: strPurchaseOrderID, strVendorName: strVendorName, intStatus: intStatus, strRequestedFor: strRequestedFor, intCreatedBy: intCreatedBy, strNotes: strNotes }),
                 contentType: 'application/json',
                 success:
                     function (results) {
                         console.log('Response:', results);
+                        $('#newPO').modal('hide');
                     }
             });
         });

@@ -77,6 +77,7 @@
         contentType: 'application/json',
         success: function (results) {
           $('#username').text(results.UserName);
+          sessionStorage.setItem('userId', results.UserID);
         }
       });
 
@@ -147,6 +148,7 @@
         contentType: 'application/json',
         success: function (results) {
           sessionStorage.removeItem('SimpleSession');
+          sessionStorage.removeItem('userID');
           window.location.href = "./pages/login.html";
         }
       });
