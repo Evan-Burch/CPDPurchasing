@@ -189,7 +189,7 @@ app.post("/fillPOTable", async (req, res) => {
 			POTable[i].CreatedBy = CreatedByQuery[0].DisplayName
 		}
 		for (let i = 0; i < POTable.length; i++) {
-			const RequestedForQuery = await dbConnection.query("SELECT DisplayName FROM tblUser WHERE EmployeeID=?;", [POTable[i].RequestedFor]);
+			const RequestedForQuery = await dbConnection.query("SELECT DisplayName FROM tblUser WHERE EmployeeID=?;", [parseInt(POTable[i].RequestedFor, 10)]);
 			POTable[i].RequestedFor = RequestedForQuery[0].DisplayName
 		}
 
