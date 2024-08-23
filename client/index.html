@@ -18,7 +18,7 @@
         <div class="collapse navbar-collapse d-flex">
           <ul class="navbar-nav me-auto col-10">
             <li class="nav-item">
-              <a class="nav-link" href="home.html">Home
+              <a class="nav-link" href="index.html">Home
                 <span class="visually-hidden">(current)</span>
               </a>
             </li>
@@ -77,55 +77,56 @@
         contentType: 'application/json',
         success: function (results) {
           $('#username').text(results.UserName);
+          sessionStorage.setItem('userId', results.UserID);
         }
       });
 
-      doBackgroundCalls();
+      // doBackgroundCalls();
     });
 
     function switchPage(pageName) {
       $('#divMain').load(pageName);
     }
 
-    function doBackgroundCalls() {
-      $.ajax({
-        type: 'POST',
-        url: 'http://54.144.91.83:8000/fillPOTable',
-        data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
-        contentType: 'application/json',
-        success: function (results) {
-          console.log('Response:', results);
-          if (results.status === 200) {
-            cacheJSON("POTable", results);
-            console.log("cached PO table");
-          } else {
-            console.error('Unexpected response format or status:', results);
-          }
-        },
-        error: function (xhr, status, error) {
-          console.error('AJAX Error:', status, error);
-        }
-      });
+    // function doBackgroundCalls() {
+    //   $.ajax({
+    //     type: 'POST',
+    //     url: 'http://54.144.91.83:8000/fillPOTable',
+    //     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+    //     contentType: 'application/json',
+    //     success: function (results) {
+    //       console.log('Response:', results);
+    //       if (results.status === 200) {
+    //         cacheJSON("POTable", results);
+    //         console.log("cached PO table");
+    //       } else {
+    //         console.error('Unexpected response format or status:', results);
+    //       }
+    //     },
+    //     error: function (xhr, status, error) {
+    //       console.error('AJAX Error:', status, error);
+    //     }
+    //   });
 
-      $.ajax({
-        type: 'POST',
-        url: 'http://54.144.91.83:8000/fillVendorTable',
-        data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
-        contentType: 'application/json',
-        success: function (results) {
-          console.log('Response:', results);
-          if (results.status === 200) {
-            cacheJSON("VendorTable", results);
-            console.log("cached vendor table");
-          } else {
-            console.error('Unexpected response format or status:', results);
-          }
-        },
-        error: function (xhr, status, error) {
-          console.error('AJAX Error:', status, error);
-        }
-      });
-    }
+    //   $.ajax({
+    //     type: 'POST',
+    //     url: 'http://54.144.91.83:8000/fillVendorTable',
+    //     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+    //     contentType: 'application/json',
+    //     success: function (results) {
+    //       console.log('Response:', results);
+    //       if (results.status === 200) {
+    //         cacheJSON("VendorTable", results);
+    //         console.log("cached vendor table");
+    //       } else {
+    //         console.error('Unexpected response format or status:', results);
+    //       }
+    //     },
+    //     error: function (xhr, status, error) {
+    //       console.error('AJAX Error:', status, error);
+    //     }
+    //   });
+    // }
 
     $('#btnSwitch').click(function () {
       if ($('html').attr('data-bs-theme') === 'dark') {
@@ -147,6 +148,7 @@
         contentType: 'application/json',
         success: function (results) {
           sessionStorage.removeItem('SimpleSession');
+          sessionStorage.removeItem('userID');
           window.location.href = "./pages/login.html";
         }
       });

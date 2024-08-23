@@ -100,7 +100,7 @@
                     console.log('Response:', results);
                     if (results.status === 200 && Array.isArray(results.AccountTable)) {
                         results.AccountTable.forEach(result => {
-                            let strRow = '<tr><td><a href="#" onclick="switchPage(\'viewAccount.html\', \'' + result['AccountID'] + '\')">' + result['AccountID'] + '</a></td><td>' + result['Description'] + '</td><td>' + result['DivisionID'] + '</td><td>' + result['FiscalAuthority'] + '</td><td>' + result['Status'] + '</td></tr>';
+                            let strRow = '<tr><td><a href="#" onclick="switchPage(\'pages/viewAccount.html\', \'' + result['AccountID'] + '\')">' + result['AccountID'] + '</a></td><td>' + result['Description'] + '</td><td>' + result['DivisionID'] + '</td><td>' + result['FiscalAuthority'] + '</td><td>' + result['Status'] + '</td></tr>';
                             $('#tblAccounts tbody').append(strRow);
                         });
 
