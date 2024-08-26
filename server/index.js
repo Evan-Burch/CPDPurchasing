@@ -88,12 +88,12 @@ app.post("/addPO", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
-	const PurchaseOrderID = clean(req.body.PurchaseOrderID);
-	const VendorID = clean(req.body.VendorID);
-	const Status = clean(req.body.Status);
-	const RequestedFor = clean(req.body.RequestedFor); 
-	const CreatedBy = clean(req.body.CreatedBy);
-	const Notes = clean(req.body.Notes);
+	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
+	const strVendorName = clean(req.body.strVendorName);
+	const intStatus = req.body.intStatus;
+	const strRequestedFor = clean(req.body.strRequestedFor); 
+	const intCreatedBy = req.body.intCreatedBy;
+	const strNotes = clean(req.body.strNotes);
 
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
@@ -101,9 +101,17 @@ app.post("/addPO", async (req, res) => {
 			return res.json({"message": "You must be logged in to do that", "status": 400});
 		}
 
+		var duplicate = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
+		if (duplicate.length != 0) {
+			return res.json({"message": `Purchase Order ${strPurchaseOrderID} already exists.`, "status": 400});
+		}
+
 		console.log("Creating a new PO");
 
-		await dbConnection.query("INSERT INTO tblPurchaseOrder (PurchaseOrderID, VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [PurchaseOrderID, VendorID, Status, RequestedFor, CreatedBy, Notes]);
+		const strRequestedForID = await dbConnection.query("SELECT EmployeeID FROM tblUser WHERE DisplayName=?;", [strRequestedFor]);
+		const intVendorID = await dbConnection.query("SELECT VendorID FROM tblVendor WHERE VendorName=?;", [strVendorName]);
+
+		await dbConnection.query("INSERT INTO tblPurchaseOrder (PurchaseOrderID, VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [strPurchaseOrderID, intVendorID[0].VendorID, intStatus, strRequestedForID[0].EmployeeID, intCreatedBy, strNotes]);
 
 		res.json({"message": "Success.", "status": 200});
 	} finally {
@@ -117,11 +125,11 @@ app.post("/addPO", async (req, res) => {
 
 app.post("/getUserName", async (req, res) => {
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	
 	const UserName = await getUserNameBySessionToken(uuidSessionToken);
-	if (UserName == -1) {
-		return res.json({"message": "No UserName for that sessiontoken or UserID", "status": 400});
-	}
-	res.json({"message": "Success.", "status": 200, "UserName": UserName});
+	var userID = await getUserIDBySessionToken(uuidSessionToken);
+	
+	res.json({"message": "Success.", "status": 200, "UserName": UserName, "UserID": userID});
 });
 
 app.post("/login", async (req, res) => {
@@ -168,18 +176,28 @@ app.post("/fillPOTable", async (req, res) => {
 		console.log("Filling the PO Table");
 
 		POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder");
+		if (POTable.length == 0) 
+			return res.json({"message": "There are no purchase orders.", "status": 500});
 
+		// Replace the IDs with the actual names for Vendors, CreatedBy, and RequestedFor
 		for (let i = 0; i < POTable.length; i++) {
 			const VendorQuery = await dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [POTable[i].VendorID]);
 			POTable[i].VendorName = VendorQuery[0].VendorName
 		}
-
-		if (POTable.length == 0) {
-			return res.json({"message": "There are no purchase orders.", "status": 500});
-		} else {
-			// If there are POs, list them
-			res.json({"message": "Success.", "status": 200, "POTable": POTable});
+		for (let i = 0; i < POTable.length; i++) {
+			const CreatedByQuery = await dbConnection.query("SELECT DisplayName FROM tblUser WHERE EmployeeID=?;", [POTable[i].CreatedBy]);
+			POTable[i].CreatedBy = CreatedByQuery[0].DisplayName
 		}
+		for (let i = 0; i < POTable.length; i++) {
+			if (POTable[i].RequestedFor == "")
+				POTable[i].RequestedFor = "N/A";
+			else {
+				const RequestedForQuery = await dbConnection.query("SELECT DisplayName FROM tblUser WHERE EmployeeID=?;", [parseInt(POTable[i].RequestedFor, 10)]);
+				POTable[i].RequestedFor = RequestedForQuery[0].DisplayName
+			}
+		}
+
+		res.json({"message": "Success.", "status": 200, "POTable": POTable});
 
 	} finally {
 		await dbConnection.close();
@@ -238,6 +256,28 @@ app.post("/fillVendorTable", async (req, res) => {
 	}
 });
 
+app.post("/fillNewPOModal", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Filling the New PO Modal");
+
+		const VendorNames = await dbConnection.query("SELECT VendorName FROM tblVendor;");
+		const Users = await dbConnection.query("SELECT DisplayName FROM tblUser;");
+
+		res.json({"message": "Success.", "status": 200, "VendorNames": VendorNames, "Users": Users});
+
+	} finally {
+		await dbConnection.close();
+	}
+});
+
 // ========================================================
 // 						 UPDATE
 // ========================================================
@@ -261,6 +301,27 @@ app.delete("/logout", async (req, res) => {
 		await dbConnection.query("DELETE FROM tblSessions where ID=?;", [uuidSessionToken]);
 
 		res.json({"message": "Goodbye!", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.delete("/deletePO", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Deleting PO " + strPurchaseOrderID);
+
+		await dbConnection.query("DELETE FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
+
+		res.json({"message": "Success.", "status": 200});
 	} finally {
 		await dbConnection.close();
 	}
