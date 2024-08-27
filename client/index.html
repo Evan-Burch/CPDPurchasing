@@ -82,10 +82,43 @@
       });
 
       // doBackgroundCalls();
+      $(document).on('click mousemove scroll', function () {
+        expireSession();
+      })
     });
 
     function switchPage(pageName) {
       $('#divMain').load(pageName);
+    }
+
+    // Functions for auto-logout
+    var timeoutTimer;
+    var expireTime1 = 1000*10;
+    var expireTime2 = 1000*5;
+    function expireSession() {
+      clearTimeout(timeoutTimer);
+      timeoutTimer = setTimeout('idleWarning()', expireTime1);
+    }
+    function idleWarning() {
+      clearTimeout(timeoutTimer);
+      console.log('LOGGING USER OUT IN '+ expireTime2/1000 + ' SECONDS');
+      timeoutTimer = setTimeout('idleTimeout()', expireTime2);
+    }
+    function idleTimeout() {
+      console.log('AUTO LOGGED OUT USER');
+      setTimeout(() => {
+        $.ajax({
+          type: 'DELETE',
+          url: 'http://54.144.91.83:8000/logout',
+          data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+          contentType: 'application/json',
+          success: function (results) {
+            sessionStorage.removeItem('SimpleSession');
+            sessionStorage.removeItem('userID');
+            window.location.href = "./pages/login.html";
+          }
+        });
+      }, 2000);
     }
 
     // function doBackgroundCalls() {
