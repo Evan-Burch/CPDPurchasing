@@ -274,9 +274,9 @@ app.post("/status", async (req, res) => {
 		var vendorRows = await dbConnection.query("SELECT COUNT(*) FROM tblVendor;");
 		var accountRows = await dbConnection.query("SELECT COUNT(*) FROM tblAccount;");
 
-		console.log(poRows);
+		//console.log(poRows[0]["COUNT(*)"]);
 
-		res.json({"message": "OK", "status": 200});
+		res.json({"message": "OK", "status": 200, "poRows": parseInt(poRows[0]["COUNT(*)"]), "vendorRows": parseInt(vendorRows[0]["COUNT(*)"]), "accountRows": parseInt(accountRows[0]["COUNT(*)"])});
 	} finally {
 		await dbConnection.close();
 	}
