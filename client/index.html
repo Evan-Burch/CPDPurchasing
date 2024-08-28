@@ -93,17 +93,20 @@
 
     // Functions for auto-logout
     var timeoutTimer;
-    var expireTime1 = 1000*10;
-    var expireTime2 = 1000*5;
+    var expireTime1 = 10*60000; //10 minutes
+    var expireTime2 = 5*60000; //5 minutes to warn at halfway point
+
     function expireSession() {
       clearTimeout(timeoutTimer);
       timeoutTimer = setTimeout('idleWarning()', expireTime1);
     }
+
     function idleWarning() {
       clearTimeout(timeoutTimer);
-      console.log('LOGGING USER OUT IN '+ expireTime2/1000 + ' SECONDS');
+      console.log('LOGGING USER OUT IN '+ expireTime2/60000 + ' MINUTES');
       timeoutTimer = setTimeout('idleTimeout()', expireTime2);
     }
+
     function idleTimeout() {
       console.log('AUTO LOGGED OUT USER');
       setTimeout(() => {
