@@ -266,7 +266,7 @@ app.delete("/logout", async (req, res) => {
 	}
 });
 
-app.get("/status", async (req, res) => {
+app.post("/status", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 	
