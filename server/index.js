@@ -265,3 +265,26 @@ app.delete("/logout", async (req, res) => {
 		await dbConnection.close();
 	}
 });
+
+app.get("/status", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			// we still probably don't want them to call this unless they're logged in
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		var poRows = await dbConnection.query("SELECT COUNT(*) FROM tblPurchaseOrder;");
+		var vendorRows = await dbConnection.query("SELECT COUNT(*) FROM tblVendor;");
+		var accountRows = await dbConnection.query("SELECT COUNT(*) FROM tblAccount;");
+
+		console.log(poRows);
+
+		res.json({"message": "OK", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
+});
