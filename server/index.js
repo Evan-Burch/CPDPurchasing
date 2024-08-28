@@ -270,6 +270,8 @@ app.post("/status", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 	
+	console.log(uuidSessionToken);
+
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
 		if (userID == -1) {
