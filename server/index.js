@@ -209,10 +209,11 @@ app.post("/fillPOTable", async (req, res) => {
 
 		console.log("Filling the PO Table");
 
-		POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder");
+		POTable = await dbConnection.query("select tblPurchaseOrder.PurchaseOrderID, tblPurchaseOrder.VendorID, tblPurchaseOrder.Status, rf.DisplayName as RequestedFor, tblPurchaseOrder.CreatedDateTime, cb.DisplayName as CreatedBy, tblPurchaseOrder.Notes, tblPurchaseOrder.Amount, tblVendor.VendorName from tblPurchaseOrder inner join tblUser rf on tblPurchaseOrder.RequestedFor = rf.EmployeeID inner join tblUser cb on tblPurchaseOrder.CreatedBy = cb.EmployeeID inner join tblVendor on tblPurchaseOrder.VendorID = tblVendor.VendorID;");
 		if (POTable.length == 0) 
 			return res.json({"message": "There are no purchase orders.", "status": 500});
 
+		/*
 		// Replace the IDs with the actual names for Vendors, CreatedBy, and RequestedFor
 		for (let i = 0; i < POTable.length; i++) {
 			const VendorQuery = await dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [POTable[i].VendorID]);
@@ -230,6 +231,7 @@ app.post("/fillPOTable", async (req, res) => {
 				POTable[i].RequestedFor = RequestedForQuery[0].DisplayName
 			}
 		}
+		*/
 
 		res.json({"message": "Success.", "status": 200, "POTable": POTable});
 
