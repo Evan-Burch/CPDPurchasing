@@ -35,6 +35,40 @@ var server = app.listen(8000, function() {
 	});
 });
 
+//This route is called whenever a webhook is triggered from a push to Github
+app.post('/build', bodyParser.json(), (req, res) => {
+	// Validate the webhook signature
+	const secret = process.env["GITHUB_WEBHOOK_SECRET"];
+	const signature = req.headers['x-hub-signature'];
+	const hash = `sha1=${crypto.createHmac('sha1', secret).update(JSON.stringify(req.body)).digest('hex')}`;
+	if (signature !== hash) {
+	  	return res.status(401).send('Invalid signature');
+	}
+
+	const branch = req.body?.ref;
+	if (branch != 'refs/heads/dev') {
+		return res.status(401).send('Branch was ' + branch + " needs to be dev");
+	}
+  
+	// Parse the webhook payload
+	const payload = req.body;
+	
+	// Deploy app
+	console.log("Received new webhook request from Github. Re-Deploying...");
+	exec(`bash '/home/admin/Hubble/deploy.sh' ${process.pid} > /home/admin/logs/deploylog`, (error, stdout, stderr) => {
+	if (error) {
+		console.error(`Error executing script: ${error}`);
+		return;
+	}
+	console.log(`Script output: ${stdout}`);
+	if (stderr) {
+		console.error(`Script error: ${stderr}`);
+	}
+	});
+  
+	res.status(200).send('Webhook received');
+});
+
 /******************************************HELPER FUNCTIONS******************************************/
 
 //delete unwanted characters
