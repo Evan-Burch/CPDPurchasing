@@ -82,28 +82,37 @@
       });
 
       // doBackgroundCalls();
-      $(document).on('click mousemove scroll', function () {
-        expireSession();
-      })
+
+      // Automatic logout functionality within webpage
+      var idleInterval = setInterval('timerInc()', 1000*60);
+      $(this).on('mousemove', function () {
+        clearTimeout(warningTimer);
+        idleCur = 0;
+      });
     });
 
     function switchPage(pageName) {
       $('#divMain').load(pageName);
     }
 
-    // Functions for auto-logout
-    var timeoutTimer;
-    var expireTime1 = 1000*10;
-    var expireTime2 = 1000*5;
-    function expireSession() {
-      clearTimeout(timeoutTimer);
-      timeoutTimer = setTimeout('idleWarning()', expireTime1);
+    var warningTimer; // for auto logout
+    var idleMax = 10;
+    var idleCur = 0;
+    var expireTime = 1000*60*5; // last 5 minutes
+    // Checks idle timeout and sends to idle warning after 5 minutes
+    function timerInc() {
+      console.log(idleCur)
+      idleCur += 1;
+      if (idleCur > 4) {
+        idleWarning();
+      }
     }
+    // Idle warning
     function idleWarning() {
-      clearTimeout(timeoutTimer);
-      console.log('LOGGING USER OUT IN '+ expireTime2/1000 + ' SECONDS');
-      timeoutTimer = setTimeout('idleTimeout()', expireTime2);
+      console.log('LOGGING USER OUT IN ' + expireTime/(1000*60) + ' MINUTES');
+      warningTimer = setTimeout('idleTimeout()', expireTime);
     }
+    // Auto logs out users after 2 seconds
     function idleTimeout() {
       console.log('AUTO LOGGED OUT USER');
       setTimeout(() => {
@@ -118,7 +127,7 @@
             window.location.href = "./pages/login.html";
           }
         });
-      }, 2000);
+      }, 1000*2);
     }
 
     // function doBackgroundCalls() {
