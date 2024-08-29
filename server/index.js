@@ -35,6 +35,40 @@ var server = app.listen(8000, function() {
 	});
 });
 
+//This route is called whenever a webhook is triggered from a push to Github
+app.post('/build', bodyParser.json(), (req, res) => {
+	// Validate the webhook signature
+	const secret = process.env["GITHUB_WEBHOOK_SECRET"];
+	const signature = req.headers['x-hub-signature'];
+	const hash = `sha1=${crypto.createHmac('sha1', secret).update(JSON.stringify(req.body)).digest('hex')}`;
+	if (signature !== hash) {
+	  	return res.status(401).send('Invalid signature');
+	}
+
+	const branch = req.body?.ref;
+	if (branch != 'refs/heads/dev') {
+		return res.status(401).send('Branch was ' + branch + " needs to be dev");
+	}
+  
+	// Parse the webhook payload
+	const payload = req.body;
+	
+	// Deploy app
+	console.log("Received new webhook request from Github. Re-Deploying...");
+	exec(`bash '/home/admin/Hubble/deploy.sh' ${process.pid} > /home/admin/logs/deploylog`, (error, stdout, stderr) => {
+	if (error) {
+		console.error(`Error executing script: ${error}`);
+		return;
+	}
+	console.log(`Script output: ${stdout}`);
+	if (stderr) {
+		console.error(`Script error: ${stderr}`);
+	}
+	});
+  
+	res.status(200).send('Webhook received');
+});
+
 /******************************************HELPER FUNCTIONS******************************************/
 
 //delete unwanted characters
@@ -175,10 +209,11 @@ app.post("/fillPOTable", async (req, res) => {
 
 		console.log("Filling the PO Table");
 
-		POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder");
+		POTable = await dbConnection.query("select tblPurchaseOrder.PurchaseOrderID, tblPurchaseOrder.VendorID, tblPurchaseOrder.Status, rf.DisplayName as RequestedFor, tblPurchaseOrder.CreatedDateTime, cb.DisplayName as CreatedBy, tblPurchaseOrder.Notes, tblPurchaseOrder.Amount, tblVendor.VendorName from tblPurchaseOrder inner join tblUser rf on tblPurchaseOrder.RequestedFor = rf.EmployeeID inner join tblUser cb on tblPurchaseOrder.CreatedBy = cb.EmployeeID inner join tblVendor on tblPurchaseOrder.VendorID = tblVendor.VendorID;");
 		if (POTable.length == 0) 
 			return res.json({"message": "There are no purchase orders.", "status": 500});
 
+		/*
 		// Replace the IDs with the actual names for Vendors, CreatedBy, and RequestedFor
 		for (let i = 0; i < POTable.length; i++) {
 			const VendorQuery = await dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [POTable[i].VendorID]);
@@ -196,6 +231,7 @@ app.post("/fillPOTable", async (req, res) => {
 				POTable[i].RequestedFor = RequestedForQuery[0].DisplayName
 			}
 		}
+		*/
 
 		res.json({"message": "Success.", "status": 200, "POTable": POTable});
 
