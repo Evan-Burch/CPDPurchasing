@@ -326,3 +326,25 @@ app.delete("/deletePO", async (req, res) => {
 		await dbConnection.close();
 	}
 });
+
+app.post("/status", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+		
+		var poRows = await dbConnection.query("SELECT COUNT(*) FROM tblPurchaseOrder;");
+		var vendorRows = await dbConnection.query("SELECT COUNT(*) FROM tblVendor;");
+		var accountRows = await dbConnection.query("SELECT COUNT(*) FROM tblAccount;");
+
+		//console.log(poRows[0]["COUNT(*)"]);
+
+		res.json({"message": "OK", "status": 200, "poRows": parseInt(poRows[0]["COUNT(*)"]), "vendorRows": parseInt(vendorRows[0]["COUNT(*)"]), "accountRows": parseInt(accountRows[0]["COUNT(*)"])});
+	} finally {
+		await dbConnection.close();
+	}
+});
