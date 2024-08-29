@@ -23,9 +23,23 @@
             </form>
           </div>
         </div>
+        <div class="form-group col-8 offset-2 mb-3">
+          <label for="txtPassword" style="color:red;">*required</label>
+          <input type="password" class="form-control" id="txtPassword" placeholder="password" aria-label="Password">
+        </div>
+        <button type="button" class="btn btn-secondary col-8 offset-2 mt-5 mb-3" id="btnLogin">Login</button>
+        <button type="button" class="btn btn-secondary col-8 offset-2 mb-3" id="btnSAMLLogin">Login with SAML</button>
+      </form>
     </div>
+  </div>
 
 
+  <script src="../assets/js/jquery-3.7.1.min.js"></script>
+  <script src="../assets/js/utils.js"></script>
+  <script>
+    $(document).ready(function () {
+      handleBrowserNav(); // stop the user from going back/forwards/whatever
+    });
     <!-- <div class="card text-white bg-primary p-4" style="opacity:0.9; max-width: 90%; width: 400px;">
       <img class="mx-auto d-block mb-3" src="../assets/images/logo.png" style="width: 120px; height: 120px;">
       <form>
