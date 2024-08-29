@@ -34,7 +34,6 @@
             <li class="nav-item">
               <a class="nav-link" href="javascript:switchPage('./pages/reports.html')">Reports</a>
             </li>
-          </ul>
           <ul class="nav-item dropdown col-2 justify-content-center mt-3 ml-2">
             <a id="username" class="nav-link dropdown-toggle show" data-bs-toggle="dropdown" href="#" role="button"
               aria-haspopup="true" aria-expanded="true">Dropdown</a>
@@ -54,6 +53,7 @@
   </div>
 
   <script src="./assets/js/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.datatables.net/2.0.1/js/dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/3.0.0/js/dataTables.buttons.js"></script>
   <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.bootstrap5.js"></script>
@@ -86,6 +86,7 @@
       // Automatic logout functionality within webpage
       var idleInterval = setInterval('timerInc()', 1000*60);
       $(this).on('mousemove', function () {
+        swalTimeout.close();
         clearTimeout(warningTimer);
         idleCur = 0;
       });
@@ -95,13 +96,20 @@
       $('#divMain').load(pageName);
     }
 
-    var warningTimer; // for auto logout
+    // Variables for automatic logout
+    var swalTimeout = Swal.mixin({
+        showCancelButton: false,
+        showConfirmButton: false,
+        width:'300px'
+      });
+    var warningTimer;
     var idleMax = 10;
     var idleCur = 0;
     var expireTime = 1000*60*5; // last 5 minutes
+    
     // Checks idle timeout and sends to idle warning after 5 minutes
     function timerInc() {
-      console.log(idleCur)
+      // console.log(idleCur);
       idleCur += 1;
       if (idleCur > 4) {
         idleWarning();
@@ -109,7 +117,12 @@
     }
     // Idle warning
     function idleWarning() {
-      console.log('LOGGING USER OUT IN ' + expireTime/(1000*60) + ' MINUTES');
+      swalTimeout.fire({
+        icon:'warning',
+        position:'top-end',
+        title:'Uh Oh!',
+        text:'LOGGING USER OUT IN ' + expireTime/(1000*60) + ' MINUTES'
+      })
       warningTimer = setTimeout('idleTimeout()', expireTime);
     }
     // Auto logs out users after 2 seconds
