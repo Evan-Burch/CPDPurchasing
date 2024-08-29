@@ -11,16 +11,19 @@
 </head>
 
 <body>
-  <div class="col-12">
-    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+  <div class="container-fluid">
+    <!-- Use container-fluid to ensure it takes up the full width on all screen sizes -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <div class="container-fluid">
-        <a class="navbar-brand">POModule</a>
-        <div class="collapse navbar-collapse d-flex">
-          <ul class="navbar-nav me-auto col-10">
+        <a class="navbar-brand" href="#">POModule</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <!-- Add margin-bottom for better spacing on smaller screens -->
             <li class="nav-item">
-              <a class="nav-link" href="index.html">Home
-                <span class="visually-hidden">(current)</span>
-              </a>
+              <a class="nav-link active" aria-current="page" href="index.html">Home</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="javascript:switchPage('./pages/purchaseOrders.html')">Purchase Orders</a>
@@ -35,24 +38,29 @@
               <a class="nav-link" href="javascript:switchPage('./pages/reports.html')">Reports</a>
             </li>
           </ul>
-          <ul class="nav-item dropdown col-2 justify-content-center mt-3 ml-2">
-            <a id="username" class="nav-link dropdown-toggle show" data-bs-toggle="dropdown" href="#" role="button"
-              aria-haspopup="true" aria-expanded="true">Dropdown</a>
-            <div id="dropdownMenu" class="dropdown-menu" data-bs-popper="static">
-              <a id="btnSwitch" class="dropdown-item">Switch Theme</a>
-              <a class="dropdown-item" href="#">Settings</a>
-              <a id='btnLogout' class="dropdown-item" href="#">Logout</a>
-            </div>
+          <ul class="navbar-nav">
+            <!-- Dropdown for smaller screens -->
+            <li class="nav-item dropdown">
+              <a id="username" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Dropdown
+              </a>
+              <ul id="dropdownMenu" class="dropdown-menu dropdown-menu-end">
+                <li><a id="btnSwitch" class="dropdown-item" href="#">Switch Theme</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><a id="btnLogout" class="dropdown-item" href="#">Logout</a></li>
+              </ul>
+            </li>
           </ul>
-
         </div>
       </div>
     </nav>
+
     <div id="divMain">
-      <!--Decide what goes in here for home page-->
+      <!-- Main content area, will load dynamically based on the user's selection -->
     </div>
   </div>
 
+  <!-- JS Libraries -->
   <script src="./assets/js/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.datatables.net/2.0.1/js/dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/3.0.0/js/dataTables.buttons.js"></script>
@@ -64,6 +72,8 @@
   <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.html5.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.print.min.js"></script>
   <script src="./assets/js/utils.js"></script>
+
+  <!-- Custom JS -->
   <script>
     $(document).ready(function () {
       if (sessionStorage.getItem('SimpleSession') == null) {
@@ -81,59 +91,15 @@
         }
       });
 
-      // doBackgroundCalls();
+      // Additional scripts or background processes can be added here.
     });
 
     function switchPage(pageName) {
       $('#divMain').load(pageName);
     }
 
-    // function doBackgroundCalls() {
-    //   $.ajax({
-    //     type: 'POST',
-    //     url: 'http://54.144.91.83:8000/fillPOTable',
-    //     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
-    //     contentType: 'application/json',
-    //     success: function (results) {
-    //       console.log('Response:', results);
-    //       if (results.status === 200) {
-    //         cacheJSON("POTable", results);
-    //         console.log("cached PO table");
-    //       } else {
-    //         console.error('Unexpected response format or status:', results);
-    //       }
-    //     },
-    //     error: function (xhr, status, error) {
-    //       console.error('AJAX Error:', status, error);
-    //     }
-    //   });
-
-    //   $.ajax({
-    //     type: 'POST',
-    //     url: 'http://54.144.91.83:8000/fillVendorTable',
-    //     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
-    //     contentType: 'application/json',
-    //     success: function (results) {
-    //       console.log('Response:', results);
-    //       if (results.status === 200) {
-    //         cacheJSON("VendorTable", results);
-    //         console.log("cached vendor table");
-    //       } else {
-    //         console.error('Unexpected response format or status:', results);
-    //       }
-    //     },
-    //     error: function (xhr, status, error) {
-    //       console.error('AJAX Error:', status, error);
-    //     }
-    //   });
-    // }
-
     $('#btnSwitch').click(function () {
-      if ($('html').attr('data-bs-theme') === 'dark') {
-        $('html').attr('data-bs-theme', 'light');
-      } else {
-        $('html').attr('data-bs-theme', 'dark');
-      }
+      $('html').attr('data-bs-theme', $('html').attr('data-bs-theme') === 'dark' ? 'light' : 'dark');
     });
 
     $('#username').click(function () {
@@ -154,7 +120,6 @@
       });
     });
   </script>
-
 </body>
 
 </html>

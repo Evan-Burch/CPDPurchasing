@@ -2,22 +2,26 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>POModule</title>
-  <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/css/main.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POModule</title>
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/login.css" rel="stylesheet">
 </head>
 
-<body
-  style="background-image: url(../assets/images/pd-hero-image.jpg); background-repeat:no-repeat; background-size:cover;">
-  <div class="d-flex vh-100 vw-100 justify-content-center align-items-center">
-    <div class="card text-white bg-primary p-5 " style="opacity:0.9; width:30%;">
-      <h1 class="login-header col-10 mt-5 offset-1 text-center">Cookeville Police Department</h1>
-      <form>
-        <div class="form-group col-8 offset-2 mb-3">
-          <label for="txtUsername" style="color:red;">*required</label>
-          <input type="text" class="form-control" id="txtUsername" placeholder="username" aria-label="Username">
+<body style="background-image: url(../assets/images/pd-hero-image.jpg); background-repeat:no-repeat; background-size:cover;">
+    <div class="d-flex vh-100 vw-100 justify-content-center align-items-center">
+        <!-- Use Bootstrap utilities to center the card both vertically and horizontally -->
+        <div class="login-page">
+          <div class="form bg-primary">
+            <img class="mx-auto d-block mb-3" src="../assets/images/logo.png" style="width: 120px; height: 120px;">
+            <form class="login-form">
+              <input type="text" id="txtUsername" placeholder="username" aria-label="Username"/>
+              <input type="password" id="txtPassword" placeholder="password" aria-label="Password">
+              <button type="button" class="mb-1 col-5" id="btnLogin">login</button>
+              <button type="button" class="col-5" id="btnSAMLLogin">SAML</button>
+            </form>
+          </div>
         </div>
         <div class="form-group col-8 offset-2 mb-3">
           <label for="txtPassword" style="color:red;">*required</label>
@@ -36,36 +40,48 @@
     $(document).ready(function () {
       handleBrowserNav(); // stop the user from going back/forwards/whatever
     });
+    <!-- <div class="card text-white bg-primary p-4" style="opacity:0.9; max-width: 90%; width: 400px;">
+      <img class="mx-auto d-block mb-3" src="../assets/images/logo.png" style="width: 120px; height: 120px;">
+      <form>
+          <div class="form-group mb-3">
+              <input type="text" class="form-control" id="txtUsername" placeholder="Username" aria-label="Username">
+          </div>
+          <div class="form-group mb-3">
+              <input type="password" class="form-control" id="txtPassword" placeholder="Password" aria-label="Password">
+          </div>
+          <button type="button" class="btn btn-warning w-100 mb-3" id="btnLogin">Login</button>
+          <button type="button" class="btn btn-warning w-100" id="btnSAMLLogin">Login with SAML</button>
+      </form>
+  </div> -->
 
-    $('#btnLogin').on('click', function () {
-      let strUserName = $('#txtUsername').val();
-      let strPassword = $('#txtPassword').val();
+    <script src="../assets/js/jquery-3.7.1.min.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script>
+        $(document).ready(function () {
+            handleBrowserNav(); // stop the user from going back/forwards/whatever
+        });
 
-      if (strUserName.length < 1 || strPassword.length < 1) {
-        // HALEY TODO: add validation for email/password
-        console.log("invalid username/password")
-      } else {
-        $.ajax({
-          type: 'POST',
-          url: 'http://54.144.91.83:8000/login',
-          data: JSON.stringify({ strUserName: strUserName, strPassword: strPassword }),
-          contentType: 'application/json',
-          success:
-            function (results) {
-              if (results.status == 200) { // this was missing
-                sessionStorage.setItem('SimpleSession', results.uuidSessionToken);
-                window.location.href = "../index.html";
-              }
+        $('#btnLogin').on('click', function () {
+            let strUserName = $('#txtUsername').val();
+            let strPassword = $('#txtPassword').val();
+
+            if (strUserName.length < 1 || strPassword.length < 1) {
+                console.log("invalid username/password");
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://54.144.91.83:8000/login',
+                    data: JSON.stringify({ strUserName: strUserName, strPassword: strPassword }),
+                    contentType: 'application/json',
+                    success:
+                        function (results) {
+                            sessionStorage.setItem('SimpleSession', results.uuidSessionToken);
+                            window.location.href = "../index.html";
+                        }
+                });
             }
         });
-      }
-
-
-      // console.log("username: ", strUserName);
-      // console.log("Password: ", strPassword);
-
-    })
-  </script>
+    </script>
 
 </body>
 
