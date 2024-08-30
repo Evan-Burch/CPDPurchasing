@@ -34,6 +34,7 @@
             <li class="nav-item">
               <a class="nav-link" href="javascript:switchPage('./pages/reports.html')">Reports</a>
             </li>
+          </ul>
           <ul class="nav-item dropdown col-2 justify-content-center mt-3 ml-2">
             <a id="username" class="nav-link dropdown-toggle show" data-bs-toggle="dropdown" href="#" role="button"
               aria-haspopup="true" aria-expanded="true">Dropdown</a>
@@ -109,7 +110,7 @@
     
     // Checks idle timeout and sends to idle warning after 5 minutes
     function timerInc() {
-      // console.log(idleCur);
+      //console.log(idleCur);
       idleCur += 1;
       if (idleCur > 4) {
         idleWarning();
@@ -119,10 +120,9 @@
     function idleWarning() {
       swalTimeout.fire({
         icon:'warning',
-        position:'top-end',
         title:'Uh Oh!',
         text:'LOGGING USER OUT IN ' + expireTime/(1000*60) + ' MINUTES'
-      })
+      });
       warningTimer = setTimeout('idleTimeout()', expireTime);
     }
     // Auto logs out users after 2 seconds
