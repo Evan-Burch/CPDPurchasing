@@ -62,6 +62,7 @@
 
   <!-- JS Libraries -->
   <script src="./assets/js/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.datatables.net/2.0.1/js/dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/3.0.0/js/dataTables.buttons.js"></script>
   <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.bootstrap5.js"></script>
@@ -91,12 +92,107 @@
         }
       });
 
-      // Additional scripts or background processes can be added here.
+
+      // doBackgroundCalls();
+
+      // Automatic logout functionality within webpage
+      var idleInterval = setInterval('timerInc()', 1000*60);
+      $(this).on('mousemove', function () {
+        swalTimeout.close();
+        clearTimeout(warningTimer);
+        idleCur = 0;
+      });
     });
 
     function switchPage(pageName) {
       $('#divMain').load(pageName);
     }
+
+    // Variables for automatic logout
+    var swalTimeout = Swal.mixin({
+        showCancelButton: false,
+        showConfirmButton: false,
+        width:'300px'
+      });
+    var warningTimer;
+    var idleMax = 10;
+    var idleCur = 0;
+    var expireTime = 1000*60*5; // last 5 minutes
+    
+    // Checks idle timeout and sends to idle warning after 5 minutes
+    function timerInc() {
+      //console.log(idleCur);
+      idleCur += 1;
+      if (idleCur > 4) {
+        idleWarning();
+      }
+    }
+    // Idle warning
+    function idleWarning() {
+      swalTimeout.fire({
+        icon:'warning',
+        title:'Uh Oh!',
+        text:'LOGGING USER OUT IN ' + expireTime/(1000*60) + ' MINUTES'
+      });
+      warningTimer = setTimeout('idleTimeout()', expireTime);
+    }
+    // Auto logs out users after 2 seconds
+    function idleTimeout() {
+      console.log('AUTO LOGGED OUT USER');
+      setTimeout(() => {
+        $.ajax({
+          type: 'DELETE',
+          url: 'http://54.144.91.83:8000/logout',
+          data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+          contentType: 'application/json',
+          success: function (results) {
+            sessionStorage.removeItem('SimpleSession');
+            sessionStorage.removeItem('userID');
+            window.location.href = "./pages/login.html";
+          }
+        });
+      }, 1000*2);
+    }
+
+    // function doBackgroundCalls() {
+    //   $.ajax({
+    //     type: 'POST',
+    //     url: 'http://54.144.91.83:8000/fillPOTable',
+    //     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+    //     contentType: 'application/json',
+    //     success: function (results) {
+    //       console.log('Response:', results);
+    //       if (results.status === 200) {
+    //         cacheJSON("POTable", results);
+    //         console.log("cached PO table");
+    //       } else {
+    //         console.error('Unexpected response format or status:', results);
+    //       }
+    //     },
+    //     error: function (xhr, status, error) {
+    //       console.error('AJAX Error:', status, error);
+    //     }
+    //   });
+
+    //   $.ajax({
+    //     type: 'POST',
+    //     url: 'http://54.144.91.83:8000/fillVendorTable',
+    //     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+    //     contentType: 'application/json',
+    //     success: function (results) {
+    //       console.log('Response:', results);
+    //       if (results.status === 200) {
+    //         cacheJSON("VendorTable", results);
+    //         console.log("cached vendor table");
+    //       } else {
+    //         console.error('Unexpected response format or status:', results);
+    //       }
+    //     },
+    //     error: function (xhr, status, error) {
+    //       console.error('AJAX Error:', status, error);
+    //     }
+    //   });
+    // }
 
     $('#btnSwitch').click(function () {
       $('html').attr('data-bs-theme', $('html').attr('data-bs-theme') === 'dark' ? 'light' : 'dark');
