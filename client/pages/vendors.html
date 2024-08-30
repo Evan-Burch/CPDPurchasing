@@ -109,10 +109,12 @@
             success: function (results) {
                 console.log('Response:', results);
                 if (results.status === 200 && Array.isArray(results.VendorTable)) {
+                    /*
                     results.VendorTable.forEach(result => {
                         let strRow = '<tr><td><a href="#" onclick="switchPage(\'pages/viewVendor.html\', \'' + result['VendorName'] + '\')">' + result['VendorName'] + '</td><td><a href="http://' + result['Website'] + '" target="_blank">' + result['Website'] + '</a></td><td>' + result['Status'] + '</td></tr>';
                         $('#tblVendors tbody').append(strRow);
                     });
+                    */
 
                     // Initialize DataTable after data is appended
                     $('#tblVendors').DataTable({
@@ -125,7 +127,23 @@
                                 ]
                             }
                         },
-                        "autowidth": false
+                        "autowidth": false,
+                        data: results.VendorTable,
+                            columns: [
+                                {data: "VendorName", title: "Vendor Name", render: function(data, type) {
+                                    if (type == "display") {
+                                        return '<a href="#" onclick="switchPage(\'pages/viewVendor.html\', \'' + data + '\')">' + data + "</a>";
+                                    }
+                                    return data;
+                                }},
+                                {data: "Website", title: "Link", render: function(data, type) {
+                                    if (type == "display") {
+                                        return '<a href="http://' + data + '" target="_blank">' + data + "</a>";
+                                    }
+                                    return data;
+                                }},
+                                {data: "Status", title: "Status"}
+                            ],
                     });
                 } else {
                     console.error('Unexpected response format or status:', results);

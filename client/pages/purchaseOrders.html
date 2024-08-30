@@ -104,7 +104,7 @@
                             },
                             data: results.POTable,
                             columns: [
-                                {data: 'PurchaseOrderID', title: "Purchase Order", render: function(data, type) {
+                                {data: "PurchaseOrderID", title: "Purchase Order", render: function(data, type) {
                                     if (type == "display") {
                                         return '<a href="#" onclick="switchPage(\'pages/viewPO.html\', \'' + data + '\')">' + data + "</a>";
                                     }
