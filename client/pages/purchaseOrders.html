@@ -31,19 +31,6 @@
             </div>
             <div class="card-body">
                 <table class="table table-striped responsive" id="tblPurchaseOrders">
-                    <thead>
-                        <tr>
-                            <th>Purchase Order</th>
-                            <th>Date Created</th>
-                            <th>Vendor</th>
-                            <th>Amount</th>
-                            <th>Created By</th>
-                            <th>Requested For</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
                 </table>
             </div>
         </div>
@@ -104,18 +91,6 @@
                 success: function (results) {
                     console.log('Response:', results);
                     if (results.status === 200 && Array.isArray(results.POTable)) {
-                        var allRows = "";
-                        results.POTable.forEach(result => {
-                            let strRow =
-                                '<tr><td><a href="#" onclick="switchPage(\'pages/viewPO.html\', \'' + result['PurchaseOrderID'] + '\')">' + result['PurchaseOrderID'] + '</td><td>' + result['CreatedDateTime'] +
-                                '</td><td>' + result['VendorName'] +
-                                '</td><td>' + result['Amount'] +
-                                '</td><td>' + result['CreatedBy'] +
-                                '</td><td>' + result['RequestedFor'] + '</td></tr>';
-                                allRows += strRow;
-                        });
-                        $('#tblPurchaseOrders tbody').append(allRows);
-
                         // Initialize DataTable after data is appended
                         $('#tblPurchaseOrders').DataTable({
                             layout: {
@@ -127,9 +102,21 @@
                                     ]
                                 }
                             },
-                            "autowidth": false,
-                            paging: true,
-                            orderClasses: false
+                            data: results.POTable,
+                            columns: [
+                                {data: 'PurchaseOrderID', title: "Purchase Order", render: function(data, type) {
+                                    if (type == "display") {
+                                        return '<a href="#" onclick="switchPage(\'pages/viewPO.html\', \'' + data + '\')">' + data + "</a>";
+                                    }
+                                    return data;
+                                }},
+                                {data: "CreatedDateTime", title: "Date Created"},
+                                {data: "VendorName", title: "Vendor"},
+                                {data: "Amount", title: "Amount"},
+                                {data: "CreatedBy", title: "Created By"},
+                                {data: "RequestedFor", title: "Requested For"}
+                            ],
+                            autowidth: false
                         });
                     } else {
                         console.error('Unexpected response format or status:', results);
