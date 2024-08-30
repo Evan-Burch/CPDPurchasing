@@ -31,16 +31,6 @@
             </div>
             <div class="card-body">
                 <table class="table table-striped" id="tblVendors">
-                    <thead>
-                        <tr>
-                            <th>Vendor Name</th>
-                            <th>Link</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
                 </table>
             </div>
         </div>
@@ -78,29 +68,6 @@
         }
 
         $(document).ready(function () {
-            // var results = recallJSON("VendorTable");
-
-            // if (Array.isArray(results.VendorTable)) {
-            //     results.VendorTable.forEach(result => {
-            //         let strRow = '<tr><td><a href="#" onclick="switchPage(\'viewVendor.html\', \'' + result['VendorName'] + '\')">' + result['VendorName'] + '</td><td><a href="http://' + result['Website'] + '" target="_blank">' + result['Website'] + '</a></td><td>' + result['Status'] + '</td></tr>';
-            //         $('#tblVendors tbody').append(strRow);
-            //     });
-
-            //     // Initialize DataTable after data is appended
-            //     $('#tblVendors').DataTable({
-            //         layout: {
-            //             topStart: {
-            //                 buttons: [
-            //                     { extend: 'copy', className: 'copyButton' },
-            //                     { extend: 'excel', className: 'excelButton' },
-            //                     { extend: 'print', className: 'printButton' }
-            //                 ]
-            //             }
-            //         },
-            //         "autowidth": false
-            //     });
-            // }
-
             $.ajax({
             type: 'POST',
             url: 'http://54.144.91.83:8000/fillVendorTable',
@@ -109,13 +76,6 @@
             success: function (results) {
                 console.log('Response:', results);
                 if (results.status === 200 && Array.isArray(results.VendorTable)) {
-                    /*
-                    results.VendorTable.forEach(result => {
-                        let strRow = '<tr><td><a href="#" onclick="switchPage(\'pages/viewVendor.html\', \'' + result['VendorName'] + '\')">' + result['VendorName'] + '</td><td><a href="http://' + result['Website'] + '" target="_blank">' + result['Website'] + '</a></td><td>' + result['Status'] + '</td></tr>';
-                        $('#tblVendors tbody').append(strRow);
-                    });
-                    */
-
                     // Initialize DataTable after data is appended
                     $('#tblVendors').DataTable({
                         layout: {
@@ -129,21 +89,21 @@
                         },
                         "autowidth": false,
                         data: results.VendorTable,
-                            columns: [
-                                {data: "VendorName", title: "Vendor Name", render: function(data, type) {
-                                    if (type == "display") {
-                                        return '<a href="#" onclick="switchPage(\'pages/viewVendor.html\', \'' + data + '\')">' + data + "</a>";
-                                    }
-                                    return data;
-                                }},
-                                {data: "Website", title: "Link", render: function(data, type) {
-                                    if (type == "display") {
-                                        return '<a href="http://' + data + '" target="_blank">' + data + "</a>";
-                                    }
-                                    return data;
-                                }},
-                                {data: "Status", title: "Status"}
-                            ],
+                        columns: [
+                            {data: "VendorName", title: "Vendor Name", render: function(data, type) {
+                                if (type == "display") {
+                                    return '<a href="#" onclick="switchPage(\'pages/viewVendor.html\', \'' + data + '\')">' + data + "</a>";
+                                }
+                                return data;
+                            }},
+                            {data: "Website", title: "Link", render: function(data, type) {
+                                if (type == "display") {
+                                    return '<a href="http://' + data + '" target="_blank">' + data + "</a>";
+                                }
+                                return data;
+                            }},
+                            {data: "Status", title: "Status"}
+                        ],
                     });
                 } else {
                     console.error('Unexpected response format or status:', results);
