@@ -30,7 +30,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table table-striped" id="tblPurchaseOrders">
+                <table class="table table-striped responsive" id="tblPurchaseOrders">
                     <thead>
                         <tr>
                             <th>Purchase Order</th>
@@ -104,6 +104,7 @@
                 success: function (results) {
                     console.log('Response:', results);
                     if (results.status === 200 && Array.isArray(results.POTable)) {
+                        var allRows = "";
                         results.POTable.forEach(result => {
                             let strRow =
                                 '<tr><td><a href="#" onclick="switchPage(\'pages/viewPO.html\', \'' + result['PurchaseOrderID'] + '\')">' + result['PurchaseOrderID'] + '</td><td>' + result['CreatedDateTime'] +
@@ -111,8 +112,9 @@
                                 '</td><td>' + result['Amount'] +
                                 '</td><td>' + result['CreatedBy'] +
                                 '</td><td>' + result['RequestedFor'] + '</td></tr>';
-                            $('#tblPurchaseOrders tbody').append(strRow);
+                                allRows += strRow;
                         });
+                        $('#tblPurchaseOrders tbody').append(allRows);
 
                         // Initialize DataTable after data is appended
                         $('#tblPurchaseOrders').DataTable({
@@ -125,7 +127,9 @@
                                     ]
                                 }
                             },
-                            "autowidth": false
+                            "autowidth": false,
+                            paging: true,
+                            orderClasses: false
                         });
                     } else {
                         console.error('Unexpected response format or status:', results);
