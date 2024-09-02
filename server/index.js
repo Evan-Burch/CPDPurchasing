@@ -377,7 +377,7 @@ app.post("/getVendorInfo", async (req, res) => {
 			return res.json({"message": "You must be logged in to do that", "status": 400});
 		}
 
-		console.log("Getting Vendor Info for " + strVendorID);
+		console.log("Getting Vendor Info for " + strVendorName);
 
 		const VendorInfo = await dbConnection.query("SELECT * FROM tblVendor WHERE VendorName=?;", [strVendorName]);
 
