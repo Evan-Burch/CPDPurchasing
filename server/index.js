@@ -369,7 +369,7 @@ app.post("/getAccountInfo", async (req, res) => {
 app.post("/getVendorInfo", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
-	const strVendorID = clean(req.body.strVendorID);
+	const strVendorName = clean(req.body.strVendorName);
 
 	try{
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
@@ -379,7 +379,7 @@ app.post("/getVendorInfo", async (req, res) => {
 
 		console.log("Getting Vendor Info for " + strVendorID);
 
-		const VendorInfo = await dbConnection.query("SELECT * FROM tblVendor WHERE VendorID=?;", [strAccountID]);
+		const VendorInfo = await dbConnection.query("SELECT * FROM tblVendor WHERE VendorName=?;", [strVendorName]);
 
 		if(VendorInfo.length == 0) {
 			return res.json({"message": "There is no vendor with that ID.", "status": 500});

@@ -132,7 +132,7 @@
                 success: function (results) {
                     console.log(results);
                     $('#pDescription').text(results.AccountInfo[0].Description);
-                    $('#pDivision').text(results.AccountInfo[0].Division);
+                    $('#pDivision').text(results.AccountInfo[0].DivisionID);
                     $('#pFiscalAuthority').text(results.AccountInfo[0].FiscalAuthority);
                     $('#pStatus').text(results.AccountInfo[0].Status);
                 }
