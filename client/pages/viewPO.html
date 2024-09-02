@@ -160,13 +160,14 @@
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
                 success: function(results){
-                    $('#pVendor').text(results.strVendorName);
-                    $('#pCreatedBy').text(results.strCreatedBy);
-                    $('#pRequestedFor').text(results.strRequestedFor);
-                    $('#pDate').text(results.strDate);
-                    $('#pStatus').text(results.strStatus);
-                    $('#pRoute').text(results.strRoute);
-                    $('#txtNotes').val(results.strNotes);
+                    console.log(results);
+                    $('#pVendor').text(results.POInfo[0].VendorID);
+                    $('#pCreatedBy').text(results.POInfo[0].CreatedBy);
+                    $('#pRequestedFor').text(results.POInfo[0].RequestedFor);
+                    $('#pDate').text(results.POInfo[0].CreatedDateTime);
+                    $('#pStatus').text(results.POInfo[0].Status);
+                    $('#pRoute').text(results.POInfo[0].RequestedFor);
+                    $('#txtNotes').val(results.POInfo[0].Notes);
                 }
             })
         })

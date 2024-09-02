@@ -325,7 +325,7 @@ app.post("/getPOInfo", async (req, res) => {
 			return res.json({"message": "You must be logged in to do that", "status": 400});
 		}
 
-		console.log("Getting PO info for " + strPurchaseOrderID);
+		console.log("Getting PO Info for " + strPurchaseOrderID);
 
 		const POInfo = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
 
@@ -339,7 +339,57 @@ app.post("/getPOInfo", async (req, res) => {
 	} finally {
 		await dbConnection.close();
 	}
-})
+});
+
+app.post("/getAccountInfo", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strAccountID = clean(req.body.strAccountID);
+
+	try{
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Getting Account Info for " + strAccountID);
+
+		const AccountInfo = await dbConnection.query("SELECT * FROM tblAccount WHERE AccountID=?;", [strAccountID]);
+
+		if(AccountInfo.length == 0) {
+			return res.json({"message": "There is no account with that ID.", "status": 500});
+		} else {
+			res.json({"message": "Success.", "status": 200, "AccountInfo": AccountInfo});
+		}
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.post("/getVendorInfo", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strVendorID = clean(req.body.strVendorID);
+
+	try{
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Getting Vendor Info for " + strVendorID);
+
+		const VendorInfo = await dbConnection.query("SELECT * FROM tblVendor WHERE VendorID=?;", [strAccountID]);
+
+		if(VendorInfo.length == 0) {
+			return res.json({"message": "There is no vendor with that ID.", "status": 500});
+		} else {
+			res.json({"message": "Success.", "status": 200, "VendorInfo": VendorInfo});
+		}
+	} finally {
+		await dbConnection.close();
+	}
+});
 
 // ========================================================
 // 						 UPDATE
