@@ -20,8 +20,8 @@
                                 <p><b> Status: </b></p>
                             </div>
                             <div class="col-3 p-3">
-                                <p> placeholder </p>
-                                <p> placeholder </p>
+                                <p id="pWebsite"> placeholder </p>
+                                <p id="pStatus"> placeholder </p>
                             </div>
                         </div>
                     </div>
@@ -145,6 +145,17 @@
         $(document).ready(function () {
             const VendorName = sessionStorage.getItem('VendorName');
             $('#vendorTitle').text(VendorName);
+            $.ajax({
+                type: 'POST',
+                url: 'http://54.144.91.83:8000/getVendorInfo',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName}),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results);
+                    $('#pWebsite').text(results.VendorInfo[0].Website);
+                    $('#pStatus').text(results.VendorInfo[0].Status);
+                }
+            })
         })
 
         $('#tblVendorContacts').DataTable({
