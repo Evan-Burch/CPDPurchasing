@@ -154,6 +154,21 @@
         $(document).ready(function () {
             const PurchaseOrderID = sessionStorage.getItem('PurchaseOrderID');
             $('#poTitle').text('Purchase Order ' + PurchaseOrderID);
+            $.ajax({
+                type: 'POST',
+                url: 'http://54.144.91.83:8000/getPOInfo',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
+                contentType: 'application/json',
+                success: function(results){
+                    $('#pVendor').text(results.strVendorName);
+                    $('#pCreatedBy').text(results.strCreatedBy);
+                    $('#pRequestedFor').text(results.strRequestedFor);
+                    $('#pDate').text(results.strDate);
+                    $('#pStatus').text(results.strStatus);
+                    $('#pRoute').text(results.strRoute);
+                    $('#txtNotes').val(results.strNotes);
+                }
+            })
         })
 
         $('#tblPOItems').DataTable({

@@ -31,18 +31,6 @@
             </div>
             <div class="card-body">
                 <table class="table table-striped" id="tblAccounts">
-                    <thead>
-                        <tr>
-                            <th>Account Number</th>
-                            <th>Description</th>
-                            <th>Division</th>
-                            <th>Fiscal Authority</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
                 </table>
             </div>
         </div>
@@ -99,11 +87,6 @@
                 success: function (results) {
                     console.log('Response:', results);
                     if (results.status === 200 && Array.isArray(results.AccountTable)) {
-                        results.AccountTable.forEach(result => {
-                            let strRow = '<tr><td><a href="#" onclick="switchPage(\'pages/viewAccount.html\', \'' + result['AccountID'] + '\')">' + result['AccountID'] + '</a></td><td>' + result['Description'] + '</td><td>' + result['DivisionID'] + '</td><td>' + result['FiscalAuthority'] + '</td><td>' + result['Status'] + '</td></tr>';
-                            $('#tblAccounts tbody').append(strRow);
-                        });
-
                         // Initialize DataTable after data is appended
                         $('#tblAccounts').DataTable({
                             layout: {
@@ -115,6 +98,19 @@
                                     ]
                                 }
                             },
+                            data: results.AccountTable,
+                            columns: [
+                                {data: "AccountID", title: "Account Number", render: function(data, type) {
+                                    if (type == "display") {
+                                        return '<a href="#" onclick="switchPage(\'pages/viewAccount.html\', \'' + data + '\')">' + data + "</a>";
+                                    }
+                                    return data;
+                                }},
+                                {data: "Description", title: "Description"},
+                                {data: "DivisionID", title: "Division"},
+                                {data: "FiscalAuthority", title: "Fiscal Authority"},
+                                {data: "Status", title: "Status"}
+                            ],
                             "autowidth": false
                         });
                     } else {
