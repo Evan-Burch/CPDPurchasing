@@ -314,6 +314,83 @@ app.post("/fillNewPOModal", async (req, res) => {
 	}
 });
 
+app.post("/getPOInfo", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Getting PO Info for " + strPurchaseOrderID);
+
+		const POInfo = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
+
+		if (POInfo.length == 0) {
+			return res.json({"message": "There is no purchase order with that ID.", "status": 500});
+		} else {
+			// If there is a PO with that ID, list it
+			res.json({"message": "Success.", "status": 200, "POInfo": POInfo});
+		}
+
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.post("/getAccountInfo", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strAccountID = clean(req.body.strAccountID);
+
+	try{
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Getting Account Info for " + strAccountID);
+
+		const AccountInfo = await dbConnection.query("SELECT * FROM tblAccount WHERE AccountID=?;", [strAccountID]);
+
+		if(AccountInfo.length == 0) {
+			return res.json({"message": "There is no account with that ID.", "status": 500});
+		} else {
+			res.json({"message": "Success.", "status": 200, "AccountInfo": AccountInfo});
+		}
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.post("/getVendorInfo", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strVendorName = clean(req.body.strVendorName);
+
+	try{
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Getting Vendor Info for " + strVendorName);
+
+		const VendorInfo = await dbConnection.query("SELECT * FROM tblVendor WHERE VendorName=?;", [strVendorName]);
+
+		if(VendorInfo.length == 0) {
+			return res.json({"message": "There is no vendor with that ID.", "status": 500});
+		} else {
+			res.json({"message": "Success.", "status": 200, "VendorInfo": VendorInfo});
+		}
+	} finally {
+		await dbConnection.close();
+	}
+});
+
 // ========================================================
 // 						 UPDATE
 // ========================================================
