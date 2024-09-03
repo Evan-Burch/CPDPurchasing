@@ -40,7 +40,10 @@ app.post('/build', bodyParser.json(), (req, res) => {
 	// Validate the webhook signature
 	const secret = process.env["GITHUB_WEBHOOK_SECRET"];
 	const signature = req.headers['x-hub-signature'];
+	console.log("secret is " + secret);
+	console.log("signature is " + signature);
 	const hash = `sha1=${crypto.createHmac('sha1', secret).update(JSON.stringify(req.body)).digest('hex')}`;
+	console.log("hash is " + hash);
 	if (signature !== hash) {
 	  	return res.status(401).send('Invalid signature');
 	}
