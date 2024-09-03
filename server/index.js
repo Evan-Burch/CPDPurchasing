@@ -391,6 +391,30 @@ app.post("/getVendorInfo", async (req, res) => {
 	}
 });
 
+app.get("/getUserSettings", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		const settingsQuery = await dbConnection.query("SELECT * FROM tblUserSettings WHERE UserID=?;", [userID]);
+
+		if (settingsQuery.length == 0) {
+			return res.json({"message": "The user doesn't have any saved settings.", "status": 203});
+		} else {
+			console.log(settingsQuery);
+			res.json({"message": "Success.", "status": 200});
+		}
+
+	} finally {
+		await dbConnection.close();
+	}
+});
+
 // ========================================================
 // 						 UPDATE
 // ========================================================
