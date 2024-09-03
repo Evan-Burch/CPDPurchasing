@@ -391,7 +391,7 @@ app.post("/getVendorInfo", async (req, res) => {
 	}
 });
 
-app.get("/getUserSettings", async (req, res) => {
+app.post("/getUserSettings", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
@@ -406,7 +406,54 @@ app.get("/getUserSettings", async (req, res) => {
 		if (settingsQuery.length == 0) {
 			return res.json({"message": "The user doesn't have any saved settings.", "status": 203});
 		} else {
-			console.log(settingsQuery);
+			var settingsArray = new Array();
+			var settingsRaw = settingsQuery[0].Settings.split(",");
+			
+			if (settingsRaw.length % 2 != 0) {
+				return res.json({"message": "Unable to properly parse user settings.", "status": 500});
+			}
+			for (var i = 0; i < settingsRaw.length - 1; i += 2) {
+				var currentSetting = {};
+				currentSetting[settingsRaw[i]] = settingsRaw[i + 1];
+				settingsArray.push(currentSetting);
+			}
+			
+			res.json({"message": "Success.", "status": 200, "user_settings": settingsArray});
+		}
+
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.post("/updateUserSettings", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strKey = clean(req.body.strKey);
+	const strValue = clean(req.body.strValue);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		const settingsQuery = await dbConnection.query("SELECT * FROM tblUserSettings WHERE UserID=?;", [userID]);
+
+		if (settingsQuery.length == 0) {
+			// They have no settings, so insert a new row and we're done
+			await dbConnection.query("INSERT INTO tblUserSettings (UserID, Settings) VALUES (?, ?);", [userID, strKey + "," + strValue]);
+			return res.json({"message": "Success.", "status": 201}); // created
+		} else {
+			var currentSettings = settingsQuery[0].Settings;
+			var newSettings = currentSettings + "," + strKey + "," + strValue;
+			
+			if (currentSettings.split(",").length % 2 != 0) {
+				return res.json({"message": "Unable to properly parse user settings.", "status": 500});
+			}
+			
+			await dbConnection.query("UPDATE tblUserSettings SET Settings=? WHERE UserID=?;", [newSettings, userID]);
+			
 			res.json({"message": "Success.", "status": 200});
 		}
 
