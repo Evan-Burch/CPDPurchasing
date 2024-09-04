@@ -165,6 +165,7 @@ app.post("/addAccount", async (req, res) => {
 	const Division = clean(req.body.strDivision);
 
 	console.log(AccountNumber, ",", Description, ",", FiscalAuthority, ",", Division);
+
 	// try {
 	// 	var userID = await getUserIDBySessionToken(uuidSessionToken);
 	// 	if (userID == -1) {
@@ -173,7 +174,7 @@ app.post("/addAccount", async (req, res) => {
 
 	// 	console.log("index.js TODO: Creating a new Account...");
 
-	// 	//todo: update this
+	// 	//TODO: update this insert
 	// 	//await dbConnection.query("INSERT INTO tblAccount (AccountNumber, Description, FiscalAuthority, Division, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [PurchaseOrderID, VendorID, Status, RequestedFor, CreatedBy, Notes]);
 
 	// 	//res.json({"message": "Success.", "status": 200});
@@ -337,6 +338,28 @@ app.post("/fillNewPOModal", async (req, res) => {
 		const Users = await dbConnection.query("SELECT DisplayName FROM tblUser;");
 
 		res.json({"message": "Success.", "status": 200, "VendorNames": VendorNames, "Users": Users});
+
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.post("/fillNewAccountModal", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Filling the New account Modal");
+
+		const FiscalAuthorities = await dbConnection.query("SELECT FiscalAuthority FROM tblAccount;");
+		const Users = await dbConnection.query("SELECT DisplayName FROM tblUser;");
+
+		res.json({"message": "Success.", "status": 200, "FiscalAuthorities": FiscalAuthorities, "Users": Users});
 
 	} finally {
 		await dbConnection.close();

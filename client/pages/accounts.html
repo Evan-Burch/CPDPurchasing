@@ -126,24 +126,24 @@
         //populate the drop-down boxes for the modal (Fiscal Authority)
         $('#btnNewAccount').on('click', function () {
             console.log("accounts.html new account clicked");
-            // $.ajax({
-            //     type: 'POST',
-            //     url: 'http://54.144.91.83:8000/fillNewAccountModal',
-            //     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
-            //     contentType: 'application/json',
-            //     success:
-            //         function (results) {
-            //             results.VendorNames.forEach(element => {
-            //                 $('#txtVendor').append('<option value="' + element.VendorName + '">' + element.VendorName + '</option>');
-            //             });
-            //             // results.VendorContacts.forEach(element => {
-            //             //     $('#txtVendorContact').append('<option value="' + element.Name + '">' + element.Name + '</option>');
-            //             // })
-            //             results.Users.forEach(element => {
-            //                 $('#txtSelectedFor').append('<option value="' + element.DisplayName + '">' + element.DisplayName + '</option>');
-            //             })
-            //         }
-            // });
+            $.ajax({
+                type: 'POST',
+                url: 'http://54.144.91.83:8000/fillNewAccountModal',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+                contentType: 'application/json',
+                success:
+                    function (results) {
+                        results.VendorNames.forEach(element => {
+                            $('#txtVendor').append('<option value="' + element.VendorName + '">' + element.VendorName + '</option>');
+                        });
+                        // results.VendorContacts.forEach(element => {
+                        //     $('#txtVendorContact').append('<option value="' + element.Name + '">' + element.Name + '</option>');
+                        // })
+                        results.Users.forEach(element => {
+                            $('#txtSelectedFor').append('<option value="' + element.DisplayName + '">' + element.DisplayName + '</option>');
+                        })
+                    }
+            });
         });
 
         // send the create request to the server
