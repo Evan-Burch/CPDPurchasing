@@ -39,7 +39,7 @@ echo -e "${YELLOW}Backend output will be stored in /home/admin/logs/${logFileNam
 
 kill -INT $pid
 { # try
-    npm install && node index.js > /home/admin/logs/$logFileName &&
+    npm install && node index.js > /home/admin/logs/${logFileName} &&
     echo -e "${GREEN}Backend is live${NC}"
 } || { # catch
     echo -e "${RED}ERROR while installing dependencies or launching node!${NC}" 
