@@ -164,6 +164,8 @@ app.post("/addVendor", async (req, res) => {
 	let strVendorID = "";
 	let strVendorContactID = "";
 
+	console.log('backend create vendor: ', VendorName, ", ", Link);
+
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
 		if (userID == -1) {
