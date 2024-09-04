@@ -121,6 +121,8 @@
             let strVendorName = $('#txtVendor').val();
             let strVendorLink = $('#txtLink').val();
 
+            console.log('Create Vendor clicked: ', strVendorName, ",", strVendorLink);
+
             $.ajax({
                 type: 'POST',
                 url: 'http://54.144.83:8000/addVendor',

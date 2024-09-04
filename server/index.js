@@ -170,7 +170,7 @@ app.post("/addVendor", async (req, res) => {
 			return res.json({"message": "You must be logged in to do that", "status": 400});
 		}
 
-		console.log("Creating a new Vendor");
+		console.log("Creating a new Vendor: ", VendorName, ", ", Link);
 
 		await dbConnection.query("INSERT INTO tblVendor (VendorID, VendorName, Website, Status, VendorContactID) VALUES (?, ?, ?, 1, ?);", [strVendorID, VendorName, Link, strVendorContactID]);
 
