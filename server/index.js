@@ -153,6 +153,34 @@ app.post("/addPO", async (req, res) => {
 	}
 });
 
+
+app.post("/addVendor", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const strVendorName = clean(req.body.strVendorName);
+	const strLink = clean(req.body.strVendorLink);
+
+	//HB TODO: what about the vendorID num and the vendor contactID?
+	let strVendorID = 123;
+	let strVendorContactID = 124;
+
+	console.log('backend create vendor: ', strVendorName, ", ", strLink);
+  
+  try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+    
+    await dbConnection.query("INSERT INTO tblVendor (VendorID, VendorName, Website, Status, VendorContactID) VALUES (?, ?, ?, 1, ?);", [strVendorID, strVendorName, strLink, strVendorContactID]);
+
+    res.json({"message": "Success.", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
+});
+    
 app.post("/addAccount", async (req, res) => {
 	console.log("index.js: Creating a new Account...");
 
@@ -172,7 +200,10 @@ app.post("/addAccount", async (req, res) => {
 			return res.json({"message": "You must be logged in to do that", "status": 400});
 		}
 
+		console.log("Creating a new Vendor: ", strVendorName, ", ", strLink);
+
 		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [AccountNumber, Description, FiscalAuthority, Division]);
+
 
 		res.json({"message": "Success.", "status": 200});
 	} finally {
