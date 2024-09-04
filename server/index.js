@@ -153,6 +153,35 @@ app.post("/addPO", async (req, res) => {
 	}
 });
 
+app.post("/addAccount", async (req, res) => {
+	console.log("index.js TODO: Creating a new Account...");
+
+	// const dbConnection = await db_pool.getConnection();
+	// const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const AccountNumber = clean(req.body.AccountNumber);
+	const Description = clean(req.body.Description);
+	const FiscalAuthority = clean(req.body.FiscalAuthority);
+	const Division = clean(req.body.Division);
+
+	console.log(AccountNumber, ",", Description, ",", FiscalAuthority, ",", Division);
+	// try {
+	// 	var userID = await getUserIDBySessionToken(uuidSessionToken);
+	// 	if (userID == -1) {
+	// 		return res.json({"message": "You must be logged in to do that", "status": 400});
+	// 	}
+
+	// 	console.log("index.js TODO: Creating a new Account...");
+
+	// 	//todo: update this
+	// 	//await dbConnection.query("INSERT INTO tblAccount (AccountNumber, Description, FiscalAuthority, Division, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [PurchaseOrderID, VendorID, Status, RequestedFor, CreatedBy, Notes]);
+
+	// 	//res.json({"message": "Success.", "status": 200});
+	// } finally {
+	// 	await dbConnection.close();
+	// }
+});
+
 // ========================================================
 // 						 READ
 // ========================================================
