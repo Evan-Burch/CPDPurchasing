@@ -46,7 +46,7 @@ app.post('/build', bodyParser.json(), (req, res) => {
 	}
 
 	const branch = req.body?.ref;
-	if (branch != 'refs/heads/dev') {
+	if (branch != 'refs/heads/backend') {
 		return res.status(401).send('Branch was ' + branch + " needs to be dev");
 	}
   
@@ -55,7 +55,7 @@ app.post('/build', bodyParser.json(), (req, res) => {
 	
 	// Deploy app
 	console.log("Received new webhook request from Github. Re-Deploying...");
-	exec(`bash '/home/admin/Hubble/deploy.sh' ${process.pid} > /home/admin/logs/deploylog`, (error, stdout, stderr) => {
+	exec(`bash '/home/admin/Hubble/deploy.sh' ${process.pid}`, (error, stdout, stderr) => {
 	if (error) {
 		console.error(`Error executing script: ${error}`);
 		return;
