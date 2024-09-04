@@ -13,3 +13,16 @@ function cacheJSON(key, json) {
 function recallJSON(key) {
     return localStorage.getItem(key);
 }
+
+function validateInput() {
+    const reqs = document.querySelectorAll('.req');
+
+    reqs.forEach((e) => {
+        if (e.value === '') {
+            e.classList.add('invalid');
+        }
+        else {
+            e.classList.remove('invalid');
+        }
+    });
+}
