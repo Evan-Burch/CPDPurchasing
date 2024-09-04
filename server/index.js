@@ -31,7 +31,7 @@ var server = app.listen(8000, function() {
 			console.log("I couldn't figure out what branch I'm on!");
 	    	}
 	    	currentBranch = stdout.trim()
-	    	console.log("Backend is live on branch " + currentBranch);
+	    	console.log("!Backend is live on branch " + currentBranch);
 	});
 });
 
