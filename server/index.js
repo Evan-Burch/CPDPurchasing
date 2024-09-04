@@ -159,10 +159,10 @@ app.post("/addAccount", async (req, res) => {
 	// const dbConnection = await db_pool.getConnection();
 	// const uuidSessionToken = clean(req.body.uuidSessionToken);
 
-	const AccountNumber = clean(req.body.AccountNumber);
-	const Description = clean(req.body.Description);
-	const FiscalAuthority = clean(req.body.FiscalAuthority);
-	const Division = clean(req.body.Division);
+	const AccountNumber = clean(req.body.strAccountNumber);
+	const Description = clean(req.body.strDescription);
+	const FiscalAuthority = clean(req.body.strFiscalAuthority);
+	const Division = clean(req.body.strDivision);
 
 	console.log(AccountNumber, ",", Description, ",", FiscalAuthority, ",", Division);
 	// try {

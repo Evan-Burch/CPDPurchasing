@@ -153,6 +153,9 @@
             let strDescription = $('#txtDescription').val();
             let strFiscalAuthority = $('#txtFiscal').val();
             let strDivision = $('#txtDivision').val();
+            console.log("Sending Data:", strAccountNumber, ",",
+                strDescription, ",", strFiscalAuthority, ",", strDivision
+            )
 
             $.ajax({
                 type: 'POST',
