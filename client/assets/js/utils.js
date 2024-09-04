@@ -21,6 +21,9 @@ function validateInput() {
         if (e.value === '') {
             e.classList.add('invalid');
         }
+        else if (e.className.includes('form-select') && e.options[0].selected) {
+            e.classList.add('invalid');
+        }
         else {
             e.classList.remove('invalid');
         }
