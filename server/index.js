@@ -153,6 +153,32 @@ app.post("/addPO", async (req, res) => {
 	}
 });
 
+app.post("/addVendor", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const VendorName = clean(req.body.strVendorName);
+	const Link = clean(req.body.strVendorLink);
+
+	//HB TODO: what about the vendorID num and the vendor contactID?
+	let strVendorID = "";
+	let strVendorContactID = "";
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Creating a new Vendor");
+
+		await dbConnection.query("INSERT INTO tblVendor (VendorID, VendorName, Website, Status, VendorContactID) VALUES (?, ?, ?, 1, ?);", [strVendorID, VendorName, Link, strVendorContactID]);
+
+		res.json({"message": "Success.", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
+});
 // ========================================================
 // 						 READ
 // ========================================================
