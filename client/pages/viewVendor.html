@@ -152,7 +152,11 @@
                 contentType: 'application/json',
                 success: function (results) {
                     console.log(results);
-                    $('#pWebsite').text(results.VendorInfo[0].Website);
+                    if(results.VendorInfo[0].Website != '') {
+                        $('#pWebsite').text(results.VendorInfo[0].Website);
+                    }else{
+                        $('#pWebsite').text('N/A');
+                    }
                     $('#pStatus').text(results.VendorInfo[0].Status);
                 }
             })
