@@ -153,6 +153,33 @@ app.post("/addPO", async (req, res) => {
 	}
 });
 
+app.post("/addAccount", async (req, res) => {
+	console.log("index.js: Creating a new Account...");
+
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const AccountNumber = clean(req.body.strAccountNumber);
+	const Description = clean(req.body.strDescription);
+	const FiscalAuthority = clean(req.body.strFiscalAuthority);
+	const Division = clean(req.body.strDivision);
+
+	console.log(AccountNumber, ",", Description, ",", FiscalAuthority, ",", Division);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [AccountNumber, Description, FiscalAuthority, Division]);
+
+		res.json({"message": "Success.", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
 // ========================================================
 // 						 READ
 // ========================================================
@@ -314,17 +341,22 @@ app.post("/fillNewPOModal", async (req, res) => {
 	}
 });
 
-app.post("/getPOInfo", async (req, res) => {
+  
+	// HB TODO Note: currently fills with many "unknowns" so check if SQL is correct
+  app.post("/fillNewAccountModal", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
-	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
-	
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
 		if (userID == -1) {
 			return res.json({"message": "You must be logged in to do that", "status": 400});
 		}
 
+		console.log("Filling the New account Modal");
+
+		const FiscalAuthorities = await dbConnection.query("SELECT FiscalAuthority FROM tblAccount;");
+
+		res.json({"message": "Success.", "status": 200, "FiscalAuthorities": FiscalAuthorities});
 		console.log("Getting PO Info for " + strPurchaseOrderID);
 
 		const POInfo = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
