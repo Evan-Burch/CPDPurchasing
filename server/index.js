@@ -46,7 +46,7 @@ app.post('/build', bodyParser.json(), (req, res) => {
 	}
 
 	const branch = req.body?.ref;
-	if (branch != 'refs/heads/backend') {
+	if (branch != 'refs/heads/dev') {
 		return res.status(401).send('Branch was ' + branch + " needs to be dev");
 	}
   
