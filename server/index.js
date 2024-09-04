@@ -357,7 +357,7 @@ app.post("/fillNewAccountModal", async (req, res) => {
 
 		const FiscalAuthorities = await dbConnection.query("SELECT FiscalAuthority FROM tblAccount;");
 
-		res.json({"message": "Success.", "status": 200, "FiscalAuthorities": FiscalAuthorities, "Users": Users});
+		res.json({"message": "Success.", "status": 200, "FiscalAuthorities": FiscalAuthorities});
 
 	} finally {
 		await dbConnection.close();
