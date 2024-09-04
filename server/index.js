@@ -446,7 +446,24 @@ app.post("/updateUserSettings", async (req, res) => {
 			return res.json({"message": "Success.", "status": 201}); // created
 		} else {
 			var currentSettings = settingsQuery[0].Settings;
-			var newSettings = currentSettings + "," + strKey + "," + strValue;
+			var currentSettingsArray = currentSettings.split(",");
+			var foundExistingKey = false;
+			for (var i = 0; i < currentSettingsArray.length - 1; i++) {
+				if (currentSettingsArray[i] == strKey) {
+					currentSettingsArray[i + 1] = strValue;
+					foundExistingKey = true;
+					break;
+				}
+			}
+			
+			var newSettings = "";
+			if (!foundExistingKey) {
+				newSettings = currentSettings + "," + strKey + "," + strValue;
+			} else {
+				newSettings = currentSettingsArray.join(",");
+			}
+			
+			//console.log(newSettings);
 			
 			if (currentSettings.split(",").length % 2 != 0) {
 				return res.json({"message": "Unable to properly parse user settings.", "status": 500});
