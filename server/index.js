@@ -154,10 +154,10 @@ app.post("/addPO", async (req, res) => {
 });
 
 app.post("/addAccount", async (req, res) => {
-	console.log("index.js TODO: Creating a new Account...");
+	console.log("index.js: Creating a new Account...");
 
-	// const dbConnection = await db_pool.getConnection();
-	// const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
 	const AccountNumber = clean(req.body.strAccountNumber);
 	const Description = clean(req.body.strDescription);
@@ -166,21 +166,18 @@ app.post("/addAccount", async (req, res) => {
 
 	console.log(AccountNumber, ",", Description, ",", FiscalAuthority, ",", Division);
 
-	// try {
-	// 	var userID = await getUserIDBySessionToken(uuidSessionToken);
-	// 	if (userID == -1) {
-	// 		return res.json({"message": "You must be logged in to do that", "status": 400});
-	// 	}
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
 
-	// 	console.log("index.js TODO: Creating a new Account...");
+		await dbConnection.query("INSERT INTO tblAccount (AccountNumber, Description, FiscalAuthority, Division, Status) VALUES (?, ?, ?, ?, 0);", [AccountNumber, Description, FiscalAuthority]);
 
-	// 	//TODO: update this insert
-	// 	//await dbConnection.query("INSERT INTO tblAccount (AccountNumber, Description, FiscalAuthority, Division, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [PurchaseOrderID, VendorID, Status, RequestedFor, CreatedBy, Notes]);
-
-	// 	//res.json({"message": "Success.", "status": 200});
-	// } finally {
-	// 	await dbConnection.close();
-	// }
+		res.json({"message": "Success.", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
 });
 
 // ========================================================
@@ -344,6 +341,8 @@ app.post("/fillNewPOModal", async (req, res) => {
 	}
 });
 
+
+// HB TODO Note: currently fills with many "unknowns" so check if SQL is correct
 app.post("/fillNewAccountModal", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
@@ -357,7 +356,6 @@ app.post("/fillNewAccountModal", async (req, res) => {
 		console.log("Filling the New account Modal");
 
 		const FiscalAuthorities = await dbConnection.query("SELECT FiscalAuthority FROM tblAccount;");
-		const Users = await dbConnection.query("SELECT DisplayName FROM tblUser;");
 
 		res.json({"message": "Success.", "status": 200, "FiscalAuthorities": FiscalAuthorities, "Users": Users});
 

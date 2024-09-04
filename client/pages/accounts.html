@@ -133,15 +133,9 @@
                 contentType: 'application/json',
                 success:
                     function (results) {
-                        results.VendorNames.forEach(element => {
-                            $('#txtVendor').append('<option value="' + element.VendorName + '">' + element.VendorName + '</option>');
+                        results.FiscalAuthorities.forEach(element => {
+                            $('#txtFiscal').append('<option value="' + element.FiscalAuthorities + '">' + element.FiscalAuthorities + '</option>');
                         });
-                        // results.VendorContacts.forEach(element => {
-                        //     $('#txtVendorContact').append('<option value="' + element.Name + '">' + element.Name + '</option>');
-                        // })
-                        results.Users.forEach(element => {
-                            $('#txtSelectedFor').append('<option value="' + element.DisplayName + '">' + element.DisplayName + '</option>');
-                        })
                     }
             });
         });
