@@ -20,7 +20,7 @@
       <!-- Use Bootstrap utilities to center the card both vertically and horizontally -->
       <div class="login-page">
         <div class="form bg-primary">
-          <img class="mx-auto d-block mb-3" src="../assets/images/logo.png" style="width: 120px; height: 120px;">
+          <img class="mx-auto d-block mb-3" src="../assets/images/logo.png" style="width: 120px; height: 120px; opacity: 70%;">
           <form class="login-form">
             <input class = "req" type="text" id="txtUsername" placeholder="username" aria-label="Username" required>
             <input class = "req" type="password" id="txtPassword" placeholder="password" aria-label="Password" required>
@@ -53,8 +53,10 @@
                     contentType: 'application/json',
                     success:
                         function (results) {
-                            sessionStorage.setItem('SimpleSession', results.uuidSessionToken);
-                            window.location.href = "../index.html";
+                            if (results.status == 200) { // this was missing
+                                sessionStorage.setItem('SimpleSession', results.uuidSessionToken);
+                                window.location.href = "../index.html";
+                            }
                         }
                 });
             }

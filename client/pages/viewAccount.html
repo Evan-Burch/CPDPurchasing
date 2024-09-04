@@ -19,16 +19,16 @@
                                 <p><b> Division: </b></p>
                             </div>
                             <div class="col-3 p-3">
-                                <p> placeholder </p>
-                                <p> placeholder </p>
+                                <p id="pDescription"> placeholder </p>
+                                <p id="pDivision"> placeholder </p>
                             </div>
                             <div class="col-3 p-3">
                                 <p><b> Fiscal Authority: </b></p>
                                 <p><b> Status: </b></p>
                             </div>
                             <div class="col-3 p-3">
-                                <p> placeholder </p>
-                                <p> placeholder </p>
+                                <p id="pFiscalAuthority"> placeholder </p>
+                                <p id="pStatus"> placeholder </p>
                             </div>
                         </div>
                     </div>
@@ -124,6 +124,19 @@
         $(document).ready(function () {
             const AccountID = sessionStorage.getItem('AccountID');
             $('#accountTitle').text('Account ' + AccountID);
+            $.ajax({
+                type: 'POST',
+                url: 'http://54.144.91.83:8000/getAccountInfo',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountID: AccountID}),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results);
+                    $('#pDescription').text(results.AccountInfo[0].Description);
+                    $('#pDivision').text(results.AccountInfo[0].DivisionID);
+                    $('#pFiscalAuthority').text(results.AccountInfo[0].FiscalAuthority);
+                    $('#pStatus').text(results.AccountInfo[0].Status);
+                }
+            })
         })
 
         $('#tblAccountYearlyBudgets').DataTable({
