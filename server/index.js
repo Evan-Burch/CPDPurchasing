@@ -172,7 +172,7 @@ app.post("/addAccount", async (req, res) => {
 			return res.json({"message": "You must be logged in to do that", "status": 400});
 		}
 
-		await dbConnection.query("INSERT INTO tblAccount (AccountNumber, Description, FiscalAuthority, Division, Status) VALUES (?, ?, ?, ?, 0);", [AccountNumber, Description, FiscalAuthority]);
+		await dbConnection.query("INSERT INTO tblAccount (AccountNumber, Description, FiscalAuthority, Division, Status) VALUES (?, ?, ?, ?, 0);", [AccountNumber, Description, FiscalAuthority, Division]);
 
 		res.json({"message": "Success.", "status": 200});
 	} finally {
