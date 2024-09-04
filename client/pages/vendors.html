@@ -125,7 +125,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: 'http://54.144.83:8000/addVendor',
+                url: 'http://54.144.91.83:8000/addVendor',
                 data: JSON.stringify({uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName:strVendorName, strVendorLink:strVendorLink}),
                 contentType: 'application/json',
                 success:
