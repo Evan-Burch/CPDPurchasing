@@ -388,6 +388,23 @@ app.post("/fillNewPOModal", async (req, res) => {
 		const FiscalAuthorities = await dbConnection.query("SELECT FiscalAuthority FROM tblAccount;");
 
 		res.json({"message": "Success.", "status": 200, "FiscalAuthorities": FiscalAuthorities});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+
+app.post("/getPOInfo", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strPurchaseOrderID = clean(req.body.strAccountID);
+
+	try{
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
 		console.log("Getting PO Info for " + strPurchaseOrderID);
 
 		const POInfo = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
@@ -398,7 +415,6 @@ app.post("/fillNewPOModal", async (req, res) => {
 			// If there is a PO with that ID, list it
 			res.json({"message": "Success.", "status": 200, "POInfo": POInfo});
 		}
-
 	} finally {
 		await dbConnection.close();
 	}
