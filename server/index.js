@@ -157,14 +157,14 @@ app.post("/addVendor", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
-	const VendorName = clean(req.body.strVendorName);
-	const Link = clean(req.body.strVendorLink);
+	const strVendorName = clean(req.body.strVendorName);
+	const strLink = clean(req.body.strVendorLink);
 
 	//HB TODO: what about the vendorID num and the vendor contactID?
-	let strVendorID = "";
-	let strVendorContactID = "";
+	let strVendorID = 123;
+	let strVendorContactID = 124;
 
-	console.log('backend create vendor: ', VendorName, ", ", Link);
+	console.log('backend create vendor: ', strVendorName, ", ", strLink);
 
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
@@ -174,7 +174,7 @@ app.post("/addVendor", async (req, res) => {
 
 		console.log("Creating a new Vendor: ", VendorName, ", ", Link);
 
-		await dbConnection.query("INSERT INTO tblVendor (VendorID, VendorName, Website, Status, VendorContactID) VALUES (?, ?, ?, 1, ?);", [strVendorID, VendorName, Link, strVendorContactID]);
+		await dbConnection.query("INSERT INTO tblVendor (VendorID, VendorName, Website, Status, VendorContactID) VALUES (?, ?, ?, 1, ?);", [strVendorID, strVendorName, strLink, strVendorContactID]);
 
 		res.json({"message": "Success.", "status": 200});
 	} finally {
