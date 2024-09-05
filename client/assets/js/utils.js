@@ -13,3 +13,21 @@ function cacheJSON(key, json) {
 function recallJSON(key) {
     return localStorage.getItem(key);
 }
+
+// Function for input validation on client-side
+// Checks that required input fields are not empty/default values 
+function validateInput() {
+    const reqs = document.querySelectorAll('.req');
+
+    reqs.forEach((e) => {
+        if (e.value === '') {
+            e.classList.add('invalid');
+        }
+        else if (e.className.includes('form-select') && e.options[0].selected) {
+            e.classList.add('invalid');
+        }
+        else {
+            e.classList.remove('invalid');
+        }
+    });
+}

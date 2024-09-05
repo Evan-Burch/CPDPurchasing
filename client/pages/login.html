@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<style>
+    .invalid {
+        box-shadow: 0 0 2px 2px #fd0000;
+    }
+</style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,10 +22,10 @@
         <div class="form bg-primary">
           <img class="mx-auto d-block mb-3" src="../assets/images/logo.png" style="width: 120px; height: 120px; opacity: 70%;">
           <form class="login-form">
-            <input type="text" id="txtUsername" placeholder="username" aria-label="Username"/>
-            <input type="password" id="txtPassword" placeholder="password" aria-label="Password">
-            <button type="button" class="mb-1 col-5" id="btnLogin">login</button>
-            <button type="button" class="col-5" id="btnSAMLLogin">SAML</button>
+            <input class = "req" type="text" id="txtUsername" placeholder="username" aria-label="Username" required>
+            <input class = "req" type="password" id="txtPassword" placeholder="password" aria-label="Password" required>
+            <button type="button" class="mb-1 col-5" id="btnLogin" aria-label="Login">login</button>
+            <button type="button" class="col-5" id="btnSAMLLogin" aria-label="Login with SAML">SAML</button>
           </form>
         </div>
       </div>
@@ -37,6 +43,7 @@
             let strPassword = $('#txtPassword').val();
 
             if (strUserName.length < 1 || strPassword.length < 1) {
+                validateInput();
                 console.log("invalid username/password");
             } else {
                 $.ajax({
