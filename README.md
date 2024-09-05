@@ -25,7 +25,7 @@ Software Engineering City of Cookeville
 - Your public IP address needs to be added to the Security Group that controls access to the EC2. If your IP is not on the list, reach out to Evan.
 > **Note:** If you change locations, it is likely that your public IP will change and the new one will need to be added
 - You must have the **hubble.pem** private key file on your computer. If you do not have it, reach out to someone on the team that has it.
-- From the directory that the .pem file is in, run `ssh -i "hubble.pem" admin@ec2-54-144-91-83.compute-1.amazonaws.com`
+- From the directory that the .pem file is in, run `ssh -i "hubble.pem" admin@ec2-34-224-145-158.compute-1.amazonaws.com`
 - Once connected, use `screen -r` to enter the screen where the backend output can be seen. You should only run the backend while inside the screen.
 - While in the screen, use `ctrl + C` to stop the backend, and `node index.js` to start it
 - Use `ctrl + A + D` to exit the screen
@@ -36,7 +36,7 @@ You can greatly ease the process of using ssh to connect by completing the follo
 - Also in the `.ssh` directory, open the `config` file and enter the following information, making sure to replace <path_to_pem_file> with the path to the file on your computer, and add hubble.pem at the end of the path:
     ```
     Host hubble
-        HostName 54.144.91.83
+        HostName 34.224.145.158
         User admin
         IdentityFile <path_to_pem_file>
     ```

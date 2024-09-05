@@ -75,7 +75,7 @@
         $(document).ready(function () {
             $.ajax({
             type: 'POST',
-            url: 'http://54.144.91.83:8000/fillVendorTable',
+            url: 'http://34.224.145.158:8000/fillVendorTable',
             data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
             contentType: 'application/json',
             success: function (results) {
@@ -129,7 +129,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: 'http://54.144.91.83:8000/addVendor',
+                url: 'http://34.224.145.158:8000/addVendor',
                 data: JSON.stringify({uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName:strVendorName, strVendorLink:strVendorLink}),
                 contentType: 'application/json',
                 success:
