@@ -20,8 +20,8 @@
                                 <p><b> Status: </b></p>
                             </div>
                             <div class="col-3 p-3">
-                                <p> placeholder </p>
-                                <p> placeholder </p>
+                                <p id="pWebsite"> placeholder </p>
+                                <p id="pStatus"> placeholder </p>
                             </div>
                         </div>
                     </div>
@@ -95,8 +95,8 @@
                     <input type="text" class="form-control" id="txtEditVendorLink" placeholder="Website">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success">Edit</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" aria-label="Finish vendor edit">Edit</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close edit modal">Close</button>
                 </div>
             </div>
         </div>
@@ -131,8 +131,8 @@
                     <input type="checkbox" class="form-check-input" id="chkPrimaryContact">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success">Add</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" aria-label="Add vendor contact">Add</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close edit model">Close</button>
                 </div>
             </div>
         </div>
@@ -145,6 +145,21 @@
         $(document).ready(function () {
             const VendorName = sessionStorage.getItem('VendorName');
             $('#vendorTitle').text(VendorName);
+            $.ajax({
+                type: 'POST',
+                url: 'http://34.224.145.158:8000/getVendorInfo',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName}),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results);
+                    if(results.VendorInfo[0].Website != '') {
+                        $('#pWebsite').text(results.VendorInfo[0].Website);
+                    }else{
+                        $('#pWebsite').text('N/A');
+                    }
+                    $('#pStatus').text(results.VendorInfo[0].Status);
+                }
+            })
         })
 
         $('#tblVendorContacts').DataTable({

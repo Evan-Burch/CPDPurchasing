@@ -106,8 +106,8 @@
                     <input type="text" class="form-control" id="txtEditNotes" placeholder="Notes">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success">Edit</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" aria-label="Finish PO edit">Edit</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="CLose edit modal">Close</button>
                 </div>
             </div>
         </div>
@@ -154,6 +154,22 @@
         $(document).ready(function () {
             const PurchaseOrderID = sessionStorage.getItem('PurchaseOrderID');
             $('#poTitle').text('Purchase Order ' + PurchaseOrderID);
+            $.ajax({
+                type: 'POST',
+                url: 'http://34.224.145.158:8000/getPOInfo',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
+                contentType: 'application/json',
+                success: function(results){
+                    console.log(results);
+                    $('#pVendor').text(results.POInfo[0].VendorID);
+                    $('#pCreatedBy').text(results.POInfo[0].CreatedBy);
+                    $('#pRequestedFor').text(results.POInfo[0].RequestedFor);
+                    $('#pDate').text(results.POInfo[0].CreatedDateTime);
+                    $('#pStatus').text(results.POInfo[0].Status);
+                    $('#pRoute').text(results.POInfo[0].RequestedFor);
+                    $('#txtNotes').val(results.POInfo[0].Notes);
+                }
+            })
         })
 
         $('#tblPOItems').DataTable({
@@ -164,7 +180,7 @@
             // Add functionality to delete PO
             $.ajax({
                 type: 'DELETE',
-                url: 'http://54.144.91.83:8000/deletePO',
+                url: 'http://34.224.145.158:8000/deletePO',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: sessionStorage.getItem('PurchaseOrderID') }),
                 contentType: 'application/json',
                 success: function(results){
