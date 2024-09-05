@@ -15,6 +15,10 @@
         background-color: #2c3e50;
         border-color: #2c3e50;
     }
+
+    .invalid {
+        box-shadow: 0 0 2px 2px #fd0000;
+    }
 </style>
 
 <body>
@@ -48,24 +52,24 @@
                 </div>
                 <div class="modal-body">
                     <label for="txtAccountNum" class="form-label">Account Number</label>
-                    <input type="text" class="form-control" id="txtAccountNum" placeholder="Account Number">
+                    <input type="text" class="form-control req" id="txtAccountNum" placeholder="Account Number" required>
 
                     <label for="txtDecription" class="form-label">Description</label>
-                    <input type="text" class="form-control" id="txtDescription" placeholder="Description">
+                    <input type="text" class="form-control req" id="txtDescription" placeholder="Description" required>
 
                     <label for="txtFiscal" class="form-label">Fiscal Authority</label>
-                    <select class="form-select" id="txtFiscal" aria-label="Requested For">
+                    <select class="form-select req" id="txtFiscal" required>
                         <option selected>Fiscal Authority</option>
                     </select>
 
                     <label for="txtDivision" class="form-label">Division</label>
-                    <input type="text" class="form-control" id="txtDivision" placeholder="Division">
+                    <input type="text" class="form-control req" id="txtDivision" placeholder="Division" required>
 
                     <!-- NOTE: In the past POModule there was a checkbox for status to set as active, we are not doing that -->
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success">Create</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" aria-label="Create new account">Create</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close account modal">Close</button>
                 </div>
             </div>
         </div>
