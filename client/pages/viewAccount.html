@@ -126,7 +126,7 @@
             $('#accountTitle').text('Account ' + AccountID);
             $.ajax({
                 type: 'POST',
-                url: 'http://54.144.91.83:8000/getAccountInfo',
+                url: 'http://34.224.145.158:8000/getAccountInfo',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountID: AccountID}),
                 contentType: 'application/json',
                 success: function (results) {

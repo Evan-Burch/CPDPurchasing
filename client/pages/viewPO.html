@@ -156,7 +156,7 @@
             $('#poTitle').text('Purchase Order ' + PurchaseOrderID);
             $.ajax({
                 type: 'POST',
-                url: 'http://54.144.91.83:8000/getPOInfo',
+                url: 'http://34.224.145.158:8000/getPOInfo',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
                 success: function(results){
@@ -180,7 +180,7 @@
             // Add functionality to delete PO
             $.ajax({
                 type: 'DELETE',
-                url: 'http://54.144.91.83:8000/deletePO',
+                url: 'http://34.224.145.158:8000/deletePO',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: sessionStorage.getItem('PurchaseOrderID') }),
                 contentType: 'application/json',
                 success: function(results){

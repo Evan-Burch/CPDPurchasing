@@ -85,7 +85,7 @@
         $(document).ready(function () {
             $.ajax({
                 type: 'POST',
-                url: 'http://54.144.91.83:8000/fillAccountTable',
+                url: 'http://34.224.145.158:8000/fillAccountTable',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
                 contentType: 'application/json',
                 success: function (results) {
@@ -132,7 +132,7 @@
             console.log("accounts.html new account clicked");
             $.ajax({
                 type: 'POST',
-                url: 'http://54.144.91.83:8000/fillNewAccountModal',
+                url: 'http://34.224.145.158:8000/fillNewAccountModal',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
                 contentType: 'application/json',
                 success:
@@ -157,7 +157,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: 'http://54.144.91.83:8000/addAccount',
+                url: 'http://34.224.145.158:8000/addAccount',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountNumber:strAccountNumber, strDescription:strDescription, strFiscalAuthority:strFiscalAuthority, strDivision:strDivision}),
                 contentType: 'application/json',
                 success:

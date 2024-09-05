@@ -83,7 +83,7 @@
 
       $.ajax({
         type: 'POST',
-        url: 'http://54.144.91.83:8000/getUserName',
+        url: 'http://34.224.145.158:8000/getUserName',
         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
         contentType: 'application/json',
         success: function (results) {
@@ -94,7 +94,7 @@
 
       $.ajax({
         type: 'POST',
-        url: 'http://54.144.91.83:8000/getUserSettings',
+        url: 'http://34.224.145.158:8000/getUserSettings',
         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
         contentType: 'application/json',
         success: function (results) {
@@ -169,7 +169,7 @@
       setTimeout(() => {
         $.ajax({
           type: 'DELETE',
-          url: 'http://54.144.91.83:8000/logout',
+          url: 'http://34.224.145.158:8000/logout',
           data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
           contentType: 'application/json',
           success: function (results) {
@@ -184,7 +184,7 @@
     // function doBackgroundCalls() {
     //   $.ajax({
     //     type: 'POST',
-    //     url: 'http://54.144.91.83:8000/fillPOTable',
+    //     url: 'http://34.224.145.158:8000/fillPOTable',
     //     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
     //     contentType: 'application/json',
     //     success: function (results) {
@@ -203,7 +203,7 @@
 
     //   $.ajax({
     //     type: 'POST',
-    //     url: 'http://54.144.91.83:8000/fillVendorTable',
+    //     url: 'http://34.224.145.158:8000/fillVendorTable',
     //     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
     //     contentType: 'application/json',
     //     success: function (results) {
@@ -225,7 +225,7 @@
       $('html').attr('data-bs-theme', $('html').attr('data-bs-theme') === 'dark' ? 'light' : 'dark');
       $.ajax({
         type: 'POST',
-        url: 'http://54.144.91.83:8000/updateUserSettings',
+        url: 'http://34.224.145.158:8000/updateUserSettings',
         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), "strKey": "theme", "strValue": $('html').attr('data-bs-theme') }),
         contentType: 'application/json',
         success: function (results) {
@@ -243,7 +243,7 @@
     $('#btnLogout').click(function () {
       $.ajax({
         type: 'DELETE',
-        url: 'http://54.144.91.83:8000/logout',
+        url: 'http://34.224.145.158:8000/logout',
         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
         contentType: 'application/json',
         success: function (results) {
