@@ -15,6 +15,10 @@
         background-color: #2c3e50;
         border-color: #2c3e50;
     }
+
+    .invalid {
+        box-shadow: 0 0 2px 2px #fd0000;
+    }
 </style>
 
 <body>
@@ -31,21 +35,12 @@
             </div>
             <div class="card-body">
                 <table class="table table-striped" id="tblVendors">
-                    <thead>
-                        <tr>
-                            <th>Vendor Name</th>
-                            <th>Link</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 
+    <!-- Modal -->
     <div class="modal fade" id="newVendor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -56,14 +51,14 @@
                 </div>
                 <div class="modal-body">
                     <label for="txtVendor" class="form-label">Vendor Name</label>
-                    <input type="text" class="form-control" id="txtVendor" placeholder="Vendor Name">
+                    <input type="text" class="form-control req" id="txtVendor" placeholder="Vendor Name" required>
 
                     <label for="txtLink" class="form-label">Link</label>
                     <input type="text" class="form-control" id="txtLink" placeholder="Link">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success">Create</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    <button id="btnCreateVendor" type="button" class="btn btn-success" aria-label="Create new vendor">Create</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close vendor modal">Close</button>
                 </div>
             </div>
         </div>
@@ -78,29 +73,6 @@
         }
 
         $(document).ready(function () {
-            // var results = recallJSON("VendorTable");
-
-            // if (Array.isArray(results.VendorTable)) {
-            //     results.VendorTable.forEach(result => {
-            //         let strRow = '<tr><td><a href="#" onclick="switchPage(\'viewVendor.html\', \'' + result['VendorName'] + '\')">' + result['VendorName'] + '</td><td><a href="http://' + result['Website'] + '" target="_blank">' + result['Website'] + '</a></td><td>' + result['Status'] + '</td></tr>';
-            //         $('#tblVendors tbody').append(strRow);
-            //     });
-
-            //     // Initialize DataTable after data is appended
-            //     $('#tblVendors').DataTable({
-            //         layout: {
-            //             topStart: {
-            //                 buttons: [
-            //                     { extend: 'copy', className: 'copyButton' },
-            //                     { extend: 'excel', className: 'excelButton' },
-            //                     { extend: 'print', className: 'printButton' }
-            //                 ]
-            //             }
-            //         },
-            //         "autowidth": false
-            //     });
-            // }
-
             $.ajax({
             type: 'POST',
             url: 'http://54.144.91.83:8000/fillVendorTable',
@@ -109,11 +81,6 @@
             success: function (results) {
                 console.log('Response:', results);
                 if (results.status === 200 && Array.isArray(results.VendorTable)) {
-                    results.VendorTable.forEach(result => {
-                        let strRow = '<tr><td><a href="#" onclick="switchPage(\'pages/viewVendor.html\', \'' + result['VendorName'] + '\')">' + result['VendorName'] + '</td><td><a href="http://' + result['Website'] + '" target="_blank">' + result['Website'] + '</a></td><td>' + result['Status'] + '</td></tr>';
-                        $('#tblVendors tbody').append(strRow);
-                    });
-
                     // Initialize DataTable after data is appended
                     $('#tblVendors').DataTable({
                         layout: {
@@ -125,7 +92,23 @@
                                 ]
                             }
                         },
-                        "autowidth": false
+                        "autowidth": false,
+                        data: results.VendorTable,
+                        columns: [
+                            {data: "VendorName", title: "Vendor Name", render: function(data, type) {
+                                if (type == "display") {
+                                    return '<a href="#" onclick="switchPage(\'pages/viewVendor.html\', \'' + data + '\')">' + data + "</a>";
+                                }
+                                return data;
+                            }},
+                            {data: "Website", title: "Link", render: function(data, type) {
+                                if (type == "display") {
+                                    return '<a href="http://' + data + '" target="_blank">' + data + "</a>";
+                                }
+                                return data;
+                            }},
+                            {data: "Status", title: "Status"}
+                        ],
                     });
                 } else {
                     console.error('Unexpected response format or status:', results);
@@ -135,6 +118,26 @@
                 console.error('AJAX Error:', status, error);
             }
         });
+        });
+
+        //create new vendor
+        $('#btnCreateVendor').on('click', function() {
+            let strVendorName = $('#txtVendor').val();
+            let strVendorLink = $('#txtLink').val();
+
+            console.log('Create Vendor clicked: ', strVendorName, ",", strVendorLink);
+
+            $.ajax({
+                type: 'POST',
+                url: 'http://54.144.91.83:8000/addVendor',
+                data: JSON.stringify({uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName:strVendorName, strVendorLink:strVendorLink}),
+                contentType: 'application/json',
+                success:
+                    function(results) {
+                        console.log('Response:', results);
+                        $('#newVendor').modal('hide');
+                    }
+            });
         });
 
     </script>

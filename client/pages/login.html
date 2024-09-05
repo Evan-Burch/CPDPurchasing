@@ -1,65 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+
+<style>
+    .invalid {
+        box-shadow: 0 0 2px 2px #fd0000;
+    }
+</style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>POModule</title>
     <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../assets/css/main.css" rel="stylesheet">
+    <link href="../assets/css/login.css" rel="stylesheet">
 </head>
-<body>
-    <div class="col-12 d-flex justify-content-center align-items-center">
-        <div class="col-8 vh-100" style="background-image: url(../assets/images/pd-hero-image.jpg); background-size: cover;">
-        </div>
-        <div class="col-4 vh-100 text-white bg-primary">
-          <h1 class="login-header col-10 mt-5 offset-1">Cookeville Police Department</h1>
-          <form>
-            <div class="form-group col-8 offset-2 mb-3">
-              <label for="txtUsername">Username</label>
-              <input type="text" class="form-control" id="txtUsername" aria-label="Username">
-            </div>
-            <div class="form-group col-8 offset-2 mb-3">
-              <label for="txtPassword">Password</label>
-              <input type="password" class="form-control" id="txtPassword" aria-label="Password">
-            </div>
-            <button type="button" class="btn btn-secondary col-6 offset-3 mb-2" id="btnLogin">Login</button>
-            <button type="button" class="btn btn-secondary col-6 offset-3" id="btnSAMLLogin">Login with SAML</button>
+
+<body style="background-image: url(../assets/images/pd-hero-image.jpg); background-repeat:no-repeat; background-size:cover;">
+  <div class="d-flex vh-100 vw-100 justify-content-center align-items-center">
+      <!-- Use Bootstrap utilities to center the card both vertically and horizontally -->
+      <div class="login-page">
+        <div class="form bg-primary">
+          <img class="mx-auto d-block mb-3" src="../assets/images/logo.png" style="width: 120px; height: 120px; opacity: 70%;">
+          <form class="login-form">
+            <input class = "req" type="text" id="txtUsername" placeholder="username" aria-label="Username" required>
+            <input class = "req" type="password" id="txtPassword" placeholder="password" aria-label="Password" required>
+            <button type="button" class="mb-1 col-5" id="btnLogin" aria-label="Login">login</button>
+            <button type="button" class="col-5" id="btnSAMLLogin" aria-label="Login with SAML">SAML</button>
           </form>
         </div>
       </div>
-      <script src="../assets/js/jquery-3.7.1.min.js"></script>
-      <script src="../assets/js/utils.js"></script>
-      <script>
-        $(document).ready(function() {
-          handleBrowserNav(); // stop the user from going back/forwards/whatever
+  </div>
+
+    <script src="../assets/js/jquery-3.7.1.min.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script>
+        $(document).ready(function () {
+            handleBrowserNav(); // stop the user from going back/forwards/whatever
         });
-    
+
         $('#btnLogin').on('click', function () {
-          let strUserName = $('#txtUsername').val();
-          let strPassword = $('#txtPassword').val();
-    
-          if (strUserName.length < 1 || strPassword.length < 1) {
-            // HALEY TODO: add validation for email/password
-            console.log("invalid username/password")
-          } else {
-            $.ajax({
-              type: 'POST',
-              url: 'http://54.144.91.83:8000/login',
-              data: JSON.stringify({ strUserName: strUserName, strPassword: strPassword }),
-              contentType: 'application/json',
-              success: 
-                function(results) {
-                  sessionStorage.setItem('SimpleSession', results.uuidSessionToken);
-                  window.location.href = "../index.html";
-                }
-            });
-          }
-    
-    
-          // console.log("username: ", strUserName);
-          // console.log("Password: ", strPassword);
-    
-        })
-      </script>
+            let strUserName = $('#txtUsername').val();
+            let strPassword = $('#txtPassword').val();
+
+            if (strUserName.length < 1 || strPassword.length < 1) {
+                validateInput();
+                console.log("invalid username/password");
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://54.144.91.83:8000/login',
+                    data: JSON.stringify({ strUserName: strUserName, strPassword: strPassword }),
+                    contentType: 'application/json',
+                    success:
+                        function (results) {
+                            if (results.status == 200) { // this was missing
+                                sessionStorage.setItem('SimpleSession', results.uuidSessionToken);
+                                window.location.href = "../index.html";
+                            }
+                        }
+                });
+            }
+        });
+    </script>
+
 </body>
+
 </html>

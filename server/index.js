@@ -35,6 +35,40 @@ var server = app.listen(8000, function() {
 	});
 });
 
+//This route is called whenever a webhook is triggered from a push to Github
+app.post('/build', bodyParser.json(), (req, res) => {
+	// Validate the webhook signature
+	const secret = process.env["GITHUB_WEBHOOK_SECRET"];
+	const signature = req.headers['x-hub-signature'];
+	const hash = `sha1=${crypto.createHmac('sha1', secret).update(JSON.stringify(req.body)).digest('hex')}`;
+	if (signature !== hash) {
+	  	return res.status(401).send('Invalid signature');
+	}
+
+	const branch = req.body?.ref;
+	if (branch != 'refs/heads/dev') {
+		return res.status(401).send('Branch was ' + branch + " needs to be dev");
+	}
+  
+	// Parse the webhook payload
+	const payload = req.body;
+	
+	// Deploy app
+	console.log("Received new webhook request from Github. Re-Deploying...");
+	exec(`bash '/home/admin/Hubble/deploy.sh' ${process.pid}`, (error, stdout, stderr) => {
+	if (error) {
+		console.error(`Error executing script: ${error}`);
+		return;
+	}
+	console.log(`Script output: ${stdout}`);
+	if (stderr) {
+		console.error(`Script error: ${stderr}`);
+	}
+	});
+  
+	res.status(200).send('Webhook received');
+});
+
 /******************************************HELPER FUNCTIONS******************************************/
 
 //delete unwanted characters
@@ -88,12 +122,12 @@ app.post("/addPO", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
-	const PurchaseOrderID = clean(req.body.PurchaseOrderID);
-	const VendorID = clean(req.body.VendorID);
-	const Status = clean(req.body.Status);
-	const RequestedFor = clean(req.body.RequestedFor); 
-	const CreatedBy = clean(req.body.CreatedBy);
-	const Notes = clean(req.body.Notes);
+	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
+	const strVendorName = clean(req.body.strVendorName);
+	const intStatus = req.body.intStatus;
+	const strRequestedFor = clean(req.body.strRequestedFor); 
+	const intCreatedBy = req.body.intCreatedBy;
+	const strNotes = clean(req.body.strNotes);
 
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
@@ -101,9 +135,75 @@ app.post("/addPO", async (req, res) => {
 			return res.json({"message": "You must be logged in to do that", "status": 400});
 		}
 
+		var duplicate = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
+		if (duplicate.length != 0) {
+			return res.json({"message": `Purchase Order ${strPurchaseOrderID} already exists.`, "status": 400});
+		}
+
 		console.log("Creating a new PO");
 
-		await dbConnection.query("INSERT INTO tblPurchaseOrder (PurchaseOrderID, VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [PurchaseOrderID, VendorID, Status, RequestedFor, CreatedBy, Notes]);
+		const strRequestedForID = await dbConnection.query("SELECT EmployeeID FROM tblUser WHERE DisplayName=?;", [strRequestedFor]);
+		const intVendorID = await dbConnection.query("SELECT VendorID FROM tblVendor WHERE VendorName=?;", [strVendorName]);
+
+		await dbConnection.query("INSERT INTO tblPurchaseOrder (PurchaseOrderID, VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [strPurchaseOrderID, intVendorID[0].VendorID, intStatus, strRequestedForID[0].EmployeeID, intCreatedBy, strNotes]);
+
+		res.json({"message": "Success.", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+
+app.post("/addVendor", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const strVendorName = clean(req.body.strVendorName);
+	const strLink = clean(req.body.strVendorLink);
+
+	//HB TODO: what about the vendorID num and the vendor contactID?
+	let strVendorID = 123;
+	let strVendorContactID = 124;
+
+	console.log('backend create vendor: ', strVendorName, ", ", strLink);
+  
+  try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+    
+    await dbConnection.query("INSERT INTO tblVendor (VendorID, VendorName, Website, Status, VendorContactID) VALUES (?, ?, ?, 1, ?);", [strVendorID, strVendorName, strLink, strVendorContactID]);
+
+    res.json({"message": "Success.", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
+});
+    
+app.post("/addAccount", async (req, res) => {
+	console.log("index.js: Creating a new Account...");
+
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const AccountNumber = clean(req.body.strAccountNumber);
+	const Description = clean(req.body.strDescription);
+	const FiscalAuthority = clean(req.body.strFiscalAuthority);
+	const Division = clean(req.body.strDivision);
+
+	console.log(AccountNumber, ",", Description, ",", FiscalAuthority, ",", Division);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Creating a new Vendor: ", strVendorName, ", ", strLink);
+
+		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [AccountNumber, Description, FiscalAuthority, Division]);
+
 
 		res.json({"message": "Success.", "status": 200});
 	} finally {
@@ -117,11 +217,11 @@ app.post("/addPO", async (req, res) => {
 
 app.post("/getUserName", async (req, res) => {
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	
 	const UserName = await getUserNameBySessionToken(uuidSessionToken);
-	if (UserName == -1) {
-		return res.json({"message": "No UserName for that sessiontoken or UserID", "status": 400});
-	}
-	res.json({"message": "Success.", "status": 200, "UserName": UserName});
+	var userID = await getUserIDBySessionToken(uuidSessionToken);
+	
+	res.json({"message": "Success.", "status": 200, "UserName": UserName, "UserID": userID});
 });
 
 app.post("/login", async (req, res) => {
@@ -167,19 +267,31 @@ app.post("/fillPOTable", async (req, res) => {
 
 		console.log("Filling the PO Table");
 
-		POTable = await dbConnection.query("SELECT * FROM tblPurchaseOrder");
+		POTable = await dbConnection.query("select tblPurchaseOrder.PurchaseOrderID, tblPurchaseOrder.VendorID, tblPurchaseOrder.Status, rf.DisplayName as RequestedFor, tblPurchaseOrder.CreatedDateTime, cb.DisplayName as CreatedBy, tblPurchaseOrder.Notes, tblPurchaseOrder.Amount, tblVendor.VendorName from tblPurchaseOrder inner join tblUser rf on tblPurchaseOrder.RequestedFor = rf.EmployeeID inner join tblUser cb on tblPurchaseOrder.CreatedBy = cb.EmployeeID inner join tblVendor on tblPurchaseOrder.VendorID = tblVendor.VendorID;");
+		if (POTable.length == 0) 
+			return res.json({"message": "There are no purchase orders.", "status": 500});
 
+		/*
+		// Replace the IDs with the actual names for Vendors, CreatedBy, and RequestedFor
 		for (let i = 0; i < POTable.length; i++) {
 			const VendorQuery = await dbConnection.query("SELECT VendorName FROM tblVendor WHERE VendorID=?;", [POTable[i].VendorID]);
 			POTable[i].VendorName = VendorQuery[0].VendorName
 		}
-
-		if (POTable.length == 0) {
-			return res.json({"message": "There are no purchase orders.", "status": 500});
-		} else {
-			// If there are POs, list them
-			res.json({"message": "Success.", "status": 200, "POTable": POTable});
+		for (let i = 0; i < POTable.length; i++) {
+			const CreatedByQuery = await dbConnection.query("SELECT DisplayName FROM tblUser WHERE EmployeeID=?;", [POTable[i].CreatedBy]);
+			POTable[i].CreatedBy = CreatedByQuery[0].DisplayName
 		}
+		for (let i = 0; i < POTable.length; i++) {
+			if (POTable[i].RequestedFor == "")
+				POTable[i].RequestedFor = "N/A";
+			else {
+				const RequestedForQuery = await dbConnection.query("SELECT DisplayName FROM tblUser WHERE EmployeeID=?;", [parseInt(POTable[i].RequestedFor, 10)]);
+				POTable[i].RequestedFor = RequestedForQuery[0].DisplayName
+			}
+		}
+		*/
+
+		res.json({"message": "Success.", "status": 200, "POTable": POTable});
 
 	} finally {
 		await dbConnection.close();
@@ -238,6 +350,214 @@ app.post("/fillVendorTable", async (req, res) => {
 	}
 });
 
+app.post("/fillNewPOModal", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Filling the New PO Modal");
+
+		const VendorNames = await dbConnection.query("SELECT VendorName FROM tblVendor;");
+		const Users = await dbConnection.query("SELECT DisplayName FROM tblUser;");
+
+		res.json({"message": "Success.", "status": 200, "VendorNames": VendorNames, "Users": Users});
+
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+  
+	// HB TODO Note: currently fills with many "unknowns" so check if SQL is correct
+  app.post("/fillNewAccountModal", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Filling the New account Modal");
+
+		const FiscalAuthorities = await dbConnection.query("SELECT FiscalAuthority FROM tblAccount;");
+
+		res.json({"message": "Success.", "status": 200, "FiscalAuthorities": FiscalAuthorities});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+
+app.post("/getPOInfo", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
+
+	try{
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Getting PO Info for " + strPurchaseOrderID);
+
+		const POInfo = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
+
+		if (POInfo.length == 0) {
+			return res.json({"message": "There is no purchase order with that ID.", "status": 500});
+		} else {
+			// If there is a PO with that ID, list it
+			res.json({"message": "Success.", "status": 200, "POInfo": POInfo});
+		}
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.post("/getAccountInfo", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strAccountID = clean(req.body.strAccountID);
+
+	try{
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Getting Account Info for " + strAccountID);
+
+		const AccountInfo = await dbConnection.query("SELECT * FROM tblAccount WHERE AccountID=?;", [strAccountID]);
+
+		if(AccountInfo.length == 0) {
+			return res.json({"message": "There is no account with that ID.", "status": 500});
+		} else {
+			res.json({"message": "Success.", "status": 200, "AccountInfo": AccountInfo});
+		}
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.post("/getVendorInfo", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strVendorName = clean(req.body.strVendorName);
+
+	try{
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Getting Vendor Info for " + strVendorName);
+
+		const VendorInfo = await dbConnection.query("SELECT * FROM tblVendor WHERE VendorName=?;", [strVendorName]);
+
+		if(VendorInfo.length == 0) {
+			return res.json({"message": "There is no vendor with that ID.", "status": 500});
+		} else {
+			res.json({"message": "Success.", "status": 200, "VendorInfo": VendorInfo});
+		}
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.post("/getUserSettings", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		const settingsQuery = await dbConnection.query("SELECT * FROM tblUserSettings WHERE UserID=?;", [userID]);
+
+		if (settingsQuery.length == 0) {
+			return res.json({"message": "The user doesn't have any saved settings.", "status": 203});
+		} else {
+			var settingsArray = new Array();
+			var settingsRaw = settingsQuery[0].Settings.split(",");
+			
+			if (settingsRaw.length % 2 != 0) {
+				return res.json({"message": "Unable to properly parse user settings.", "status": 500});
+			}
+			for (var i = 0; i < settingsRaw.length - 1; i += 2) {
+				var currentSetting = {};
+				currentSetting[settingsRaw[i]] = settingsRaw[i + 1];
+				settingsArray.push(currentSetting);
+			}
+			
+			res.json({"message": "Success.", "status": 200, "user_settings": settingsArray});
+		}
+
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.post("/updateUserSettings", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strKey = clean(req.body.strKey);
+	const strValue = clean(req.body.strValue);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		const settingsQuery = await dbConnection.query("SELECT * FROM tblUserSettings WHERE UserID=?;", [userID]);
+
+		if (settingsQuery.length == 0) {
+			// They have no settings, so insert a new row and we're done
+			await dbConnection.query("INSERT INTO tblUserSettings (UserID, Settings) VALUES (?, ?);", [userID, strKey + "," + strValue]);
+			return res.json({"message": "Success.", "status": 201}); // created
+		} else {
+			var currentSettings = settingsQuery[0].Settings;
+			var currentSettingsArray = currentSettings.split(",");
+			var foundExistingKey = false;
+			for (var i = 0; i < currentSettingsArray.length - 1; i++) {
+				if (currentSettingsArray[i] == strKey) {
+					currentSettingsArray[i + 1] = strValue;
+					foundExistingKey = true;
+					break;
+				}
+			}
+			
+			var newSettings = "";
+			if (!foundExistingKey) {
+				newSettings = currentSettings + "," + strKey + "," + strValue;
+			} else {
+				newSettings = currentSettingsArray.join(",");
+			}
+			
+			//console.log(newSettings);
+			
+			if (currentSettings.split(",").length % 2 != 0) {
+				return res.json({"message": "Unable to properly parse user settings.", "status": 500});
+			}
+			
+			await dbConnection.query("UPDATE tblUserSettings SET Settings=? WHERE UserID=?;", [newSettings, userID]);
+			
+			res.json({"message": "Success.", "status": 200});
+		}
+
+	} finally {
+		await dbConnection.close();
+	}
+});
+
 // ========================================================
 // 						 UPDATE
 // ========================================================
@@ -261,6 +581,49 @@ app.delete("/logout", async (req, res) => {
 		await dbConnection.query("DELETE FROM tblSessions where ID=?;", [uuidSessionToken]);
 
 		res.json({"message": "Goodbye!", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.delete("/deletePO", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Deleting PO " + strPurchaseOrderID);
+
+		await dbConnection.query("DELETE FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
+
+		res.json({"message": "Success.", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.post("/status", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+		
+		var poRows = await dbConnection.query("SELECT COUNT(*) FROM tblPurchaseOrder;");
+		var vendorRows = await dbConnection.query("SELECT COUNT(*) FROM tblVendor;");
+		var accountRows = await dbConnection.query("SELECT COUNT(*) FROM tblAccount;");
+
+		//console.log(poRows[0]["COUNT(*)"]);
+
+		res.json({"message": "OK", "status": 200, "poRows": parseInt(poRows[0]["COUNT(*)"]), "vendorRows": parseInt(vendorRows[0]["COUNT(*)"]), "accountRows": parseInt(accountRows[0]["COUNT(*)"])});
 	} finally {
 		await dbConnection.close();
 	}

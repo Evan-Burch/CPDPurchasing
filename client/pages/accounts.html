@@ -15,6 +15,10 @@
         background-color: #2c3e50;
         border-color: #2c3e50;
     }
+
+    .invalid {
+        box-shadow: 0 0 2px 2px #fd0000;
+    }
 </style>
 
 <body>
@@ -23,7 +27,7 @@
             <div class="card-header">
                 <div class="row">
                     <h3 class="col-8">Accounts</h3>
-                    <button type="button" class="btn btn-primary col-4" data-bs-toggle="modal"
+                    <button id="btnNewAccount" type="button" class="btn btn-primary col-4" data-bs-toggle="modal"
                         data-bs-target="#newAccount">
                         Create New Account
                     </button>
@@ -31,18 +35,6 @@
             </div>
             <div class="card-body">
                 <table class="table table-striped" id="tblAccounts">
-                    <thead>
-                        <tr>
-                            <th>Account Number</th>
-                            <th>Description</th>
-                            <th>Division</th>
-                            <th>Fiscal Authority</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
                 </table>
             </div>
         </div>
@@ -60,24 +52,24 @@
                 </div>
                 <div class="modal-body">
                     <label for="txtAccountNum" class="form-label">Account Number</label>
-                    <input type="text" class="form-control" id="txtAccountNum" placeholder="Account Number">
+                    <input type="text" class="form-control req" id="txtAccountNum" placeholder="Account Number" required>
 
                     <label for="txtDecription" class="form-label">Description</label>
-                    <input type="text" class="form-control" id="txtDescription" placeholder="Description">
+                    <input type="text" class="form-control req" id="txtDescription" placeholder="Description" required>
 
                     <label for="txtFiscal" class="form-label">Fiscal Authority</label>
-                    <select class="form-select" id="txtFiscal" aria-label="Requested For">
+                    <select class="form-select req" id="txtFiscal" required>
                         <option selected>Fiscal Authority</option>
                     </select>
 
                     <label for="txtDivision" class="form-label">Division</label>
-                    <input type="text" class="form-control" id="txtDivision" placeholder="Division">
+                    <input type="text" class="form-control req" id="txtDivision" placeholder="Division" required>
 
                     <!-- NOTE: In the past POModule there was a checkbox for status to set as active, we are not doing that -->
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success">Create</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    <button id="btnCreateNewAccount" type="button" class="btn btn-success" aria-label="Create new account">Create</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close account modal">Close</button>
                 </div>
             </div>
         </div>
@@ -99,11 +91,6 @@
                 success: function (results) {
                     console.log('Response:', results);
                     if (results.status === 200 && Array.isArray(results.AccountTable)) {
-                        results.AccountTable.forEach(result => {
-                            let strRow = '<tr><td><a href="#" onclick="switchPage(\'pages/viewAccount.html\', \'' + result['AccountID'] + '\')">' + result['AccountID'] + '</a></td><td>' + result['Description'] + '</td><td>' + result['DivisionID'] + '</td><td>' + result['FiscalAuthority'] + '</td><td>' + result['Status'] + '</td></tr>';
-                            $('#tblAccounts tbody').append(strRow);
-                        });
-
                         // Initialize DataTable after data is appended
                         $('#tblAccounts').DataTable({
                             layout: {
@@ -115,6 +102,19 @@
                                     ]
                                 }
                             },
+                            data: results.AccountTable,
+                            columns: [
+                                {data: "AccountID", title: "Account Number", render: function(data, type) {
+                                    if (type == "display") {
+                                        return '<a href="#" onclick="switchPage(\'pages/viewAccount.html\', \'' + data + '\')">' + data + "</a>";
+                                    }
+                                    return data;
+                                }},
+                                {data: "Description", title: "Description"},
+                                {data: "DivisionID", title: "Division"},
+                                {data: "FiscalAuthority", title: "Fiscal Authority"},
+                                {data: "Status", title: "Status"}
+                            ],
                             "autowidth": false
                         });
                     } else {
@@ -124,6 +124,47 @@
                 error: function (xhr, status, error) {
                     console.error('AJAX Error:', status, error);
                 }
+            });
+        });
+
+        //populate the drop-down boxes for the modal (Fiscal Authority)
+        $('#btnNewAccount').on('click', function () {
+            console.log("accounts.html new account clicked");
+            $.ajax({
+                type: 'POST',
+                url: 'http://54.144.91.83:8000/fillNewAccountModal',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+                contentType: 'application/json',
+                success:
+                    function (results) {
+                        results.FiscalAuthorities.forEach(element => {
+                            $('#txtFiscal').append('<option value="' + element.FiscalAuthorities + '">' + element.FiscalAuthorities + '</option>');
+                        });
+                    }
+            });
+        });
+
+        // send the create request to the server
+        $('#btnCreateNewAccount').on('click', function () {
+            console.log("accounts.html create new account clicked")
+            let strAccountNumber = $('#txtAccountNum').val();
+            let strDescription = $('#txtDescription').val();
+            let strFiscalAuthority = $('#txtFiscal').val();
+            let strDivision = $('#txtDivision').val();
+            console.log("Sending Data:", strAccountNumber, ",",
+                strDescription, ",", strFiscalAuthority, ",", strDivision
+            )
+
+            $.ajax({
+                type: 'POST',
+                url: 'http://54.144.91.83:8000/addAccount',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountNumber:strAccountNumber, strDescription:strDescription, strFiscalAuthority:strFiscalAuthority, strDivision:strDivision}),
+                contentType: 'application/json',
+                success:
+                    function (results) {
+                        console.log('Response:', results);
+                        $('#newAccount').modal('hide');
+                    }
             });
         });
     </script>
