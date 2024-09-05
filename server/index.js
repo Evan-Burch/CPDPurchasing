@@ -397,7 +397,7 @@ app.post("/fillNewPOModal", async (req, res) => {
 app.post("/getPOInfo", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
-	const strPurchaseOrderID = clean(req.body.strAccountID);
+	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
 
 	try{
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
