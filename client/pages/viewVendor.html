@@ -147,7 +147,7 @@
             $('#vendorTitle').text(VendorName);
             $.ajax({
                 type: 'POST',
-                url: 'http://54.144.91.83:8000/getVendorInfo',
+                url: 'http://34.224.145.158:8000/getVendorInfo',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName}),
                 contentType: 'application/json',
                 success: function (results) {
