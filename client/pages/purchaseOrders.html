@@ -133,6 +133,7 @@
             });
         });
 
+        //fill out the vendors from the database
         $('#btnNewPO').on('click', function () {
             console.log("new po clicked");
             $.ajax({
@@ -155,6 +156,7 @@
             });
         });
 
+        //send the create request to the server
         $('#btnCreatePO').on('click', function () {
             let strPurchaseOrderID = $('#txtPurchaseID').val();
             let strVendorName = $('#txtVendor').val();

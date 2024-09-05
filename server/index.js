@@ -55,7 +55,7 @@ app.post('/build', bodyParser.json(), (req, res) => {
 	
 	// Deploy app
 	console.log("Received new webhook request from Github. Re-Deploying...");
-	exec(`bash '/home/admin/Hubble/deploy.sh' ${process.pid} > /home/admin/logs/deploylog`, (error, stdout, stderr) => {
+	exec(`bash '/home/admin/Hubble/deploy.sh' ${process.pid}`, (error, stdout, stderr) => {
 	if (error) {
 		console.error(`Error executing script: ${error}`);
 		return;
@@ -146,6 +146,64 @@ app.post("/addPO", async (req, res) => {
 		const intVendorID = await dbConnection.query("SELECT VendorID FROM tblVendor WHERE VendorName=?;", [strVendorName]);
 
 		await dbConnection.query("INSERT INTO tblPurchaseOrder (PurchaseOrderID, VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [strPurchaseOrderID, intVendorID[0].VendorID, intStatus, strRequestedForID[0].EmployeeID, intCreatedBy, strNotes]);
+
+		res.json({"message": "Success.", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+
+app.post("/addVendor", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const strVendorName = clean(req.body.strVendorName);
+	const strLink = clean(req.body.strVendorLink);
+
+	//HB TODO: what about the vendorID num and the vendor contactID?
+	let strVendorID = 123;
+	let strVendorContactID = 124;
+
+	console.log('backend create vendor: ', strVendorName, ", ", strLink);
+  
+  try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+    
+    await dbConnection.query("INSERT INTO tblVendor (VendorID, VendorName, Website, Status, VendorContactID) VALUES (?, ?, ?, 1, ?);", [strVendorID, strVendorName, strLink, strVendorContactID]);
+
+    res.json({"message": "Success.", "status": 200});
+	} finally {
+		await dbConnection.close();
+	}
+});
+    
+app.post("/addAccount", async (req, res) => {
+	console.log("index.js: Creating a new Account...");
+
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const AccountNumber = clean(req.body.strAccountNumber);
+	const Description = clean(req.body.strDescription);
+	const FiscalAuthority = clean(req.body.strFiscalAuthority);
+	const Division = clean(req.body.strDivision);
+
+	console.log(AccountNumber, ",", Description, ",", FiscalAuthority, ",", Division);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Creating a new Vendor: ", strVendorName, ", ", strLink);
+
+		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [AccountNumber, Description, FiscalAuthority, Division]);
+
 
 		res.json({"message": "Success.", "status": 200});
 	} finally {
@@ -314,12 +372,34 @@ app.post("/fillNewPOModal", async (req, res) => {
 	}
 });
 
+  
+	// HB TODO Note: currently fills with many "unknowns" so check if SQL is correct
+  app.post("/fillNewAccountModal", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		console.log("Filling the New account Modal");
+
+		const FiscalAuthorities = await dbConnection.query("SELECT FiscalAuthority FROM tblAccount;");
+
+		res.json({"message": "Success.", "status": 200, "FiscalAuthorities": FiscalAuthorities});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+
 app.post("/getPOInfo", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
-	
-	try {
+
+	try{
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
 		if (userID == -1) {
 			return res.json({"message": "You must be logged in to do that", "status": 400});
@@ -335,7 +415,6 @@ app.post("/getPOInfo", async (req, res) => {
 			// If there is a PO with that ID, list it
 			res.json({"message": "Success.", "status": 200, "POInfo": POInfo});
 		}
-
 	} finally {
 		await dbConnection.close();
 	}
@@ -386,6 +465,94 @@ app.post("/getVendorInfo", async (req, res) => {
 		} else {
 			res.json({"message": "Success.", "status": 200, "VendorInfo": VendorInfo});
 		}
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.post("/getUserSettings", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		const settingsQuery = await dbConnection.query("SELECT * FROM tblUserSettings WHERE UserID=?;", [userID]);
+
+		if (settingsQuery.length == 0) {
+			return res.json({"message": "The user doesn't have any saved settings.", "status": 203});
+		} else {
+			var settingsArray = new Array();
+			var settingsRaw = settingsQuery[0].Settings.split(",");
+			
+			if (settingsRaw.length % 2 != 0) {
+				return res.json({"message": "Unable to properly parse user settings.", "status": 500});
+			}
+			for (var i = 0; i < settingsRaw.length - 1; i += 2) {
+				var currentSetting = {};
+				currentSetting[settingsRaw[i]] = settingsRaw[i + 1];
+				settingsArray.push(currentSetting);
+			}
+			
+			res.json({"message": "Success.", "status": 200, "user_settings": settingsArray});
+		}
+
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.post("/updateUserSettings", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strKey = clean(req.body.strKey);
+	const strValue = clean(req.body.strValue);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.json({"message": "You must be logged in to do that", "status": 400});
+		}
+
+		const settingsQuery = await dbConnection.query("SELECT * FROM tblUserSettings WHERE UserID=?;", [userID]);
+
+		if (settingsQuery.length == 0) {
+			// They have no settings, so insert a new row and we're done
+			await dbConnection.query("INSERT INTO tblUserSettings (UserID, Settings) VALUES (?, ?);", [userID, strKey + "," + strValue]);
+			return res.json({"message": "Success.", "status": 201}); // created
+		} else {
+			var currentSettings = settingsQuery[0].Settings;
+			var currentSettingsArray = currentSettings.split(",");
+			var foundExistingKey = false;
+			for (var i = 0; i < currentSettingsArray.length - 1; i++) {
+				if (currentSettingsArray[i] == strKey) {
+					currentSettingsArray[i + 1] = strValue;
+					foundExistingKey = true;
+					break;
+				}
+			}
+			
+			var newSettings = "";
+			if (!foundExistingKey) {
+				newSettings = currentSettings + "," + strKey + "," + strValue;
+			} else {
+				newSettings = currentSettingsArray.join(",");
+			}
+			
+			//console.log(newSettings);
+			
+			if (currentSettings.split(",").length % 2 != 0) {
+				return res.json({"message": "Unable to properly parse user settings.", "status": 500});
+			}
+			
+			await dbConnection.query("UPDATE tblUserSettings SET Settings=? WHERE UserID=?;", [newSettings, userID]);
+			
+			res.json({"message": "Success.", "status": 200});
+		}
+
 	} finally {
 		await dbConnection.close();
 	}

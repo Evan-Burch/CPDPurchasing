@@ -40,6 +40,7 @@
         </div>
     </div>
 
+    <!-- Modal -->
     <div class="modal fade" id="newVendor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -56,7 +57,7 @@
                     <input type="text" class="form-control" id="txtLink" placeholder="Link">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" aria-label="Create new vendor">Create</button>
+                    <button id="btnCreateVendor" type="button" class="btn btn-success" aria-label="Create new vendor">Create</button>
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close vendor modal">Close</button>
                 </div>
             </div>
@@ -117,6 +118,26 @@
                 console.error('AJAX Error:', status, error);
             }
         });
+        });
+
+        //create new vendor
+        $('#btnCreateVendor').on('click', function() {
+            let strVendorName = $('#txtVendor').val();
+            let strVendorLink = $('#txtLink').val();
+
+            console.log('Create Vendor clicked: ', strVendorName, ",", strVendorLink);
+
+            $.ajax({
+                type: 'POST',
+                url: 'http://54.144.91.83:8000/addVendor',
+                data: JSON.stringify({uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName:strVendorName, strVendorLink:strVendorLink}),
+                contentType: 'application/json',
+                success:
+                    function(results) {
+                        console.log('Response:', results);
+                        $('#newVendor').modal('hide');
+                    }
+            });
         });
 
     </script>
