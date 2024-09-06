@@ -92,7 +92,7 @@
                 contentType: 'application/json',
                 success: function (results) {
                     console.log('Response:', results);
-                    if (results.status === 200 && Array.isArray(results.AccountTable)) {
+                    if (Array.isArray(results.AccountTable)) {
                         // Initialize DataTable after data is appended
                         $('#tblAccounts').DataTable({
                             layout: {
