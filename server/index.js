@@ -291,7 +291,7 @@ app.post("/fillAccountTable", async (req, res) => {
 
 		console.log("Filling the Accounts Table");
 
-		const AccountTable = await dbConnection.query("SELECT * FROM tblAccount;");
+		const AccountTable = await dbConnection.query("select tblAccount.AccountID, tblAccount.Description, tblUser.DisplayName as FiscalAuthority, tblAccount.DivisionID, tblAccount.Status from tblAccount inner join tblUser on tblAccount.FiscalAuthority = tblUser.EmployeeID;");
 
 		if (AccountTable.length == 0) {
 			return res.status(500).json({"message": "There are no accounts."});
