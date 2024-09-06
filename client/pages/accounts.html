@@ -34,8 +34,10 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table table-striped" id="tblAccounts">
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-striped responsive" id="tblAccounts">
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -113,7 +115,12 @@
                                 {data: "Description", title: "Description"},
                                 {data: "DivisionID", title: "Division"},
                                 {data: "FiscalAuthority", title: "Fiscal Authority"},
-                                {data: "Status", title: "Status"}
+                                {data: "Status", title: "Status", render: function(data, type) {
+                                    if (type == "display") {
+                                        return (data == "1") ? "Active" : "Inactive";
+                                    }
+                                    return data;
+                                }}
                             ],
                             "autowidth": false
                         });
