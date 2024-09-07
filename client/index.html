@@ -184,46 +184,6 @@
       }, 1000*2);
     }
 
-    // function doBackgroundCalls() {
-    //   $.ajax({
-    //     type: 'POST',
-    //     url: 'http://34.224.145.158:8000/fillPOTable',
-    //     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
-    //     contentType: 'application/json',
-    //     success: function (results) {
-    //       console.log('Response:', results);
-    //       if (results.status === 200) {
-    //         cacheJSON("POTable", results);
-    //         console.log("cached PO table");
-    //       } else {
-    //         console.error('Unexpected response format or status:', results);
-    //       }
-    //     },
-    //     error: function (xhr, status, error) {
-    //       console.error('AJAX Error:', status, error);
-    //     }
-    //   });
-
-    //   $.ajax({
-    //     type: 'POST',
-    //     url: 'http://34.224.145.158:8000/fillVendorTable',
-    //     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
-    //     contentType: 'application/json',
-    //     success: function (results) {
-    //       console.log('Response:', results);
-    //       if (results.status === 200) {
-    //         cacheJSON("VendorTable", results);
-    //         console.log("cached vendor table");
-    //       } else {
-    //         console.error('Unexpected response format or status:', results);
-    //       }
-    //     },
-    //     error: function (xhr, status, error) {
-    //       console.error('AJAX Error:', status, error);
-    //     }
-    //   });
-    // }
-
     $('#btnSwitch').click(function () {
       $('html').attr('data-bs-theme', $('html').attr('data-bs-theme') === 'dark' ? 'light' : 'dark');
       $.ajax({
@@ -232,9 +192,7 @@
         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), "strKey": "theme", "strValue": $('html').attr('data-bs-theme') }),
         contentType: 'application/json',
         success: function (results) {
-          if (results.status == 200 || results.status == 201) {
-            console.log("Updated user theme setting.");
-          }
+          console.log("Updated user theme setting.");
         }
       });
     });

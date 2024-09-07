@@ -34,8 +34,10 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table table-striped responsive" id="tblPurchaseOrders">
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-striped responsive" id="tblPurchaseOrders">
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -95,7 +97,7 @@
                 contentType: 'application/json',
                 success: function (results) {
                     console.log('Response:', results);
-                    if (results.status === 200 && Array.isArray(results.POTable)) {
+                    if (Array.isArray(results.POTable)) {
                         // Initialize DataTable after data is appended
                         $('#tblPurchaseOrders').DataTable({
                             layout: {
