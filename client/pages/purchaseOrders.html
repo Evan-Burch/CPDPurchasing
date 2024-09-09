@@ -165,7 +165,7 @@
             let intCreatedBy = parseInt(sessionStorage.getItem('userId'));
             let strNotes = $('#txtNotes').val();
 
-            if (strPurchaseOrderID == '' || strVendorName == 'Select Vendor' || strRequestedFor == 'Select Requested For') {
+            if (strVendorName == 'Select Vendor' || strRequestedFor == 'Select Requested For') {
                 validateInput();
             }
             else {
