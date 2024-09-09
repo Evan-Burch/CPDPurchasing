@@ -53,24 +53,27 @@
                         </button>
                     </div>
                 </div>
+            
 
                 <label for="txtNotes" class="form-label mt-3"><b>Notes</b></label>
                 <textarea id="txtNotes" class="form-control mb-2">Notes</textarea>
 
-                <table class="table table-striped" id="tblPOItems">
-                    <thead>
-                        <tr>
-                            <th>Account ID</th>
-                            <th>Item Description</th>
-                            <th>Quantity</th>
-                            <th>Price Each</th>
-                            <th>Total Price</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div class="table-responsive">
+                    <table class="table table-striped responsive" id="tblPOItems">
+                        <thead>
+                            <tr>
+                                <th>Account ID</th>
+                                <th>Item Description</th>
+                                <th>Quantity</th>
+                                <th>Price Each</th>
+                                <th>Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
                 <hr>
                 <div class="col-4">
                     <label for="formFile" class="form-label mt-2"><b>Attachments</b></label>
@@ -156,7 +159,7 @@
             $('#poTitle').text('Purchase Order ' + PurchaseOrderID);
             $.ajax({
                 type: 'POST',
-                url: 'http://54.144.91.83:8000/getPOInfo',
+                url: 'http://34.224.145.158:8000/getPOInfo',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
                 success: function(results){
@@ -180,7 +183,7 @@
             // Add functionality to delete PO
             $.ajax({
                 type: 'DELETE',
-                url: 'http://54.144.91.83:8000/deletePO',
+                url: 'http://34.224.145.158:8000/deletePO',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: sessionStorage.getItem('PurchaseOrderID') }),
                 contentType: 'application/json',
                 success: function(results){

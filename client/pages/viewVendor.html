@@ -44,36 +44,40 @@
                     </div>
                 </div>
 
-                <table class="table table-stripe" id="tblVendorContacts">
-                    <thead>
-                        <tr>
-                            <th>Contact Name</th>
-                            <th>Address</th>
-                            <th>Office Phone</th>
-                            <th>Mobile Phone</th>
-                            <th>Email</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div class="table-responsive">
+                    <table class="table table-stripe responsive" id="tblVendorContacts">
+                        <thead>
+                            <tr>
+                                <th>Contact Name</th>
+                                <th>Address</th>
+                                <th>Office Phone</th>
+                                <th>Mobile Phone</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
                 
                 <hr>
 
-                <table class="table table-stripe" id="tblVendorPOs">
-                    <thead>
-                        <tr>
-                            <th>Purchase Order ID</th>
-                            <th>Date</th>
-                            <th>Created By</th>
-                            <th>Fiscal Year</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div class="table-responsive">
+                    <table class="table table-stripe responsive" id="tblVendorPOs">
+                        <thead>
+                            <tr>
+                                <th>Purchase Order ID</th>
+                                <th>Date</th>
+                                <th>Created By</th>
+                                <th>Fiscal Year</th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -147,7 +151,7 @@
             $('#vendorTitle').text(VendorName);
             $.ajax({
                 type: 'POST',
-                url: 'http://54.144.91.83:8000/getVendorInfo',
+                url: 'http://34.224.145.158:8000/getVendorInfo',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName}),
                 contentType: 'application/json',
                 success: function (results) {

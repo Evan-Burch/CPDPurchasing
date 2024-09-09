@@ -34,8 +34,10 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table table-striped" id="tblAccounts">
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-striped responsive" id="tblAccounts">
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -86,12 +88,12 @@
         $(document).ready(function () {
             $.ajax({
                 type: 'POST',
-                url: 'http://54.144.91.83:8000/fillAccountTable',
+                url: 'http://34.224.145.158:8000/fillAccountTable',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
                 contentType: 'application/json',
                 success: function (results) {
                     console.log('Response:', results);
-                    if (results.status === 200 && Array.isArray(results.AccountTable)) {
+                    if (Array.isArray(results.AccountTable)) {
                         // Initialize DataTable after data is appended
                         $('#tblAccounts').DataTable({
                             layout: {
@@ -114,7 +116,12 @@
                                 {data: "Description", title: "Description"},
                                 {data: "DivisionID", title: "Division"},
                                 {data: "FiscalAuthority", title: "Fiscal Authority"},
-                                {data: "Status", title: "Status"}
+                                {data: "Status", title: "Status", render: function(data, type) {
+                                    if (type == "display") {
+                                        return (data == "1") ? "Active" : "Inactive";
+                                    }
+                                    return data;
+                                }}
                             ],
                             "autowidth": false
                         });
@@ -133,7 +140,7 @@
             console.log("accounts.html new account clicked");
             $.ajax({
                 type: 'POST',
-                url: 'http://54.144.91.83:8000/fillNewAccountModal',
+                url: 'http://34.224.145.158:8000/fillNewAccountModal',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
                 contentType: 'application/json',
                 success:
@@ -164,7 +171,7 @@
             else {
                 $.ajax({
                     type: 'POST',
-                    url: 'http://54.144.91.83:8000/addAccount',
+                    url: 'http://34.224.145.158:8000/addAccount',
                     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountNumber: strAccountNumber, strDescription: strDescription, strFiscalAuthority: strFiscalAuthority, strDivision: strDivision }),
                     contentType: 'application/json',
                     success:

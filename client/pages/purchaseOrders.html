@@ -34,8 +34,10 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table table-striped responsive" id="tblPurchaseOrders">
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-striped responsive" id="tblPurchaseOrders">
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -90,12 +92,12 @@
         $(document).ready(function () {
             $.ajax({
                 type: 'POST',
-                url: 'http://54.144.91.83:8000/fillPOTable',
+                url: 'http://34.224.145.158:8000/fillPOTable',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
                 contentType: 'application/json',
                 success: function (results) {
                     console.log('Response:', results);
-                    if (results.status === 200 && Array.isArray(results.POTable)) {
+                    if (Array.isArray(results.POTable)) {
                         // Initialize DataTable after data is appended
                         $('#tblPurchaseOrders').DataTable({
                             layout: {
@@ -138,7 +140,7 @@
             console.log("new po clicked");
             $.ajax({
                 type: 'POST',
-                url: 'http://54.144.91.83:8000/fillNewPOModal',
+                url: 'http://34.224.145.158:8000/fillNewPOModal',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
                 contentType: 'application/json',
                 success:
@@ -171,7 +173,7 @@
             else {
                 $.ajax({
                     type: 'POST',
-                    url: 'http://54.144.91.83:8000/addPO',
+                    url: 'http://34.224.145.158:8000/addPO',
                     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: strPurchaseOrderID, strVendorName: strVendorName, intStatus: intStatus, strRequestedFor: strRequestedFor, intCreatedBy: intCreatedBy, strNotes: strNotes }),
                     contentType: 'application/json',
                     success:

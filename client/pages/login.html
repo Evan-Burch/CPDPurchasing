@@ -1,12 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<style>
-    .invalid {
-        box-shadow: 0 0 2px 2px #fd0000;
-    }
-</style>
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,15 +41,15 @@
             } else {
                 $.ajax({
                     type: 'POST',
-                    url: 'http://54.144.91.83:8000/login',
+                    url: 'http://34.224.145.158:8000/login',
                     data: JSON.stringify({ strUserName: strUserName, strPassword: strPassword }),
                     contentType: 'application/json',
                     success:
                         function (results) {
-                            if (results.status == 200) { // this was missing
-                                sessionStorage.setItem('SimpleSession', results.uuidSessionToken);
-                                window.location.href = "../index.html";
-                            }
+                            // don't panic, now that the status codes are being returned correctly,
+                            // that bit of code i wrote can really go away now
+                            sessionStorage.setItem('SimpleSession', results.uuidSessionToken);
+                            window.location.href = "../index.html";
                         }
                 });
             }
