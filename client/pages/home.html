@@ -40,15 +40,15 @@
                             <div class="carousel-inner">
                                 <!-- First Slide -->
                                 <div class="carousel-item active">
-                                    <canvas id="chart1" style="position: relative; height:40vh; width:80vw"></canvas>
+                                    <canvas id="chart1" width="600" height="200"></canvas>
                                 </div>
                                 <!-- Second Slide -->
                                 <div class="carousel-item">
-                                    <canvas id="chart2" width="1100" height="300"></canvas>
+                                    <canvas id="chart2" width="600" height="200"></canvas>
                                 </div>
                                 <!-- Third Slide -->
                                 <div class="carousel-item">
-                                    <canvas id="chart3" width="1100" height="300"></canvas>
+                                    <canvas id="chart3" width="600" height="200"></canvas>
                                 </div>
                             </div>
                             <button class="carousel-control-prev" type="button" data-bs-target="#chartCarousel" data-bs-slide="prev">
@@ -81,7 +81,9 @@
 
     <!-- JavaScript to initialize Chart.js charts -->
     <script>
+
         // Chart 1: Doughnut chart
+        $(document).ready(function () {
         let ctx1 = document.getElementById('chart1').getContext('2d');
         new Chart(ctx1, {
             type: 'doughnut',
@@ -150,6 +152,7 @@
                 maintainAspectRatio: false
             }
         });
+    });
     </script>
 </body>
 
