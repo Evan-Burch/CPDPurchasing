@@ -34,8 +34,10 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table table-striped" id="tblVendors">
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-striped responsive" id="tblVendors">
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -80,7 +82,7 @@
             contentType: 'application/json',
             success: function (results) {
                 console.log('Response:', results);
-                if (results.status === 200 && Array.isArray(results.VendorTable)) {
+                if (Array.isArray(results.VendorTable)) {
                     // Initialize DataTable after data is appended
                     $('#tblVendors').DataTable({
                         layout: {
@@ -107,7 +109,12 @@
                                 }
                                 return data;
                             }},
-                            {data: "Status", title: "Status"}
+                            {data: "Status", title: "Status", render: function(data, type) {
+                                if (type == "display") {
+                                    return (data == "1") ? "Active" : "Inactive";
+                                }
+                                return data;
+                            }}
                         ],
                     });
                 } else {
