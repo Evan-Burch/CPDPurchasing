@@ -158,21 +158,20 @@
 
         //send the create request to the server
         $('#btnCreatePO').on('click', function () {
-            let strPurchaseOrderID = $('#txtPurchaseID').val();
             let strVendorName = $('#txtVendor').val();
             let intStatus = 1;
             let strRequestedFor = $('#txtSelectedFor').val();
             let intCreatedBy = parseInt(sessionStorage.getItem('userId'));
             let strNotes = $('#txtNotes').val();
 
-            if (strPurchaseOrderID == '' || strVendorName == 'Select Vendor' || strRequestedFor == 'Select Requested For') {
+            if (strVendorName == 'Select Vendor' || strRequestedFor == 'Select Requested For') {
                 validateInput();
             }
             else {
                 $.ajax({
                     type: 'POST',
                     url: 'http://34.224.145.158:8000/addPO',
-                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: strPurchaseOrderID, strVendorName: strVendorName, intStatus: intStatus, strRequestedFor: strRequestedFor, intCreatedBy: intCreatedBy, strNotes: strNotes }),
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: strVendorName, intStatus: intStatus, strRequestedFor: strRequestedFor, intCreatedBy: intCreatedBy, strNotes: strNotes }),
                     contentType: 'application/json',
                     success:
                         function (results) {
