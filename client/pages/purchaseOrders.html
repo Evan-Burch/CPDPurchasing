@@ -82,8 +82,9 @@
     <script src="./assets/js/utils.js"></script>
     <script>
         function switchPage(pageName, purchaseOrderId) {
-            sessionStorage.setItem('PurchaseOrderID', purchaseOrderId);
-            $('#divMain').load(pageName);
+            $('#divMain').load(pageName, function() {
+                $("body").data("purchase-order-id", purchaseOrderId); // black magic
+            });
         }
 
         $(document).ready(function () {

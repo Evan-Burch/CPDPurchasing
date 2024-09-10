@@ -154,8 +154,9 @@
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
     <script>
+        var PurchaseOrderID = -1;
         $(document).ready(function () {
-            const PurchaseOrderID = sessionStorage.getItem('PurchaseOrderID');
+            PurchaseOrderID = $("body").data("purchase-order-id"); // why does this work
             $('#poTitle').text('Purchase Order ' + PurchaseOrderID);
             $.ajax({
                 type: 'POST',
@@ -184,7 +185,7 @@
             $.ajax({
                 type: 'DELETE',
                 url: 'http://34.224.145.158:8000/deletePO',
-                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: sessionStorage.getItem('PurchaseOrderID') }),
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
                 success: function(results){
                     javascript:switchPage('./pages/purchaseOrders.html')
