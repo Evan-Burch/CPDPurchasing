@@ -150,9 +150,6 @@
                         results.VendorNames.forEach(element => {
                             $('#txtVendor').append('<option value="' + element.VendorName + '">' + element.VendorName + '</option>');
                         });
-                        // results.VendorContacts.forEach(element => {
-                        //     $('#txtVendorContact').append('<option value="' + element.Name + '">' + element.Name + '</option>');
-                        // })
                         results.Users.forEach(element => {
                             $('#txtSelectedFor').append('<option value="' + element.DisplayName + '">' + element.DisplayName + '</option>');
                         })
@@ -172,25 +169,33 @@
             // ***** Client side error handling *****
             let strErrorMessage = '';
 
-            // old error handling
-            // if (strPurchaseOrderID == '' || strVendorName == 'Select Vendor' || strRequestedFor == 'Select Requested For') {
-            //     validateInput();
-            // }
-
-            //new error handling
-            if(strNotes.length > 5) {
-                console.log("Notes field too long");
+            if(strNotes.length > 100) {
+                console.log("AddPurchaseOrder: Notes field too long");
                 strErrorMessage = strErrorMessage + "Woah! That is a long note! please shorten it to a few sentences or less.";
             }
-            
 
-            // display error message
+            if(strPurchaseOrderID == '') {
+                console.log("AddPurchaseOrder: blank purchase order ID");
+                strErrorMessage = strErrorMessage + "Please specify a purchase order ID.";
+            }
+
+            if(strVendorName == 'Select Vendor') {
+                console.log("AddPurchaseOrder: unselected vendor");
+                strErrorMessage = strErrorMessage + "Please specify a vendor.";
+            }
+
+            if(strRequestedFor == 'Select Requested For') {
+                console.log("AddPurchaseOrder: unselected requestor");
+                strErrorMessage = strErrorMessage + "Please specify a requestor.";
+            }
+
+            // if the error message exists, show it and let the user fix their problems
             if(strErrorMessage.length>0) {
-                // if the error message exists, show it and let the user fix their problems
                 console.log(strErrorMessage);
                 $('#txtErrorMsg').text(strErrorMessage);
                 $('#WarningErrorMessagePopUp').show();
             }
+            //otherwise send the post request
             else {
                 $.ajax({
                     type: 'POST',
