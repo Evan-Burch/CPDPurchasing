@@ -12,6 +12,11 @@
   <div class="d-flex vh-100 vw-100 justify-content-center align-items-center">
       <!-- Use Bootstrap utilities to center the card both vertically and horizontally -->
       <div class="login-page">
+        <div id="warningError" class="alert alert-dismissible alert-danger" style="display:none;">
+            <button id="btnWarningClose" type="button" class="btn-close" aria-label="Close" data-bs-dismiss="alert"></button>
+            <h4 class="alert-heading">Warning!</h4>
+            <p class="mb-0" id="txtLoginError"></p>
+        </div>
         <div class="form bg-primary">
           <img class="mx-auto d-block mb-3" src="../assets/images/logo.png" style="width: 120px; height: 120px; opacity: 70%;">
           <form class="login-form">
@@ -30,6 +35,10 @@
         $(document).ready(function () {
             handleBrowserNav(); // stop the user from going back/forwards/whatever
         });
+
+        $('#btnWarningClose').on('click', function() {
+            $('#warningError').hide();
+        })
 
         $('#btnLogin').on('click', function () {
             let strUserName = $('#txtUsername').val();
@@ -50,6 +59,14 @@
                             // that bit of code i wrote can really go away now
                             sessionStorage.setItem('SimpleSession', results.uuidSessionToken);
                             window.location.href = "../index.html";
+                        },
+                    error:
+                        function (results) {
+                            if (results.status == 400) {
+                                // console.log(results);
+                                $('#txtLoginError').text('Invalid Login Information');
+                                $('#warningError').show();
+                            }
                         }
                 });
             }
