@@ -206,7 +206,14 @@
                         function (results) {
                             console.log('Response:', results);
                             $('#newPO').modal('hide');
-                        }
+                    },
+                    error:function (xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
+                        //pop up the error message from server side validation
+                        $('#txtErrorMsg').html(xhr.responseJSON.message);
+                        $('#WarningErrorMessagePopUp').show();
+
+                    }
                 });
             }
         });

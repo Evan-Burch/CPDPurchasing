@@ -131,14 +131,39 @@ app.post("/addPO", async (req, res) => {
 
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
+
 		if (userID == -1) {
 			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+
+		//server side error checking
+		let strErrorMessage = '';
+
+		if(strNotes.length > 100) {
+			strErrorMessage = strErrorMessage + "<p>Woah! That is a long note! please shorten it to a few sentences or less.</p>";
+		}
+
+		if(strPurchaseOrderID == '') {
+			strErrorMessage = strErrorMessage + "<p>Please specify a purchase order ID.</p>";
+		}
+
+		if(strVendorName == 'Select Vendor') {
+			strErrorMessage = strErrorMessage + "<p>Please specify a vendor.</p>";
+		}
+
+		if(strRequestedFor == 'Select Requested For') {
+			strErrorMessage = strErrorMessage + "<p>Please specify a requestor.</p>";
+		}
+
+		if (strErrorMessage.length>0) {
+			return res.status(400).json({"message": strErrorMessage});
 		}
 
 		var duplicate = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
 		if (duplicate.length != 0) {
 			return res.status(400).json({"message": `Purchase Order ${strPurchaseOrderID} already exists.`});
 		}
+
 
 		console.log("Creating a new PO");
 
