@@ -68,6 +68,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
+    <script src="./assets/js/utils.js"></script>
     <script>
         function switchPage(pageName, vendorName) {
             sessionStorage.setItem('VendorName', vendorName);
@@ -128,23 +129,28 @@
         });
 
         //create new vendor
-        $('#btnCreateVendor').on('click', function() {
+        $('#btnCreateVendor').on('click', function () {
             let strVendorName = $('#txtVendor').val();
             let strVendorLink = $('#txtLink').val();
 
             console.log('Create Vendor clicked: ', strVendorName, ",", strVendorLink);
 
-            $.ajax({
-                type: 'POST',
-                url: 'http://34.224.145.158:8000/addVendor',
-                data: JSON.stringify({uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName:strVendorName, strVendorLink:strVendorLink}),
-                contentType: 'application/json',
-                success:
-                    function(results) {
-                        console.log('Response:', results);
-                        $('#newVendor').modal('hide');
-                    }
-            });
+            if (strVendorName == '') {
+                validateInput();
+            }
+            else {
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://34.224.145.158:8000/addVendor',
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: strVendorName, strVendorLink: strVendorLink }),
+                    contentType: 'application/json',
+                    success:
+                        function (results) {
+                            console.log('Response:', results);
+                            $('#newVendor').modal('hide');
+                        }
+                });
+            }
         });
 
     </script>
