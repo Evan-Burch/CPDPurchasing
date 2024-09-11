@@ -82,9 +82,7 @@
     <script src="./assets/js/utils.js"></script>
     <script>
         function switchPage(pageName, purchaseOrderId) {
-            $('#divMain').load(pageName, function() {
-                $("body").data("purchase-order-id", purchaseOrderId); // black magic
-            });
+            window.location.href = pageName + "?POID=" + purchaseOrderId;
         }
 
         $(document).ready(function () {
