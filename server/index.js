@@ -181,17 +181,13 @@ app.post("/addVendor", async (req, res) => {
 });
     
 app.post("/addAccount", async (req, res) => {
-	console.log("index.js: Creating a new Account...");
-
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
-	const AccountNumber = clean(req.body.strAccountNumber);
-	const Description = clean(req.body.strDescription);
-	const FiscalAuthority = clean(req.body.strFiscalAuthority);
-	const Division = clean(req.body.strDivision);
-
-	console.log(AccountNumber, ",", Description, ",", FiscalAuthority, ",", Division);
+	const strAccountNumber = clean(req.body.strAccountNumber);
+	const strDescription = clean(req.body.strDescription);
+	const strFiscalAuthority = clean(req.body.strFiscalAuthority);
+	const strDivision = clean(req.body.strDivision);
 
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
@@ -199,10 +195,9 @@ app.post("/addAccount", async (req, res) => {
 			return res.status(400).json({"message": "You must be logged in to do that"});
 		}
 
-		console.log("Creating a new Vendor: ", strVendorName, ", ", strLink);
+		console.log("Creating new Account: " + strDescription);
 
-		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [AccountNumber, Description, FiscalAuthority, Division]);
-
+		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [strAccountNumber, strDescription, strFiscalAuthority, strDivision]);
 
 		res.status(200).json({"message": "Success."});
 	} finally {
