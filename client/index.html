@@ -98,35 +98,7 @@
         }
       });
 
-      $.ajax({
-        type: 'POST',
-        url: 'http://34.224.145.158:8000/getUserSettings',
-        data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
-        contentType: 'application/json',
-        success: function (results) {
-          if (results.user_settings != undefined) {
-            var userSettingsArray = results.user_settings;
-            for (var i = 0; i < userSettingsArray.length; i++) {
-              var currentKey = Object.keys(userSettingsArray[i])[0];
-              var currentValue = userSettingsArray[i][currentKey];
-
-              switch (currentKey) {
-                case "theme":
-                  if (currentValue != $('html').attr('data-bs-theme')) {
-                    $('html').attr('data-bs-theme', currentValue);
-                  }
-                  break;
-                default:
-                  console.warn("Unrecognized setting key " + currentKey + "!");
-                  break;
-              }
-            }
-          }
-        }
-      });
-
-
-      // doBackgroundCalls();
+      getUserSettings();
 
       // Automatic logout functionality within webpage
       var idleInterval = setInterval('timerInc()', 1000*60);

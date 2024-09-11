@@ -71,8 +71,7 @@
     <script src="./assets/js/utils.js"></script>
     <script>
         function switchPage(pageName, vendorName) {
-            sessionStorage.setItem('VendorName', vendorName);
-            $('#divMain').load(pageName);
+            window.location.href = pageName + "?VendorName=" + vendorName;
         }
 
         $(document).ready(function () {

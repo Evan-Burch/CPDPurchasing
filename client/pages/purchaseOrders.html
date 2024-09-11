@@ -82,8 +82,7 @@
     <script src="./assets/js/utils.js"></script>
     <script>
         function switchPage(pageName, purchaseOrderId) {
-            sessionStorage.setItem('PurchaseOrderID', purchaseOrderId);
-            $('#divMain').load(pageName);
+            window.location.href = pageName + "?POID=" + purchaseOrderId;
         }
 
         $(document).ready(function () {
