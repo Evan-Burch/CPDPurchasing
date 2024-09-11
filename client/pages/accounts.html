@@ -81,7 +81,7 @@
         crossorigin="anonymous"></script>
     <script src="./assets/js/utils.js"></script>
     <script>
-        function switchPage(pageName, accountID) {
+        function viewPage(pageName, accountID) {
             window.location.href = pageName + "?AccountID=" + accountID;
         }
         $(document).ready(function () {
@@ -108,7 +108,7 @@
                             columns: [
                                 {data: "AccountID", title: "Account Number", render: function(data, type) {
                                     if (type == "display") {
-                                        return '<a href="#" onclick="switchPage(\'pages/viewAccount.html\', \'' + data + '\')">' + data + "</a>";
+                                        return '<a href="#" onclick="viewPage(\'pages/viewAccount.html\', \'' + data + '\')">' + data + "</a>";
                                     }
                                     return data;
                                 }},
