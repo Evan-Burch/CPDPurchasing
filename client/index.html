@@ -8,6 +8,7 @@
   <link href="https://cdn.datatables.net/2.0.1/css/dataTables.dataTables.min.css" rel="stylesheet">
   <link href="./assets/css/main.css" rel="stylesheet">
   <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -23,7 +24,7 @@
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <!-- Add margin-bottom for better spacing on smaller screens -->
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+              <a class="nav-link" href="javascript:switchPage('./pages/home.html')">Home</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="javascript:switchPage('./pages/purchaseOrders.html')">Purchase Orders</a>
@@ -44,7 +45,7 @@
               <a id="username" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Dropdown
               </a>
-              <ul id="dropdownMenu" class="dropdown-menu dropdown-menu-end">
+              <ul id="dropdownMenu" style="z-index: 99;" class="dropdown-menu dropdown-menu-end">
                 <li><a id="btnSwitch" class="dropdown-item" href="#">Switch Theme</a></li>
                 <li><a class="dropdown-item" href="#">Settings</a></li>
                 <li><a id="btnLogout" class="dropdown-item" href="#">Logout</a></li>
@@ -76,10 +77,15 @@
 
   <!-- Custom JS -->
   <script>
+    function switchPage(pageName) {
+      $('#divMain').load(pageName);
+    }
+
     $(document).ready(function () {
       if (sessionStorage.getItem('SimpleSession') == null) {
         window.location.href = "./pages/login.html";
       }
+
 
       $.ajax({
         type: 'POST',
@@ -129,11 +135,9 @@
         clearTimeout(warningTimer);
         idleCur = 0;
       });
-    });
 
-    function switchPage(pageName) {
-      $('#divMain').load(pageName);
-    }
+      switchPage('./pages/home.html');
+    });
 
     // Variables for automatic logout
     var swalTimeout = Swal.mixin({
