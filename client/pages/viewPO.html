@@ -8,6 +8,7 @@
 
 <body>
     <script src="../assets/js/jquery-3.7.1.min.js"></script>
+    <script src="../assets/js/utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.datatables.net/2.0.1/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/3.0.0/js/dataTables.buttons.js"></script>
@@ -191,7 +192,9 @@
                     $('#pRoute').text(results.POInfo[0].RequestedFor);
                     $('#txtNotes').val(results.POInfo[0].Notes);
                 }
-            })
+            });
+
+            //getUserSettings();
         })
 
         $('#tblPOItems').DataTable({
@@ -210,10 +213,6 @@
                 }
             })
         });
-
-        function returnHome() {
-            window.location.href = "../index.html";
-        }
     </script>
 </body>
 

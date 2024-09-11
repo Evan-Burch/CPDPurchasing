@@ -81,8 +81,7 @@
         crossorigin="anonymous"></script>
     <script>
         function switchPage(pageName, accountID) {
-            sessionStorage.setItem('AccountID', accountID);
-            $('#divMain').load(pageName);
+            window.location.href = pageName + "?AccountID=" + accountID;
         }
         $(document).ready(function () {
             $.ajax({
