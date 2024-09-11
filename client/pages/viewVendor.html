@@ -157,8 +157,8 @@
                 success: function (results) {
                     console.log(results);
                     if(results.VendorInfo[0].Website != '') {
-                        $('#pWebsite').text(results.VendorInfo[0].Website);
-                    }else{
+                        $('#pWebsite').html('<a href="http://' + results.VendorInfo[0].Website + '" target="_blank">' + results.VendorInfo[0].Website + '<a>');
+                    } else {
                         $('#pWebsite').text('N/A');
                     }
                     $('#pStatus').text(results.VendorInfo[0].Status);
