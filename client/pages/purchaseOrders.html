@@ -171,28 +171,28 @@
 
             if(strNotes.length > 100) {
                 console.log("AddPurchaseOrder: Notes field too long");
-                strErrorMessage = strErrorMessage + "Woah! That is a long note! please shorten it to a few sentences or less.";
+                strErrorMessage = strErrorMessage + "<p>Woah! That is a long note! please shorten it to a few sentences or less.</p>";
             }
 
             if(strPurchaseOrderID == '') {
                 console.log("AddPurchaseOrder: blank purchase order ID");
-                strErrorMessage = strErrorMessage + "Please specify a purchase order ID.";
+                strErrorMessage = strErrorMessage + "<p>Please specify a purchase order ID.</p>";
             }
 
             if(strVendorName == 'Select Vendor') {
                 console.log("AddPurchaseOrder: unselected vendor");
-                strErrorMessage = strErrorMessage + "Please specify a vendor.";
+                strErrorMessage = strErrorMessage + "<p>Please specify a vendor.</p>";
             }
 
             if(strRequestedFor == 'Select Requested For') {
                 console.log("AddPurchaseOrder: unselected requestor");
-                strErrorMessage = strErrorMessage + "Please specify a requestor.";
+                strErrorMessage = strErrorMessage + "<p>Please specify a requestor.</p>";
             }
 
             // if the error message exists, show it and let the user fix their problems
             if(strErrorMessage.length>0) {
                 console.log(strErrorMessage);
-                $('#txtErrorMsg').text(strErrorMessage);
+                $('#txtErrorMsg').html(strErrorMessage);
                 $('#WarningErrorMessagePopUp').show();
             }
             //otherwise send the post request
