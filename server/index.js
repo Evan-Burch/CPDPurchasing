@@ -413,7 +413,7 @@ app.post("/getAccountInfo", async (req, res) => {
 
 		console.log("Getting Account Info for " + strAccountID);
 
-		const AccountInfo = await dbConnection.query("SELECT * FROM tblAccount WHERE AccountID=?;", [strAccountID]);
+		const AccountInfo = await dbConnection.query("select tblAccount.AccountID, tblAccount.Description, tblUser.DisplayName as FiscalAuthority, tblAccount.DivisionID, tblAccount.Status from tblAccount left join tblUser on tblAccount.FiscalAuthority = tblUser.EmployeeID where tblAccount.AccountID=?;", [strAccountID]);
 
 		if(AccountInfo.length == 0) {
 			return res.status(500).json({"message": "There is no account with that ID."});
