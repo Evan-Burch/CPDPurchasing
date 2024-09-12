@@ -158,7 +158,7 @@
                     $('#pDescription').text(results.AccountInfo[0].Description);
                     $('#pDivision').text(results.AccountInfo[0].DivisionID);
                     $('#pFiscalAuthority').text(results.AccountInfo[0].FiscalAuthority);
-                    $('#pStatus').text(results.AccountInfo[0].Status);
+                    $('#pStatus').text((results.AccountInfo[0].Status == "1") ? "Active" : "Inactive");
                 }
             })
 

@@ -180,7 +180,7 @@
                     } else {
                         $('#pWebsite').text('N/A');
                     }
-                    $('#pStatus').text(results.VendorInfo[0].Status);
+                    $('#pStatus').text((results.VendorInfo[0].Status == "1") ? "Active" : "Inactive");
                 }
             })
 
