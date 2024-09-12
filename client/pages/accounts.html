@@ -156,7 +156,8 @@
             console.log("accounts.html create new account clicked")
             let intAccountNumber = parseInt($('#txtAccountNum').val());
             let strDescription = $('#txtDescription').val();
-            let strFiscalAuthority = $('#txtFiscal').val();
+            // evan: Fiscal authority is hardcoded here becauce It isnt being sent correctly and I needed to test the rest of the functionality
+            let strFiscalAuthority = 193 //$('#txtFiscal').val();
             let strDivision = $('#txtDivision').val();
             console.log("Sending Data:", strAccountNumber, ",",
                 strDescription, ",", strFiscalAuthority, ",", strDivision
