@@ -184,7 +184,7 @@ app.post("/addAccount", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
-	const strAccountNumber = clean(req.body.strAccountNumber);
+	const intAccountNumber = req.body.intAccountNumber;
 	const strDescription = clean(req.body.strDescription);
 	const strFiscalAuthority = clean(req.body.strFiscalAuthority);
 	const strDivision = clean(req.body.strDivision);
@@ -197,7 +197,9 @@ app.post("/addAccount", async (req, res) => {
 
 		console.log("Creating new Account: " + strDescription);
 
-		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [strAccountNumber, strDescription, strFiscalAuthority, strDivision]);
+		const intFiscalAuthorityID = await dbConnection.query("SELECT EmployeeID FROM tblUser WHERE DisplayName=?;", [strFiscalAuthority]);
+
+		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [intAccountNumber, strDescription, intFiscalAuthorityID, strDivision]);
 
 		res.status(200).json({"message": "Success."});
 	} finally {
