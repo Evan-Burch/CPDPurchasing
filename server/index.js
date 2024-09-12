@@ -290,7 +290,7 @@ app.post("/fillAccountTable", async (req, res) => {
 
 		console.log("Filling the Accounts Table");
 
-		const AccountTable = await dbConnection.query("select tblAccount.AccountID, tblAccount.Description, tblUser.DisplayName as FiscalAuthority, tblAccount.DivisionID, tblAccount.Status from tblAccount inner join tblUser on tblAccount.FiscalAuthority = tblUser.EmployeeID;");
+		const AccountTable = await dbConnection.query("select tblAccount.AccountID, tblAccount.Description, tblUser.DisplayName as FiscalAuthority, tblAccount.DivisionID, tblAccount.Status from tblAccount left join tblUser on tblAccount.FiscalAuthority = tblUser.EmployeeID;");
 
 		if (AccountTable.length == 0) {
 			return res.status(500).json({"message": "There are no accounts."});
@@ -387,7 +387,7 @@ app.post("/getPOInfo", async (req, res) => {
 
 		console.log("Getting PO Info for " + strPurchaseOrderID);
 
-		const POInfo = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
+		const POInfo = await dbConnection.query("select tblPurchaseOrder.PurchaseOrderID, tblPurchaseOrder.VendorID, tblPurchaseOrder.Status, rf.DisplayName as RequestedFor, DATE_FORMAT(tblPurchaseOrder.CreatedDateTime, '%m/%d/%Y %h:%i %p') as CreatedDateTime, cb.DisplayName as CreatedBy, tblPurchaseOrder.Notes, tblPurchaseOrder.Amount, tblVendor.VendorName from tblPurchaseOrder left join tblUser rf on tblPurchaseOrder.RequestedFor = rf.EmployeeID left join tblUser cb on tblPurchaseOrder.CreatedBy = cb.EmployeeID left join tblVendor on tblPurchaseOrder.VendorID = tblVendor.VendorID where tblPurchaseOrder.PurchaseOrderID=?;", [strPurchaseOrderID]);
 
 		if (POInfo.length == 0) {
 			return res.status(500).json({"message": "There is no purchase order with that ID."});
@@ -413,7 +413,7 @@ app.post("/getAccountInfo", async (req, res) => {
 
 		console.log("Getting Account Info for " + strAccountID);
 
-		const AccountInfo = await dbConnection.query("SELECT * FROM tblAccount WHERE AccountID=?;", [strAccountID]);
+		const AccountInfo = await dbConnection.query("select tblAccount.AccountID, tblAccount.Description, tblUser.DisplayName as FiscalAuthority, tblAccount.DivisionID, tblAccount.Status from tblAccount left join tblUser on tblAccount.FiscalAuthority = tblUser.EmployeeID where tblAccount.AccountID=?;", [strAccountID]);
 
 		if(AccountInfo.length == 0) {
 			return res.status(500).json({"message": "There is no account with that ID."});

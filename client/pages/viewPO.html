@@ -184,11 +184,11 @@
                 contentType: 'application/json',
                 success: function(results){
                     console.log(results);
-                    $('#pVendor').text(results.POInfo[0].VendorID);
+                    $('#pVendor').text(results.POInfo[0].VendorName);
                     $('#pCreatedBy').text(results.POInfo[0].CreatedBy);
                     $('#pRequestedFor').text(results.POInfo[0].RequestedFor);
                     $('#pDate').text(results.POInfo[0].CreatedDateTime);
-                    $('#pStatus').text(results.POInfo[0].Status);
+                    $('#pStatus').text((results.POInfo[0].Status == "1") ? "Active" : "Inactive");
                     $('#pRoute').text(results.POInfo[0].RequestedFor);
                     $('#txtNotes').val(results.POInfo[0].Notes);
                 }
