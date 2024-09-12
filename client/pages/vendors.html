@@ -70,7 +70,7 @@
         crossorigin="anonymous"></script>
     <script src="./assets/js/utils.js"></script>
     <script>
-        function switchPage(pageName, vendorName) {
+        function viewPage(pageName, vendorName) {
             window.location.href = pageName + "?VendorName=" + vendorName;
         }
 
@@ -99,7 +99,7 @@
                         columns: [
                             {data: "VendorName", title: "Vendor Name", render: function(data, type) {
                                 if (type == "display") {
-                                    return '<a href="#" onclick="switchPage(\'pages/viewVendor.html\', \'' + data + '\')">' + data + "</a>";
+                                    return '<a href="#" onclick="viewPage(\'pages/viewVendor.html\', \'' + data + '\')">' + data + "</a>";
                                 }
                                 return data;
                             }},
