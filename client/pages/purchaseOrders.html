@@ -169,10 +169,6 @@
             // ***** Client side error handling *****
             let strErrorMessage = '';
 
-            if(strNotes.length > 100) {
-                strErrorMessage = strErrorMessage + "<p>Woah! That is a long note! please shorten it to a few sentences or less.</p>";
-            }
-
             if(strPurchaseOrderID == '') {
                 strErrorMessage = strErrorMessage + "<p>Please specify a purchase order ID.</p>";
             }
@@ -195,6 +191,10 @@
 
             if(strRequestedFor.length > 50) {
                 strErrorMessage = strErrorMessage + "<p>requested for is too long</p>";
+            }
+
+            if(strNotes.length > 100) {
+                strErrorMessage = strErrorMessage + "<p>Woah! That is a long note! please shorten it to a few sentences or less.</p>";
             }
 
             // if the error message exists, show it and let the user fix their problems

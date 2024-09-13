@@ -172,6 +172,40 @@
             
             // ***** Client side error handling *****
             let strErrorMessage = '';
+
+            if(strAccountNumber=='') {
+                strErrorMessage = strErrorMessage + "<p>Please specify an account number</p>";
+            }
+
+            if(strAccountNumber.length > 10) {
+                strErrorMessage = strErrorMessage + "<p>Account number is too long</p>";
+            }
+
+            if(strDescription=='') {
+                strErrorMessage = strErrorMessage + "<p>Please specify a description</p>";
+            }
+
+            if(strDescription.length > 100) {
+                strErrorMessage = strErrorMessage + "<p>Description is too long</p>";
+            }
+
+            if(strFiscalAuthority=='Fiscal Authority') {
+                strErrorMessage = strErrorMessage + "<p>Please specify a fiscal authority</p>";
+            }
+
+            if(strFiscalAuthority>100) {
+                strErrorMessage = strErrorMessage + "<p>Fiscal authority is too long</p>";
+            }
+
+            if(strDivision=='') {
+                strErrorMessage = strErrorMessage + "<p>Please specify a division</p>";
+            }
+
+            if(strDivision>100) {
+                strErrorMessage = strErrorMessage + "<p>Division is too long</p>";
+            }
+
+
             
             // if the error message exists, show it and let the user fix their problems
             if(strErrorMessage.length > 0) {
