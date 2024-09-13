@@ -584,6 +584,27 @@ app.delete("/deletePO", async (req, res) => {
 	}
 });
 
+app.delete("/deleteAccount", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const intAccountID = clean(req.body.intAccountID);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+
+		console.log("Deleting Account " + intAccountID);
+
+		await dbConnection.query("DELETE FROM tblAccount WHERE AccountID=?;", [intAccountID]);
+
+		res.status(200).json({"message": "Success."});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
 app.post("/status", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);

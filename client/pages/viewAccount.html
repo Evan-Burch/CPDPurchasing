@@ -151,6 +151,18 @@
         $('#tblAccountPOs').DataTable({
             responsive: true,
         })
+
+        $('#btnDelete').on('click', function(){
+            $.ajax({
+                type: 'DELETE',
+                url: 'http://34.224.145.158:8000/deleteAccount',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountID: sessionStorage.getItem('AccountID') }),
+                contentType: 'application/json',
+                success: function(results){
+                    javascript:switchPage('./pages/accounts.html')
+                }
+            })
+        })
     </script>
 </body>
 
