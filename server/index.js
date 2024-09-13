@@ -143,12 +143,24 @@ app.post("/addPO", async (req, res) => {
 			strErrorMessage = strErrorMessage + "<p>Please specify a purchase order ID.</p>";
 		}
 
+		if(strPurchaseOrderID.length > 50) {
+			strErrorMessage = strErrorMessage + "<p>purchase order id is too long</p>";
+		}
+
 		if(strVendorName == 'Select Vendor') {
 			strErrorMessage = strErrorMessage + "<p>Please specify a vendor.</p>";
 		}
 
+		if(strVendorName.length > 50) {
+			strErrorMessage = strErrorMessage + "<p>vendor name is too long</p>";
+		}
+
 		if(strRequestedFor == 'Select Requested For') {
 			strErrorMessage = strErrorMessage + "<p>Please specify a requestor.</p>";
+		}
+
+		if(strRequestedFor.length > 50) {
+			strErrorMessage = strErrorMessage + "<p>requested for is too long</p>";
 		}
 
 		if(strNotes.length > 100) {
@@ -228,16 +240,32 @@ app.post("/addAccount", async (req, res) => {
 			strErrorMessage = strErrorMessage + "<p>Please specify an account number</p>";
 		}
 
+		if(AccountNumber.length > 10) {
+			strErrorMessage = strErrorMessage + "<p>Account number is too long</p>";
+		}
+
 		if(Description=='') {
 			strErrorMessage = strErrorMessage + "<p>Please specify a description</p>";
 		}
 
-		if(FiscalAuthority=='Select Fiscal Authority') {
+		if(Description.length > 100) {
+			strErrorMessage = strErrorMessage + "<p>Description is too long</p>";
+		}
+
+		if(FiscalAuthority=='Fiscal Authority') {
 			strErrorMessage = strErrorMessage + "<p>Please specify a fiscal authority</p>";
+		}
+
+		if(FiscalAuthority>100) {
+			strErrorMessage = strErrorMessage + "<p>Fiscal authority is too long</p>";
 		}
 
 		if(Division=='') {
 			strErrorMessage = strErrorMessage + "<p>Please specify a division</p>";
+		}
+
+		if(Division>100) {
+			strErrorMessage = strErrorMessage + "<p>Division is too long</p>";
 		}
 
 		if(strErrorMessage.length>0) {

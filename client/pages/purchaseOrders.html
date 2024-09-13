@@ -170,23 +170,31 @@
             let strErrorMessage = '';
 
             if(strNotes.length > 100) {
-                console.log("AddPurchaseOrder: Notes field too long");
                 strErrorMessage = strErrorMessage + "<p>Woah! That is a long note! please shorten it to a few sentences or less.</p>";
             }
 
             if(strPurchaseOrderID == '') {
-                console.log("AddPurchaseOrder: blank purchase order ID");
                 strErrorMessage = strErrorMessage + "<p>Please specify a purchase order ID.</p>";
             }
 
+            if(strPurchaseOrderID.length > 50) {
+                strErrorMessage = strErrorMessage + "<p>purchase order id is too long</p>";
+            }
+
             if(strVendorName == 'Select Vendor') {
-                console.log("AddPurchaseOrder: unselected vendor");
                 strErrorMessage = strErrorMessage + "<p>Please specify a vendor.</p>";
             }
 
+            if(strVendorName.length > 50) {
+                strErrorMessage = strErrorMessage + "<p>vendor name is too long</p>";
+            }
+
             if(strRequestedFor == 'Select Requested For') {
-                console.log("AddPurchaseOrder: unselected requestor");
                 strErrorMessage = strErrorMessage + "<p>Please specify a requestor.</p>";
+            }
+
+            if(strRequestedFor.length > 50) {
+                strErrorMessage = strErrorMessage + "<p>requested for is too long</p>";
             }
 
             // if the error message exists, show it and let the user fix their problems
@@ -206,7 +214,7 @@
                         function (results) {
                             console.log('Response:', results);
                             $('#newPO').modal('hide');
-                    },
+                        },
                     error:function (xhr, status, error) {
                         console.error('AJAX Error:', status, error);
                         //pop up the error message from server side validation
