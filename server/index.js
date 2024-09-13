@@ -207,8 +207,6 @@ app.post("/addVendor", async (req, res) => {
 });
     
 app.post("/addAccount", async (req, res) => {
-	console.log("index.js: Creating a new Account...");
-
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
@@ -230,11 +228,28 @@ app.post("/addAccount", async (req, res) => {
 			strErrorMessage = strErrorMessage + "<p>Please specify an account number</p>";
 		}
 
+		if(Description=='') {
+			strErrorMessage = strErrorMessage + "<p>Please specify a description</p>";
+		}
+
+		if(FiscalAuthority=='Select Fiscal Authority') {
+			strErrorMessage = strErrorMessage + "<p>Please specify a fiscal authority</p>";
+		}
+
+		if(Division=='') {
+			strErrorMessage = strErrorMessage + "<p>Please specify a division</p>";
+		}
+
 		if(strErrorMessage.length>0) {
 			return res.status(400).json({"message":strErrorMessage});
 		}
 
-		console.log("Creating a new Vendor: ", strVendorName, ", ", strLink);
+		var duplicate = await dbConnection.query("SELECT * FROM tblAccount WHERE AccountID=?;", [AccountNumber]);
+		if (duplicate.length != 0) {
+			return res.status(400).json({"message": `Account ${strPurchaseOrderID} already exists.`});
+		}
+
+		console.log("Creating a new Account: ", AccountNumber, ", ", Description, ", ", FiscalAuthority, ", ", Division);
 
 		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [AccountNumber, Description, FiscalAuthority, Division]);
 

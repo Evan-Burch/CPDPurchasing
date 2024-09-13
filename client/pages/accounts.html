@@ -52,32 +52,35 @@
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">Create New Account</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <!--Error messages. Default Hidden-->
-                <div id="WarningErrorMessagePopUp" class="alert alert-dismissible alert-warning" style="display:none;">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    <h4 class="alert-heading">Warning!</h4>
-                    <p class="mb-0" id="txtErrorMsg"></p>
-                <div class="modal-body">
-                    <label for="txtAccountNum" class="form-label">Account Number</label>
-                    <input type="text" class="form-control req" id="txtAccountNum" placeholder="Account Number" required>
+                <form>
+                    <!--Error messages. Default Hidden-->
+                    <div id="WarningErrorMessagePopUp" class="alert alert-dismissible alert-warning" style="display:none;">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <h4 class="alert-heading">Warning!</h4>
+                        <p class="mb-0" id="txtErrorMsg"></p>
+                    </div>
+                    <div class="modal-body">
+                        <label for="txtAccountNum" class="form-label">Account Number</label>
+                        <input type="text" class="form-control req" id="txtAccountNum" placeholder="Account Number" required>
 
-                    <label for="txtDecription" class="form-label">Description</label>
-                    <input type="text" class="form-control req" id="txtDescription" placeholder="Description" required>
+                        <label for="txtDecription" class="form-label">Description</label>
+                        <input type="text" class="form-control req" id="txtDescription" placeholder="Description" required>
 
-                    <label for="txtFiscal" class="form-label">Fiscal Authority</label>
-                    <select class="form-select req" id="txtFiscal" required>
-                        <option selected>Fiscal Authority</option>
-                    </select>
+                        <label for="txtFiscal" class="form-label">Fiscal Authority</label>
+                        <select class="form-select req" id="txtFiscal" required>
+                            <option selected>Fiscal Authority</option>
+                        </select>
 
-                    <label for="txtDivision" class="form-label">Division</label>
-                    <input type="text" class="form-control req" id="txtDivision" placeholder="Division" required>
+                        <label for="txtDivision" class="form-label">Division</label>
+                        <input type="text" class="form-control req" id="txtDivision" placeholder="Division" required>
 
-                    <!-- NOTE: In the past POModule there was a checkbox for status to set as active, we are not doing that -->
-                </div>
-                <div class="modal-footer">
-                    <button id="btnCreateNewAccount" type="button" class="btn btn-success" aria-label="Create new account">Create</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close account modal">Close</button>
-                </div>
+                        <!-- NOTE: In the past POModule there was a checkbox for status to set as active, we are not doing that -->
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnCreateNewAccount" type="button" class="btn btn-success" aria-label="Create new account">Create</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close account modal">Close</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
