@@ -139,10 +139,6 @@ app.post("/addPO", async (req, res) => {
 		//server side error checking
 		let strErrorMessage = '';
 
-		if(strNotes.length > 100) {
-			strErrorMessage = strErrorMessage + "<p>Woah! That is a long note! please shorten it to a few sentences or less.</p>";
-		}
-
 		if(strPurchaseOrderID == '') {
 			strErrorMessage = strErrorMessage + "<p>Please specify a purchase order ID.</p>";
 		}
@@ -153,6 +149,10 @@ app.post("/addPO", async (req, res) => {
 
 		if(strRequestedFor == 'Select Requested For') {
 			strErrorMessage = strErrorMessage + "<p>Please specify a requestor.</p>";
+		}
+
+		if(strNotes.length > 100) {
+			strErrorMessage = strErrorMessage + "<p>Woah! That is a long note! please shorten it to a few sentences or less.</p>";
 		}
 
 		if (strErrorMessage.length>0) {
@@ -217,12 +217,21 @@ app.post("/addAccount", async (req, res) => {
 	const FiscalAuthority = clean(req.body.strFiscalAuthority);
 	const Division = clean(req.body.strDivision);
 
-	console.log(AccountNumber, ",", Description, ",", FiscalAuthority, ",", Division);
-
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
 		if (userID == -1) {
 			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+
+		//server side error checking
+		let strErrorMessage = '';
+
+		if(AccountNumber=='') {
+			strErrorMessage = strErrorMessage + "<p>Please specify an account number</p>";
+		}
+
+		if(strErrorMessage.length>0) {
+			return res.status(400).json({"message":strErrorMessage});
 		}
 
 		console.log("Creating a new Vendor: ", strVendorName, ", ", strLink);
