@@ -199,7 +199,7 @@ app.post("/addAccount", async (req, res) => {
 
 		const intFiscalAuthorityID = await dbConnection.query("SELECT EmployeeID FROM tblUser WHERE DisplayName=?;", [strFiscalAuthority]);
 
-		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [intAccountNumber, strDescription, intFiscalAuthorityID, strDivision]);
+		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [intAccountNumber, strDescription, intFiscalAuthorityID[0].EmployeeID, strDivision]);
 
 		res.status(200).json({"message": "Success."});
 	} finally {
