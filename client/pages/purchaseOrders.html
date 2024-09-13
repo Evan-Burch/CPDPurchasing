@@ -117,13 +117,14 @@
                                     }
                                     return data;
                                 }},
-                                {data: "CreatedDateTime", title: "Date Created"},
+                                {type:"date", data: "CreatedDateTime", title: "Date Created"},
                                 {data: "VendorName", title: "Vendor"},
                                 {data: "Amount", title: "Amount"},
                                 {data: "CreatedBy", title: "Created By"},
                                 {data: "RequestedFor", title: "Requested For"}
                             ],
-                            autowidth: false
+                            autowidth: false,
+                            order: [[1, 'desc']]
                         });
                     } else {
                         console.error('Unexpected response format or status:', results);
