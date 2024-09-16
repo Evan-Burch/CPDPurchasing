@@ -24,8 +24,8 @@ function validateInput() {
     });
 }
 
-function returnHome() {
-    window.location.href = "../index.html";
+function returnHome(referrer) {
+    window.location.href = "../index.html?table=" + referrer;
 }
 
 function getUserSettings() {
