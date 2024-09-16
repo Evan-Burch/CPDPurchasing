@@ -26,7 +26,7 @@ cd ~/Hubble/client
 echo -e "${YELLOW}Deploying Frontend...${NC}"
 sudo rm -r /var/www/html/*
 { # try
-    sudo cp -r ./* /var/www/html/ &&
+    sudo cp -r ~/Hubble/client/* /var/www/html/ &&
     echo -e "${GREEN}Deploy complete${NC}"
 } || { # catch
     echo -e "${RED}ERROR while replacing previous deployment!${NC}" 

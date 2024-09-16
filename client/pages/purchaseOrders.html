@@ -43,7 +43,7 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal" id="newPO" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    <div class="modal fade" id="newPO" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -59,9 +59,6 @@
                         <p class="mb-0" id="txtErrorMsg"></p>
                     </div>
                     <div class="modal-body">
-                        <label for="txtPurchaseID" class="form-label">Purchase Order ID</label>
-                        <input type="text" class="form-control req" id="txtPurchaseID" placeholder="Purchase Order ID" required>
-
                         <label for="txtVendor" class="form-label">Vendor</label>
                         <select class="form-select req" id="txtVendor" aria-label="Vendor" required>
                             <option selected>Select Vendor</option>
@@ -86,9 +83,8 @@
         crossorigin="anonymous"></script>
     <script src="./assets/js/utils.js"></script>
     <script>
-        function switchPage(pageName, purchaseOrderId) {
-            sessionStorage.setItem('PurchaseOrderID', purchaseOrderId);
-            $('#divMain').load(pageName);
+        function viewPage(pageName, purchaseOrderId) {
+            window.location.href = pageName + "?POID=" + purchaseOrderId;
         }
 
         $(document).ready(function () {
@@ -115,17 +111,18 @@
                             columns: [
                                 {data: "PurchaseOrderID", title: "Purchase Order", render: function(data, type) {
                                     if (type == "display") {
-                                        return '<a href="#" onclick="switchPage(\'pages/viewPO.html\', \'' + data + '\')">' + data + "</a>";
+                                        return '<a href="#" onclick="viewPage(\'pages/viewPO.html\', \'' + data + '\')">' + data + "</a>";
                                     }
                                     return data;
                                 }},
-                                {data: "CreatedDateTime", title: "Date Created"},
+                                {type:"date", data: "CreatedDateTime", title: "Date Created"},
                                 {data: "VendorName", title: "Vendor"},
                                 {data: "Amount", title: "Amount"},
                                 {data: "CreatedBy", title: "Created By"},
                                 {data: "RequestedFor", title: "Requested For"}
                             ],
-                            autowidth: false
+                            autowidth: false,
+                            order: [[1, 'desc']]
                         });
                     } else {
                         console.error('Unexpected response format or status:', results);
@@ -159,7 +156,6 @@
 
         //send the create request to the server
         $('#btnCreatePO').on('click', function () {
-            let strPurchaseOrderID = $('#txtPurchaseID').val();
             let strVendorName = $('#txtVendor').val();
             let intStatus = 1;
             let strRequestedFor = $('#txtSelectedFor').val();
@@ -208,7 +204,7 @@
                 $.ajax({
                     type: 'POST',
                     url: 'http://34.224.145.158:8000/addPO',
-                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: strPurchaseOrderID, strVendorName: strVendorName, intStatus: intStatus, strRequestedFor: strRequestedFor, intCreatedBy: intCreatedBy, strNotes: strNotes }),
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: strVendorName, intStatus: intStatus, strRequestedFor: strRequestedFor, intCreatedBy: intCreatedBy, strNotes: strNotes }),
                     contentType: 'application/json',
                     success:
                         function (results) {

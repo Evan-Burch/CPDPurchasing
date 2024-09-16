@@ -1,13 +1,31 @@
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <link href="https://cdn.datatables.net/2.0.1/css/dataTables.dataTables.min.css" rel="stylesheet">
+    <link href="../assets/css/main.css" rel="stylesheet">
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+</head>
 
 <body>
+    <script src="../assets/js/jquery-3.7.1.min.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/2.0.1/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.bootstrap5.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.dataTables.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.print.min.js"></script>
     <div class="col-12 d-flex justify-content-center mt-2">
         <div class="card col-12 col-md-10 col-lg-9">
             <div class="card-header">
                 <div class="row">
                     <h3 class="col-8" id="poTitle"></h3>
                     <button type="button" class="btn btn-primary col-2 offset-2"
-                        onclick="javascript:switchPage('./pages/purchaseOrders.html')">Return</button>
+                        onclick="javascript:returnHome()">Return</button>
                 </div>
             </div>
             <div class="card-body">
@@ -154,8 +172,10 @@
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
     <script>
+        var PurchaseOrderID = -1;
         $(document).ready(function () {
-            const PurchaseOrderID = sessionStorage.getItem('PurchaseOrderID');
+            PurchaseOrderID = new URL(window.location.href).searchParams.get("POID");
+            
             $('#poTitle').text('Purchase Order ' + PurchaseOrderID);
             $.ajax({
                 type: 'POST',
@@ -164,15 +184,17 @@
                 contentType: 'application/json',
                 success: function(results){
                     console.log(results);
-                    $('#pVendor').text(results.POInfo[0].VendorID);
+                    $('#pVendor').text(results.POInfo[0].VendorName);
                     $('#pCreatedBy').text(results.POInfo[0].CreatedBy);
                     $('#pRequestedFor').text(results.POInfo[0].RequestedFor);
                     $('#pDate').text(results.POInfo[0].CreatedDateTime);
-                    $('#pStatus').text(results.POInfo[0].Status);
+                    $('#pStatus').text((results.POInfo[0].Status == "1") ? "Active" : "Inactive");
                     $('#pRoute').text(results.POInfo[0].RequestedFor);
                     $('#txtNotes').val(results.POInfo[0].Notes);
                 }
-            })
+            });
+
+            //getUserSettings();
         })
 
         $('#tblPOItems').DataTable({
@@ -184,13 +206,13 @@
             $.ajax({
                 type: 'DELETE',
                 url: 'http://34.224.145.158:8000/deletePO',
-                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: sessionStorage.getItem('PurchaseOrderID') }),
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
                 success: function(results){
                     javascript:switchPage('./pages/purchaseOrders.html')
                 }
             })
-        })
+        });
     </script>
 </body>
 
