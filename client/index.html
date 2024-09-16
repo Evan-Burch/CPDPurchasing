@@ -108,14 +108,14 @@
         idleCur = 0;
       });
 
-      switchPage('./pages/home.html');
-
-      
       var referrer = new URL(window.location.href).searchParams.get("table");
+      
       if (referrer != undefined) {
-        console.log("got here");
+        //console.log("got here");
         //window.location.href = "index.html";
-        $('#divMain').load("./pages/" + referrer + ".html");
+        $('#divMain').load("pages/" + referrer + ".html");
+      } else {
+        switchPage('./pages/home.html');
       }
     });
 
