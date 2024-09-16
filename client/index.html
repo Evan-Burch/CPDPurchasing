@@ -18,7 +18,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary w-100">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">POModule</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -43,10 +43,10 @@
           <ul class="navbar-nav">
             <!-- Dropdown for smaller screens -->
             <li class="nav-item dropdown">
-              <a id="username" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <button id="username" class="nav-link dropdown-toggle" href="#" aria-expanded="false">
                 Dropdown
-              </a>
-              <ul id="dropdownMenu" style="z-index: 99;" class="dropdown-menu dropdown-menu-end">
+              </button>
+              <ul id="dropdownMenu" style="z-index: 99; right: 0px" class="dropdown-menu dropdown-menu-end">
                 <li><a id="btnSwitch" class="dropdown-item" href="#">Switch Theme</a></li>
                 <li><a class="dropdown-item" href="#">Settings</a></li>
                 <li><a id="btnLogout" class="dropdown-item" href="#">Logout</a></li>
@@ -80,6 +80,10 @@
   <script>
     function switchPage(pageName) {
       $('#divMain').load(pageName);
+      var bsCollapse = new bootstrap.Collapse($('#navbarNav'), {
+        toggle: false
+      });
+      bsCollapse.hide();
     }
 
     $(document).ready(function () {
@@ -114,15 +118,15 @@
 
     // Variables for automatic logout
     var swalTimeout = Swal.mixin({
-        showCancelButton: false,
-        showConfirmButton: false,
-        width:'300px'
-      });
+      showCancelButton: false,
+      showConfirmButton: false,
+      width: '300px'
+    });
     var warningTimer;
     var idleMax = 10;
     var idleCur = 0;
     var expireTime = 1000*60*5; // last 5 minutes
-    
+
     // Checks idle timeout and sends to idle warning after 5 minutes
     function timerInc() {
       //console.log(idleCur);
@@ -134,9 +138,9 @@
     // Idle warning
     function idleWarning() {
       swalTimeout.fire({
-        icon:'warning',
-        title:'Uh Oh!',
-        text:'LOGGING USER OUT IN ' + expireTime/(1000*60) + ' MINUTES'
+        icon: 'warning',
+        title: 'Uh Oh!',
+        text: 'LOGGING USER OUT IN ' + expireTime/(1000*60) + ' MINUTES'
       });
       warningTimer = setTimeout('idleTimeout()', expireTime);
     }
