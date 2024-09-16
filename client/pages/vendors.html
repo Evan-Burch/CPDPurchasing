@@ -51,17 +51,25 @@
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">Create New Vendor</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <label for="txtVendor" class="form-label">Vendor Name</label>
-                    <input type="text" class="form-control req" id="txtVendor" placeholder="Vendor Name" required>
+                <form>
+                    <!--Error messages. Default Hidden-->
+                    <div id="WarningErrorMessagePopUp" class="alert alert-dismissible alert-warning" style="display:none;">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <h4 class="alert-heading">Warning!</h4>
+                        <p class="mb-0" id="txtErrorMsg"></p>
+                    </div>
+                    <div class="modal-body">
+                        <label for="txtVendor" class="form-label">Vendor Name</label>
+                        <input type="text" class="form-control req" id="txtVendor" placeholder="Vendor Name" required>
 
-                    <label for="txtLink" class="form-label">Link</label>
-                    <input type="text" class="form-control" id="txtLink" placeholder="Link">
-                </div>
-                <div class="modal-footer">
-                    <button id="btnCreateVendor" type="button" class="btn btn-success" aria-label="Create new vendor">Create</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close vendor modal">Close</button>
-                </div>
+                        <label for="txtLink" class="form-label">Link</label>
+                        <input type="text" class="form-control" id="txtLink" placeholder="Link">
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnCreateVendor" type="button" class="btn btn-success" aria-label="Create new vendor">Create</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close vendor modal">Close</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -132,19 +140,29 @@
             let strVendorName = $('#txtVendor').val();
             let strVendorLink = $('#txtLink').val();
 
-            console.log('Create Vendor clicked: ', strVendorName, ",", strVendorLink);
+            // ***** Client side error handling *****
+            let strErrorMessage = '';
 
-            $.ajax({
-                type: 'POST',
-                url: 'http://34.224.145.158:8000/addVendor',
-                data: JSON.stringify({uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName:strVendorName, strVendorLink:strVendorLink}),
-                contentType: 'application/json',
-                success:
-                    function(results) {
-                        console.log('Response:', results);
-                        $('#newVendor').modal('hide');
-                    }
-            });
+            // if the error message exists, show it and let the user fix their problems
+            if(strErrorMessage.length>0) {
+                console.log(strErrorMessage);
+                $('#txtErrorMsg').html(strErrorMessage);
+                $('#WarningErrorMessagePopUp').show();
+            }
+            //otherwise send the post request
+            else {
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://34.224.145.158:8000/addVendor',
+                    data: JSON.stringify({uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName:strVendorName, strVendorLink:strVendorLink}),
+                    contentType: 'application/json',
+                    success:
+                        function(results) {
+                            console.log('Response:', results);
+                            $('#newVendor').modal('hide');
+                        }
+                });
+            }
         });
 
     </script>

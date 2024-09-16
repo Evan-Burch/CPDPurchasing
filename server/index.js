@@ -176,7 +176,6 @@ app.post("/addPO", async (req, res) => {
 			return res.status(400).json({"message": `Purchase Order ${strPurchaseOrderID} already exists.`});
 		}
 
-
 		console.log("Creating a new PO");
 
 		const strRequestedForID = await dbConnection.query("SELECT EmployeeID FROM tblUser WHERE DisplayName=?;", [strRequestedFor]);
@@ -201,10 +200,34 @@ app.post("/addVendor", async (req, res) => {
 	//HB TODO: what about the vendorID num and the vendor contactID?
 	let strVendorID = 123;
 	let strVendorContactID = 124;
+	
+	//server side error checking
+	let strErrorMessage = '';
 
+	if(strVendorName == '') {
+		strErrorMessage = strErrorMessage + "<p>Please specify a vendor name.</p>";
+	}
+
+	if(strVendorName.length > 50) {
+		strErrorMessage = strErrorMessage + "<p>vendor name is too long</p>";
+	}
+
+	if(strLink == '') {
+		strErrorMessage = strErrorMessage + "<p>Please specify a link.</p>";
+	}
+
+	if(strLink.length > 100) {
+		strErrorMessage = strErrorMessage + "<p>link is too long</p>";
+	}
+
+	if(strErrorMessage.length>0) {
+		return res.status(400).json({"message":strErrorMessage});
+	}
+
+	//HB TODO: check if vendor already exists
 	console.log('backend create vendor: ', strVendorName, ", ", strLink);
-  
-  try {
+
+	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
 		if (userID == -1) {
 			return res.status(400).json({"message": "You must be logged in to do that"});
