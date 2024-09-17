@@ -52,18 +52,17 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form>
-                    <!--Error messages. Default Hidden-->
-                    <div id="WarningErrorMessagePopUp" class="alert alert-dismissible alert-warning" style="display:none;">
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        <h4 class="alert-heading">Warning!</h4>
-                        <p class="mb-0" id="txtErrorMsg"></p>
-                    </div>
                     <div class="modal-body">
                         <label for="txtVendor" class="form-label">Vendor Name</label>
                         <input type="text" class="form-control req" id="txtVendor" placeholder="Vendor Name" required>
 
                         <label for="txtLink" class="form-label">Link</label>
                         <input type="text" class="form-control" id="txtLink" placeholder="Link">
+                    </div>
+                    <!--Error messages. Default Hidden-->
+                    <div id="WarningErrorMessagePopUp" class="alert alert-warning" style="display:none;">
+                        <h4 class="alert-heading">Warning!</h4>
+                        <p class="mb-0" id="txtErrorMsg"></p>
                     </div>
                     <div class="modal-footer">
                         <button id="btnCreateVendor" type="button" class="btn btn-success" aria-label="Create new vendor">Create</button>
@@ -160,7 +159,15 @@
                         function(results) {
                             console.log('Response:', results);
                             $('#newVendor').modal('hide');
-                        }
+                        },
+                    error:
+                        function (xhr, status, error) {
+                            console.error('AJAX Error:', status, error);
+                            //pop up the error message from server side validation
+                            $('#txtErrorMsg').html(xhr.responseJSON.message);
+                            $('#WarningErrorMessagePopUp').show();
+                    }
+
                 });
             }
         });
