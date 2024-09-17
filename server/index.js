@@ -174,6 +174,9 @@ app.post("/addVendor", async (req, res) => {
 
 		// Figure out what the next auto-increment ID is for tblVendorContact so we can use it for tblVendor
 		const intVendorContactID = await dbConnection.query("SELECT MAX(ID) FROM tblVendorContact;");
+		console.log("intVendorContactID1: ", intVendorContactID[0].ID + 1);
+		console.log("intVendorContactID2: ", intVendorContactID[0] + 1);
+		console.log("intVendorContactID3: ", intVendorContactID.ID + 1);
 		const insertVendorResult = await dbConnection.query("INSERT INTO tblVendor (VendorName, Website, Status, VendorContactID) VALUES (?, ?, 1, ?);", [strVendorName, strLink, intVendorContactID[0].ID + 1]);
 		
 		// Get the ID of the newly inserted vendor to use for tblVendorContact
