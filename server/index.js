@@ -180,7 +180,7 @@ app.post("/addVendor", async (req, res) => {
 
 		// Get the ID of the newly inserted vendor to use for tblVendorContact
 		const intVendorID = insertVendorResult.insertId;
-		await dbConnection.query("INSERT INTO tblVendorContact (ID, VendorID, Name, `Primary`, DateAdded, CreatedBy, Status) VALUES (?, ?, ?, 1, NOW(), ?, 1);", [intVendorContactID[0].maxID + 1, intVendorID, strVendorName, intCreatedBy]);
+		await dbConnection.query("INSERT INTO tblVendorContact (ID, VendorID, Name, `Primary`, DateAdded, CreatedBy, Status) VALUES (?, ?, ?, 1, NOW(), ?, 1);", [intVendorContactID[0].maxID + 1, intVendorID, strVendorContactName, intCreatedBy]);
 
     	res.json({"message": "Success.", "status": 200});
 	} finally {
