@@ -176,6 +176,8 @@ app.post("/addVendor", async (req, res) => {
 		const intVendorContactID = await dbConnection.query("SELECT MAX(ID) AS maxID FROM tblVendorContact;");
 		const insertVendorResult = await dbConnection.query("INSERT INTO tblVendor (VendorName, Website, Status, VendorContactID) VALUES (?, ?, 1, ?);", [strVendorName, strLink, intVendorContactID[0].maxID + 1]);
 		
+		console.log("Creating new VendorContact: " + strVendorContactName);
+
 		// Get the ID of the newly inserted vendor to use for tblVendorContact
 		const intVendorID = insertVendorResult.insertId;
 		await dbConnection.query("INSERT INTO tblVendorContact (ID, VendorID, Name, `Primary`, DateAdded, CreatedBy, Status) VALUES (?, ?, ?, 1, NOW(), ?, 1);", [intVendorContactID[0].maxID + 1, intVendorID, strVendorName, intCreatedBy]);
@@ -604,6 +606,27 @@ app.delete("/deleteAccount", async (req, res) => {
 		console.log("Deleting Account " + intAccountID);
 
 		await dbConnection.query("DELETE FROM tblAccount WHERE AccountID=?;", [intAccountID]);
+
+		res.status(200).json({"message": "Success."});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.delete("/deleteVendor", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strVendorName = clean(req.body.strVendorName);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+
+		console.log("Deleting Vendor " + strVendorName);
+
+		await dbConnection.query("DELETE FROM tblVendor WHERE VendorName=?;", [strVendorName]);
 
 		res.status(200).json({"message": "Success."});
 	} finally {
