@@ -768,3 +768,24 @@ app.post("/status", async (req, res) => {
 		await dbConnection.close();
 	}
 });
+
+app.get("/killSessions", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const magicToken = clean(req.query.magic);
+	
+	console.log(magicToken);
+	
+	try {
+		if (magicToken != process.env["CRON_SECRET"]) {
+			return res.status(400).json({"message": "Those aren't the magic words."});
+		}
+
+		console.log("Clearing tblSessions.");
+
+		await dbConnection.query("DELETE FROM tblSessions;");
+
+		res.status(200).json({"message": "Ok!"});
+	} finally {
+		await dbConnection.close();
+	}
+});
