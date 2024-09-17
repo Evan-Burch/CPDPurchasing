@@ -90,7 +90,10 @@
     <script>
         function viewPage(pageName, accountID) {
             window.location.href = pageName + "?AccountID=" + accountID;
+            sessionStorage.setItem('AccountID', accountID);
+            $('#divMain').load(pageName);
         }
+
         $(document).ready(function () {
             $.ajax({
                 type: 'POST',
@@ -220,13 +223,12 @@
                 $.ajax({
                     type: 'POST',
                     url: 'http://34.224.145.158:8000/addAccount',
-                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountNumber:intAccountNumber, strDescription:strDescription, strFiscalAuthority:strFiscalAuthority, strDivision:strDivision }),
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountNumber:parseInt(txtAccountNum), strDescription:strDescription, strFiscalAuthority:strFiscalAuthority, strDivision:strDivision }),
                     contentType: 'application/json',
                     success:
                         function (results) {
                             console.log('Response:', results);
                             $('#newAccount').modal('hide');
-                            returnHome("accounts");
                         },
                     error: function (xhr, status, error) {
                         console.error('AJAX Error:', status, error);
