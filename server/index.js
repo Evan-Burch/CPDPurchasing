@@ -207,19 +207,27 @@ app.post("/addVendor", async (req, res) => {
 
 	if(strVendorName == '') {
 		strErrorMessage = strErrorMessage + "<p>Please specify a vendor name.</p>";
-	}
+	  }
 
-	if(strVendorName.length > 50) {
+	  if(strVendorName.length > 50) {
 		strErrorMessage = strErrorMessage + "<p>vendor name is too long</p>";
-	}
+	  }
 
-	if(strLink == '') {
+	  if(strVendorLink == '') {
 		strErrorMessage = strErrorMessage + "<p>Please specify a link.</p>";
-	}
+	  }
 
-	if(strLink.length > 100) {
+	  if(strVendorLink.length > 100) {
 		strErrorMessage = strErrorMessage + "<p>link is too long</p>";
-	}
+	  }
+
+	  if(strVendorContactName.length > 50) {
+		strErrorMessage = strErrorMessage + "<p>contact name is too long</p>";
+	  }
+
+	  if(strVendorContactName == '') {
+		strErrorMessage = strErrorMessage + "<p>Please specify a contact name.</p>";
+	  }
 
 	if(strErrorMessage.length>0) {
 		return res.status(400).json({"message":strErrorMessage});
