@@ -57,16 +57,17 @@
                         <select class="form-select req" id="txtVendor" aria-label="Vendor" required>
                             <option selected>Select Vendor</option>
                         </select>
-                        <!-- <label for="txtVendorContact" class="form-label">Vendor Contact</label>
-                        <select class="form-select" id="txtVendorContact" aria-label="Vendor Contact" required>
-                            <option selected>Select Vendor Contact</option>
-                        </select> -->
                         <label for="txtSelectedFor" class="form-label">Requested For</label>
                         <select class="form-select req" id="txtSelectedFor" aria-label="Requested For" required>
                             <option selected>Select Requested For</option>
                         </select>
                         <label for="txtNotes" class="form-label">Notes</label>
-                        <input type="text" class="form-control" id="txtNotes" placeholder="Notes">
+                        <textarea class="form-control" id="txtNotes" placeholder="Notes"></textarea>
+                    </div>
+                    <!--Error messages. Default Hidden-->
+                    <div id="WarningErrorMessagePopUp" class="alert alert-warning" style="display:none;">
+                        <h4 class="alert-heading">Warning!</h4>
+                        <p class="mb-0" id="txtErrorMsg"></p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-success" id="btnCreatePO" aria-label="Create PO">Create</button>
@@ -132,7 +133,7 @@
             });
         });
 
-        //fill out the vendors from the database
+        //fill out the purchase orders from the database
         $('#btnNewPO').on('click', function () {
             console.log("new po clicked");
             $.ajax({
@@ -145,9 +146,6 @@
                         results.VendorNames.forEach(element => {
                             $('#txtVendor').append('<option value="' + element.VendorName + '">' + element.VendorName + '</option>');
                         });
-                        // results.VendorContacts.forEach(element => {
-                        //     $('#txtVendorContact').append('<option value="' + element.Name + '">' + element.Name + '</option>');
-                        // })
                         results.Users.forEach(element => {
                             $('#txtSelectedFor').append('<option value="' + element.DisplayName + '">' + element.DisplayName + '</option>');
                         })
@@ -163,9 +161,45 @@
             let intCreatedBy = parseInt(sessionStorage.getItem('userId'));
             let strNotes = $('#txtNotes').val();
 
-            if (strVendorName == 'Select Vendor' || strRequestedFor == 'Select Requested For') {
-                validateInput();
+            // ***** Client side error handling *****
+            let strErrorMessage = '';
+
+            //not needed as purchase order id is auto generated
+            // if(strPurchaseOrderID == '') {
+            //     strErrorMessage = strErrorMessage + "<p>Please specify a purchase order ID.</p>";
+            // }
+
+            // if(strPurchaseOrderID.length > 50) {
+            //     strErrorMessage = strErrorMessage + "<p>purchase order id is too long</p>";
+            // }
+
+            if(strVendorName == 'Select Vendor') {
+                strErrorMessage = strErrorMessage + "<p>Please specify a vendor.</p>";
             }
+
+            if(strVendorName.length > 50) {
+                strErrorMessage = strErrorMessage + "<p>vendor name is too long</p>";
+            }
+
+            if(strRequestedFor == 'Select Requested For') {
+                strErrorMessage = strErrorMessage + "<p>Please specify a requestor.</p>";
+            }
+
+            if(strRequestedFor.length > 50) {
+                strErrorMessage = strErrorMessage + "<p>requested for is too long</p>";
+            }
+
+            if(strNotes.length > 100) {
+                strErrorMessage = strErrorMessage + "<p>Woah! That is a long note! please shorten it to a few sentences or less.</p>";
+            }
+
+            // if the error message exists, show it and let the user fix their problems
+            if(strErrorMessage.length>0) {
+                console.log(strErrorMessage);
+                $('#txtErrorMsg').html(strErrorMessage);
+                $('#WarningErrorMessagePopUp').show();
+            }
+            //otherwise send the post request
             else {
                 $.ajax({
                     type: 'POST',
@@ -177,7 +211,14 @@
                             console.log('Response:', results);
                             $('#newPO').modal('hide');
                             returnHome("purchaseOrders");
-                        }
+                        },
+                    error:
+                        function (xhr, status, error) {
+                            console.error('AJAX Error:', status, error);
+                            //pop up the error message from server side validation
+                            $('#txtErrorMsg').html(xhr.responseJSON.message);
+                            $('#WarningErrorMessagePopUp').show();
+                    }
                 });
             }
         });

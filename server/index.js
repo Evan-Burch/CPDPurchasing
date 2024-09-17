@@ -130,14 +130,50 @@ app.post("/addPO", async (req, res) => {
 
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
+
 		if (userID == -1) {
 			return res.status(400).json({"message": "You must be logged in to do that"});
 		}
 
-		// var duplicate = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
-		// if (duplicate.length != 0) {
-		// 	return res.status(400).json({"message": `Purchase Order ${strPurchaseOrderID} already exists.`});
-		// }
+		//server side error checking
+		let strErrorMessage = '';
+
+		if(strPurchaseOrderID == '') {
+			strErrorMessage = strErrorMessage + "<p>Please specify a purchase order ID.</p>";
+		}
+
+		if(strPurchaseOrderID.length > 50) {
+			strErrorMessage = strErrorMessage + "<p>purchase order id is too long</p>";
+		}
+
+		if(strVendorName == 'Select Vendor') {
+			strErrorMessage = strErrorMessage + "<p>Please specify a vendor.</p>";
+		}
+
+		if(strVendorName.length > 50) {
+			strErrorMessage = strErrorMessage + "<p>vendor name is too long</p>";
+		}
+
+		if(strRequestedFor == 'Select Requested For') {
+			strErrorMessage = strErrorMessage + "<p>Please specify a requestor.</p>";
+		}
+
+		if(strRequestedFor.length > 50) {
+			strErrorMessage = strErrorMessage + "<p>requested for is too long</p>";
+		}
+
+		if(strNotes.length > 100) {
+			strErrorMessage = strErrorMessage + "<p>Woah! That is a long note! please shorten it to a few sentences or less.</p>";
+		}
+
+		if (strErrorMessage.length>0) {
+			return res.status(400).json({"message": strErrorMessage});
+		}
+
+		var duplicate = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
+		if (duplicate.length != 0) {
+			return res.status(400).json({"message": `Purchase Order ${strPurchaseOrderID} already exists.`});
+		}
 
 		console.log("Creating a new PO");
 
@@ -162,9 +198,39 @@ app.post("/addVendor", async (req, res) => {
 	const strVendorContactName = clean(req.body.strVendorContactName);
 	const intCreatedBy = req.body.intCreatedBy;
 
-	console.log('backend create vendor: ', strVendorName, ", ", strLink, ", ", strVendorContactName);
+
+	let strVendorID = 123;
+	let strVendorContactID = 124;
+	
+	//server side error checking
+	let strErrorMessage = '';
+
+	if(strVendorName == '') {
+		strErrorMessage = strErrorMessage + "<p>Please specify a vendor name.</p>";
+	}
+
+	if(strVendorName.length > 50) {
+		strErrorMessage = strErrorMessage + "<p>vendor name is too long</p>";
+	}
+
+	if(strLink == '') {
+		strErrorMessage = strErrorMessage + "<p>Please specify a link.</p>";
+	}
+
+	if(strLink.length > 100) {
+		strErrorMessage = strErrorMessage + "<p>link is too long</p>";
+	}
+
+	if(strErrorMessage.length>0) {
+		return res.status(400).json({"message":strErrorMessage});
+	}
+
+	//HB TODO: check if vendor already exists
+	console.log('backend create vendor: ', strVendorName, ", ", strLink);
+
+	try {
+	  console.log('backend create vendor: ', strVendorName, ", ", strLink, ", ", strVendorContactName);
   
-  	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
 		if (userID == -1) {
 			return res.status(400).json({"message": "You must be logged in to do that"});
@@ -203,7 +269,47 @@ app.post("/addAccount", async (req, res) => {
 			return res.status(400).json({"message": "You must be logged in to do that"});
 		}
 
-		console.log("Creating new Account: " + strDescription);
+		//server side error checking
+		let strErrorMessage = '';
+
+		if(intAccountNumber=='') {
+			strErrorMessage = strErrorMessage + "<p>Please specify an account number</p>";
+		}
+    
+		if(strDescription=='') {
+			strErrorMessage = strErrorMessage + "<p>Please specify a description</p>";
+		}
+
+		if(strDescription.length > 100) {
+			strErrorMessage = strErrorMessage + "<p>Description is too long</p>";
+		}
+
+		if(strFiscalAuthority=='Fiscal Authority') {
+			strErrorMessage = strErrorMessage + "<p>Please specify a fiscal authority</p>";
+		}
+
+		if(strFiscalAuthority>100) {
+			strErrorMessage = strErrorMessage + "<p>Fiscal authority is too long</p>";
+		}
+
+		if(strDivision=='') {
+			strErrorMessage = strErrorMessage + "<p>Please specify a division</p>";
+		}
+
+		if(strDivision>100) {
+			strErrorMessage = strErrorMessage + "<p>Division is too long</p>";
+		}
+
+		if(strErrorMessage.length>0) {
+			return res.status(400).json({"message":strErrorMessage});
+		}
+
+		var duplicate = await dbConnection.query("SELECT * FROM tblAccount WHERE AccountID=?;", [intAccountNumber]);
+		if (duplicate.length != 0) {
+			return res.status(400).json({"message": `Account ${intAccountNumber} already exists.`});
+		}
+
+		console.log("Creating a new Account: ", intAccountNumber, ", ", strDescription, ", ", strFiscalAuthority, ", ", strDivision);
 
 		const intFiscalAuthorityID = await dbConnection.query("SELECT EmployeeID FROM tblUser WHERE DisplayName=?;", [strFiscalAuthority]);
 
