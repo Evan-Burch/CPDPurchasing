@@ -43,7 +43,7 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal" id="newPO" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    <div class="modal fade" id="newPO" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -81,9 +81,8 @@
         crossorigin="anonymous"></script>
     <script src="./assets/js/utils.js"></script>
     <script>
-        function switchPage(pageName, purchaseOrderId) {
-            sessionStorage.setItem('PurchaseOrderID', purchaseOrderId);
-            $('#divMain').load(pageName);
+        function viewPage(pageName, purchaseOrderId) {
+            window.location.href = pageName + "?POID=" + purchaseOrderId;
         }
 
         $(document).ready(function () {
@@ -110,17 +109,18 @@
                             columns: [
                                 {data: "PurchaseOrderID", title: "Purchase Order", render: function(data, type) {
                                     if (type == "display") {
-                                        return '<a href="#" onclick="switchPage(\'pages/viewPO.html\', \'' + data + '\')">' + data + "</a>";
+                                        return '<a href="#" onclick="viewPage(\'pages/viewPO.html\', \'' + data + '\')">' + data + "</a>";
                                     }
                                     return data;
                                 }},
-                                {data: "CreatedDateTime", title: "Date Created"},
+                                {type:"date", data: "CreatedDateTime", title: "Date Created"},
                                 {data: "VendorName", title: "Vendor"},
                                 {data: "Amount", title: "Amount"},
                                 {data: "CreatedBy", title: "Created By"},
                                 {data: "RequestedFor", title: "Requested For"}
                             ],
-                            autowidth: false
+                            autowidth: false,
+                            order: [[1, 'desc']]
                         });
                     } else {
                         console.error('Unexpected response format or status:', results);
@@ -176,6 +176,7 @@
                         function (results) {
                             console.log('Response:', results);
                             $('#newPO').modal('hide');
+                            returnHome("purchaseOrders");
                         }
                 });
             }

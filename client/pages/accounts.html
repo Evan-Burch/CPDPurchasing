@@ -79,10 +79,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
+    <script src="./assets/js/utils.js"></script>
     <script>
-        function switchPage(pageName, accountID) {
-            sessionStorage.setItem('AccountID', accountID);
-            $('#divMain').load(pageName);
+        function viewPage(pageName, accountID) {
+            window.location.href = pageName + "?AccountID=" + accountID;
         }
         $(document).ready(function () {
             $.ajax({
@@ -108,7 +108,7 @@
                             columns: [
                                 {data: "AccountID", title: "Account Number", render: function(data, type) {
                                     if (type == "display") {
-                                        return '<a href="#" onclick="switchPage(\'pages/viewAccount.html\', \'' + data + '\')">' + data + "</a>";
+                                        return '<a href="#" onclick="viewPage(\'pages/viewAccount.html\', \'' + data + '\')">' + data + "</a>";
                                     }
                                     return data;
                                 }},
@@ -159,21 +159,27 @@
             // evan: Fiscal authority is hardcoded here becauce It isnt being sent correctly and I needed to test the rest of the functionality
             let strFiscalAuthority = 'Randy Brown' //$('#txtFiscal').val();
             let strDivision = $('#txtDivision').val();
-            console.log("Sending Data:", intAccountNumber, ",",
-                strDescription, ",", strFiscalAuthority, ",", strDivision
-            )
+          
+            console.log("Sending Data:", intAccountNumber, ",", strDescription, ",", strFiscalAuthority, ",", strDivision
+            );
 
-            $.ajax({
-                type: 'POST',
-                url: 'http://34.224.145.158:8000/addAccount',
-                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountNumber:intAccountNumber, strDescription:strDescription, strFiscalAuthority:strFiscalAuthority, strDivision:strDivision}),
-                contentType: 'application/json',
-                success:
-                    function (results) {
-                        console.log('Response:', results);
-                        $('#newAccount').modal('hide');
-                    }
-            });
+            if (isNaN(intAccountNumber) || strDescription == '' || strDivision == '' || strFiscalAuthority == 'Fiscal Authority') {
+                validateInput();
+            }
+            else {
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://34.224.145.158:8000/addAccount',
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountNumber:intAccountNumber, strDescription:strDescription, strFiscalAuthority:strFiscalAuthority, strDivision:strDivision }),
+                    contentType: 'application/json',
+                    success:
+                        function (results) {
+                            console.log('Response:', results);
+                            $('#newAccount').modal('hide');
+                            returnHome("accounts");
+                        }
+                });
+            }
         });
     </script>
 </body>
