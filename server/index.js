@@ -221,12 +221,19 @@ app.post("/addVendor", async (req, res) => {
 		strErrorMessage = strErrorMessage + "<p>link is too long</p>";
 	}
 
+	if(strVendorContactName == '') {
+		strErrorMessage = strErrorMessage + "<p>Please specify a Vendor Contact.</p>";
+	}
+
+	if(strVendorContactName.length > 100) {
+		strErrorMessage = strErrorMessage + "<p>Vendor Contact is too long</p>";
+	}
+
 	if(strErrorMessage.length>0) {
 		return res.status(400).json({"message":strErrorMessage});
 	}
 
 	//HB TODO: check if vendor already exists
-	console.log('backend create vendor: ', strVendorName, ", ", strLink);
 
 	try {
 	  console.log('backend create vendor: ', strVendorName, ", ", strLink, ", ", strVendorContactName);
@@ -701,7 +708,7 @@ app.delete("/deletePO", async (req, res) => {
 app.delete("/deleteAccount", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
-	const intAccountID = clean(req.body.intAccountID);
+	const intAccountID = req.body.intAccountID;
 	
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
