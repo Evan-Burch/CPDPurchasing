@@ -161,24 +161,24 @@
         // send the create request to the server
         $('#btnCreateNewAccount').on('click', function () {
             console.log("accounts.html create new account clicked")
-            let intAccountNumber = parseInt($('#txtAccountNum').val());
+            let txtAccountNum = $('#txtAccountNum').val();
             let strDescription = $('#txtDescription').val();
             // evan: Fiscal authority is hardcoded here becauce It isnt being sent correctly and I needed to test the rest of the functionality
             let strFiscalAuthority = 'Randy Brown' //$('#txtFiscal').val();
             let strDivision = $('#txtDivision').val();
 
-            console.log("Sending Data:", strAccountNumber, ",",
+            console.log("Sending Data:", txtAccountNum, ",",
                 strDescription, ",", strFiscalAuthority, ",", strDivision
             )
             
             // ***** Client side error handling *****
             let strErrorMessage = '';
 
-            if(strAccountNumber=='') {
+            if(txtAccountNum=='') {
                 strErrorMessage = strErrorMessage + "<p>Please specify an account number</p>";
             }
 
-            if(strAccountNumber.length > 10) {
+            if(txtAccountNum.length > 10) {
                 strErrorMessage = strErrorMessage + "<p>Account number is too long</p>";
             }
 
@@ -190,7 +190,8 @@
                 strErrorMessage = strErrorMessage + "<p>Description is too long</p>";
             }
 
-            if(strFiscalAuthority=='Fiscal Authority') {
+            //update later
+            if(strFiscalAuthority=='') {
                 strErrorMessage = strErrorMessage + "<p>Please specify a fiscal authority</p>";
             }
 
