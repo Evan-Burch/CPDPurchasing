@@ -159,22 +159,28 @@ app.post("/addVendor", async (req, res) => {
 
 	const strVendorName = clean(req.body.strVendorName);
 	const strLink = clean(req.body.strVendorLink);
+	const strVendorContactName = clean(req.body.strVendorContactName);
+	const intCreatedBy = req.body.intCreatedBy;
 
-	//HB TODO: what about the vendorID num and the vendor contactID?
-	let strVendorID = 123;
-	let strVendorContactID = 124;
-
-	console.log('backend create vendor: ', strVendorName, ", ", strLink);
+	console.log('backend create vendor: ', strVendorName, ", ", strLink, ", ", strVendorContactName);
   
-  try {
+  	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
 		if (userID == -1) {
 			return res.status(400).json({"message": "You must be logged in to do that"});
 		}
-    
-    await dbConnection.query("INSERT INTO tblVendor (VendorID, VendorName, Website, Status, VendorContactID) VALUES (?, ?, ?, 1, ?);", [strVendorID, strVendorName, strLink, strVendorContactID]);
 
-    res.json({"message": "Success.", "status": 200});
+		console.log("Creating new Vendor: " + strVendorName);
+
+		// Figure out what the next auto-increment ID is for tblVendorContact so we can use it for tblVendor
+		const intVendorContactID = 1 + await dbConnection.query("SELECT MAX(ID) FROM tblVendorContact;");
+		const insertVendorResult = await dbConnection.query("INSERT INTO tblVendor (VendorName, Website, Status, VendorContactID) VALUES (?, ?, 1, ?);", [strVendorName, strLink, intVendorContactID]);
+		
+		// Get the ID of the newly inserted vendor to use for tblVendorContact
+		const intVendorID = insertVendorResult.insertId;
+		await dbConnection.query("INSERT INTO tblVendorContact (ID, VendorID, Name, Primary, DateAdded, CreatedBy, Status) VALUES (?, ?, ?, 1, NOW(), ?, 1);", [intVendorContactID, intVendorID, strVendorName, intCreatedBy]);
+
+    	res.json({"message": "Success.", "status": 200});
 	} finally {
 		await dbConnection.close();
 	}

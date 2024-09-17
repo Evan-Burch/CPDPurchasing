@@ -57,6 +57,9 @@
 
                     <label for="txtLink" class="form-label">Link</label>
                     <input type="text" class="form-control" id="txtLink" placeholder="Link">
+
+                    <label for="txtVendorContactName" class="form-label">Vendor Contact</label>
+                    <input type="text" class="form-control" id="txtVendorContactName" placeholder="Vendor Contact">
                 </div>
                 <div class="modal-footer">
                     <button id="btnCreateVendor" type="button" class="btn btn-success" aria-label="Create new vendor">Create</button>
@@ -131,13 +134,15 @@
         $('#btnCreateVendor').on('click', function() {
             let strVendorName = $('#txtVendor').val();
             let strVendorLink = $('#txtLink').val();
+            let strVendorContactName = $('#txtVendorContactName').val();
+            let intCreatedBy = parseInt(sessionStorage.getItem('userId'));
 
-            console.log('Create Vendor clicked: ', strVendorName, ",", strVendorLink);
+            console.log('Create Vendor clicked: ', strVendorName, ",", strVendorLink, ",", strVendorContactName);
 
             $.ajax({
                 type: 'POST',
                 url: 'http://34.224.145.158:8000/addVendor',
-                data: JSON.stringify({uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName:strVendorName, strVendorLink:strVendorLink}),
+                data: JSON.stringify({uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName:strVendorName, strVendorLink:strVendorLink, strVendorContactName:strVendorContactName, intCreatedBy:intCreatedBy}),
                 contentType: 'application/json',
                 success:
                     function(results) {
