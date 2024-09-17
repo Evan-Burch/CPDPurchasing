@@ -173,14 +173,14 @@ app.post("/addVendor", async (req, res) => {
 		console.log("Creating new Vendor: " + strVendorName);
 
 		// Figure out what the next auto-increment ID is for tblVendorContact so we can use it for tblVendor
-		const intVendorContactID = await dbConnection.query("SELECT MAX(ID) FROM tblVendorContact;");
-		console.log("intVendorContactID2: ", intVendorContactID[0].MAX(ID));
-		console.log("intVendorContactID2: ", intVendorContactID[0].MAX(ID) + 1);
-		const insertVendorResult = await dbConnection.query("INSERT INTO tblVendor (VendorName, Website, Status, VendorContactID) VALUES (?, ?, 1, ?);", [strVendorName, strLink, intVendorContactID[0].MAX(ID) + 1]);
+		const intVendorContactID = await dbConnection.query("SELECT MAX(ID) AS maxID FROM tblVendorContact;");
+		console.log("intVendorContactID2: ", intVendorContactID[0].maxID);
+		console.log("intVendorContactID2: ", intVendorContactID[0].maxID + 1);
+		const insertVendorResult = await dbConnection.query("INSERT INTO tblVendor (VendorName, Website, Status, VendorContactID) VALUES (?, ?, 1, ?);", [strVendorName, strLink, intVendorContactID[0].maxID + 1]);
 		
 		// Get the ID of the newly inserted vendor to use for tblVendorContact
 		const intVendorID = insertVendorResult.insertId;
-		await dbConnection.query("INSERT INTO tblVendorContact (ID, VendorID, Name, Primary, DateAdded, CreatedBy, Status) VALUES (?, ?, ?, 1, NOW(), ?, 1);", [intVendorContactID[0].MAX(ID) + 1, intVendorID, strVendorName, intCreatedBy]);
+		await dbConnection.query("INSERT INTO tblVendorContact (ID, VendorID, Name, Primary, DateAdded, CreatedBy, Status) VALUES (?, ?, ?, 1, NOW(), ?, 1);", [intVendorContactID[0].maxID + 1, intVendorID, strVendorName, intCreatedBy]);
 
     	res.json({"message": "Success.", "status": 200});
 	} finally {
