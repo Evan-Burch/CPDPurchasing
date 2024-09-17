@@ -154,24 +154,23 @@
         // send the create request to the server
         $('#btnCreateNewAccount').on('click', function () {
             console.log("accounts.html create new account clicked")
-            let strAccountNumber = $('#txtAccountNum').val();
+            let intAccountNumber = parseInt($('#txtAccountNum').val());
             let strDescription = $('#txtDescription').val();
-            let strFiscalAuthority = $('#txtFiscal').val();
+            // evan: Fiscal authority is hardcoded here becauce It isnt being sent correctly and I needed to test the rest of the functionality
+            let strFiscalAuthority = 'Randy Brown' //$('#txtFiscal').val();
             let strDivision = $('#txtDivision').val();
-
-            console.log("Sending Data:", strAccountNumber, ",",
-                strDescription, ",", strFiscalAuthority, ",", strDivision
+          
+            console.log("Sending Data:", intAccountNumber, ",", strDescription, ",", strFiscalAuthority, ",", strDivision
             );
 
-            //console.log(strAccountNumber, strDescription, strDivision, strFiscalAuthority);
-            if (strAccountNumber == '' || strDescription == '' || strDivision == '' || strFiscalAuthority == 'Fiscal Authority') {
+            if (isNaN(intAccountNumber) || strDescription == '' || strDivision == '' || strFiscalAuthority == 'Fiscal Authority') {
                 validateInput();
             }
             else {
                 $.ajax({
                     type: 'POST',
                     url: 'http://34.224.145.158:8000/addAccount',
-                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountNumber: strAccountNumber, strDescription: strDescription, strFiscalAuthority: strFiscalAuthority, strDivision: strDivision }),
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountNumber:intAccountNumber, strDescription:strDescription, strFiscalAuthority:strFiscalAuthority, strDivision:strDivision }),
                     contentType: 'application/json',
                     success:
                         function (results) {
