@@ -25,7 +25,7 @@
                 <div class="row">
                     <h3 id="vendorTitle" class="col-8">(Vendor Name here)</h3>
                     <button type="button" class="btn btn-primary col-2 offset-2"
-                        onclick="javascript:returnHome()">Return</button>
+                        onclick="javascript:returnHome('vendors')">Return</button>
                 </div>
             </div>
             <div class="card-body">
@@ -54,7 +54,7 @@
                             Add Contact
                         </button>
 
-                        <button type="button" class="btn btn-danger col-12 offset-3 mb-2"><!-- Add Functionality -->
+                        <button id="btnDelete" type="button" class="btn btn-danger col-12 offset-3 mb-2"><!-- Add Functionality -->
                             Delete Vendor
                         </button>
 
@@ -193,6 +193,18 @@
 
         $('#tblVendorPOs').DataTable({
             responsive: true,
+        })
+
+        $('#btnDelete').on('click', function(){
+            $.ajax({
+                type: 'DELETE',
+                url: 'http://34.224.145.158:8000/deleteVendor',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: sessionStorage.getItem('VendorName') }),
+                contentType: 'application/json',
+                success: function(results){
+                    javascript:switchPage('./pages/vendors.html')
+                }
+            })
         })
 
     </script>

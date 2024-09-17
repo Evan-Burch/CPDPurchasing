@@ -195,8 +195,10 @@ app.post("/addVendor", async (req, res) => {
 
 	const strVendorName = clean(req.body.strVendorName);
 	const strLink = clean(req.body.strVendorLink);
+	const strVendorContactName = clean(req.body.strVendorContactName);
+	const intCreatedBy = req.body.intCreatedBy;
 
-	//HB TODO: what about the vendorID num and the vendor contactID?
+
 	let strVendorID = 123;
 	let strVendorContactID = 124;
 	
@@ -227,14 +229,26 @@ app.post("/addVendor", async (req, res) => {
 	console.log('backend create vendor: ', strVendorName, ", ", strLink);
 
 	try {
+	  console.log('backend create vendor: ', strVendorName, ", ", strLink, ", ", strVendorContactName);
+  
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
 		if (userID == -1) {
 			return res.status(400).json({"message": "You must be logged in to do that"});
 		}
-    
-    await dbConnection.query("INSERT INTO tblVendor (VendorID, VendorName, Website, Status, VendorContactID) VALUES (?, ?, ?, 1, ?);", [strVendorID, strVendorName, strLink, strVendorContactID]);
 
-    res.json({"message": "Success.", "status": 200});
+		console.log("Creating new Vendor: " + strVendorName);
+
+		// Figure out what the next auto-increment ID is for tblVendorContact so we can use it for tblVendor
+		const intVendorContactID = await dbConnection.query("SELECT MAX(ID) AS maxID FROM tblVendorContact;");
+		const insertVendorResult = await dbConnection.query("INSERT INTO tblVendor (VendorName, Website, Status, VendorContactID) VALUES (?, ?, 1, ?);", [strVendorName, strLink, intVendorContactID[0].maxID + 1]);
+		
+		console.log("Creating new VendorContact: " + strVendorContactName);
+
+		// Get the ID of the newly inserted vendor to use for tblVendorContact
+		const intVendorID = insertVendorResult.insertId;
+		await dbConnection.query("INSERT INTO tblVendorContact (ID, VendorID, Name, `Primary`, DateAdded, CreatedBy, Status) VALUES (?, ?, ?, 1, NOW(), ?, 1);", [intVendorContactID[0].maxID + 1, intVendorID, strVendorContactName, intCreatedBy]);
+
+    	res.json({"message": "Success.", "status": 200});
 	} finally {
 		await dbConnection.close();
 	}
@@ -244,10 +258,10 @@ app.post("/addAccount", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
-	const AccountNumber = clean(req.body.strAccountNumber);
-	const Description = clean(req.body.strDescription);
-	const FiscalAuthority = clean(req.body.strFiscalAuthority);
-	const Division = clean(req.body.strDivision);
+	const intAccountNumber = req.body.intAccountNumber;
+	const strDescription = clean(req.body.strDescription);
+	const strFiscalAuthority = clean(req.body.strFiscalAuthority);
+	const strDivision = clean(req.body.strDivision);
 
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
@@ -258,35 +272,31 @@ app.post("/addAccount", async (req, res) => {
 		//server side error checking
 		let strErrorMessage = '';
 
-		if(AccountNumber=='') {
+		if(intAccountNumber=='') {
 			strErrorMessage = strErrorMessage + "<p>Please specify an account number</p>";
 		}
-
-		if(AccountNumber.length > 10) {
-			strErrorMessage = strErrorMessage + "<p>Account number is too long</p>";
-		}
-
-		if(Description=='') {
+    
+		if(strDescription=='') {
 			strErrorMessage = strErrorMessage + "<p>Please specify a description</p>";
 		}
 
-		if(Description.length > 100) {
+		if(strDescription.length > 100) {
 			strErrorMessage = strErrorMessage + "<p>Description is too long</p>";
 		}
 
-		if(FiscalAuthority=='Fiscal Authority') {
+		if(strFiscalAuthority=='Fiscal Authority') {
 			strErrorMessage = strErrorMessage + "<p>Please specify a fiscal authority</p>";
 		}
 
-		if(FiscalAuthority>100) {
+		if(strFiscalAuthority>100) {
 			strErrorMessage = strErrorMessage + "<p>Fiscal authority is too long</p>";
 		}
 
-		if(Division=='') {
+		if(strDivision=='') {
 			strErrorMessage = strErrorMessage + "<p>Please specify a division</p>";
 		}
 
-		if(Division>100) {
+		if(strDivision>100) {
 			strErrorMessage = strErrorMessage + "<p>Division is too long</p>";
 		}
 
@@ -294,15 +304,16 @@ app.post("/addAccount", async (req, res) => {
 			return res.status(400).json({"message":strErrorMessage});
 		}
 
-		var duplicate = await dbConnection.query("SELECT * FROM tblAccount WHERE AccountID=?;", [AccountNumber]);
+		var duplicate = await dbConnection.query("SELECT * FROM tblAccount WHERE AccountID=?;", [intAccountNumber]);
 		if (duplicate.length != 0) {
-			return res.status(400).json({"message": `Account ${strPurchaseOrderID} already exists.`});
+			return res.status(400).json({"message": `Account ${intAccountNumber} already exists.`});
 		}
 
-		console.log("Creating a new Account: ", AccountNumber, ", ", Description, ", ", FiscalAuthority, ", ", Division);
+		console.log("Creating a new Account: ", intAccountNumber, ", ", strDescription, ", ", strFiscalAuthority, ", ", strDivision);
 
-		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [AccountNumber, Description, FiscalAuthority, Division]);
+		const intFiscalAuthorityID = await dbConnection.query("SELECT EmployeeID FROM tblUser WHERE DisplayName=?;", [strFiscalAuthority]);
 
+		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [intAccountNumber, strDescription, intFiscalAuthorityID[0].EmployeeID, strDivision]);
 
 		res.status(200).json({"message": "Success."});
 	} finally {
@@ -680,6 +691,48 @@ app.delete("/deletePO", async (req, res) => {
 		console.log("Deleting PO " + strPurchaseOrderID);
 
 		await dbConnection.query("DELETE FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
+
+		res.status(200).json({"message": "Success."});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.delete("/deleteAccount", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const intAccountID = clean(req.body.intAccountID);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+
+		console.log("Deleting Account " + intAccountID);
+
+		await dbConnection.query("DELETE FROM tblAccount WHERE AccountID=?;", [intAccountID]);
+
+		res.status(200).json({"message": "Success."});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.delete("/deleteVendor", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strVendorName = clean(req.body.strVendorName);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+
+		console.log("Deleting Vendor " + strVendorName);
+
+		await dbConnection.query("DELETE FROM tblVendor WHERE VendorName=?;", [strVendorName]);
 
 		res.status(200).json({"message": "Success."});
 	} finally {

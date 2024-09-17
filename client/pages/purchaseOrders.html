@@ -209,6 +209,7 @@
                         function (results) {
                             console.log('Response:', results);
                             $('#newPO').modal('hide');
+                            returnHome("purchaseOrders");
                         },
                     error:
                         function (xhr, status, error) {
