@@ -171,8 +171,7 @@
             let strDivision = $('#txtDivision').val();
 
             console.log("Sending Data:", txtAccountNum, ",",
-                strDescription, ",", strFiscalAuthority, ",", strDivision
-            )
+                strDescription, ",", strFiscalAuthority, ",", strDivision);
             
             // ***** Client side error handling *****
             let strErrorMessage = '';
@@ -185,6 +184,13 @@
                 strErrorMessage = strErrorMessage + "<p>Account number is too long</p>";
             }
 
+            //try to parse the account number to an int
+            try {
+                let intAccountNumber = parseInt(strAccountNumber);
+            } catch (error) {
+                strErrorMessage = strErrorMessage + "<p>Account number is not a number</p>";
+            }
+
             if(strDescription=='') {
                 strErrorMessage = strErrorMessage + "<p>Please specify a description</p>";
             }
@@ -193,8 +199,7 @@
                 strErrorMessage = strErrorMessage + "<p>Description is too long</p>";
             }
 
-            //update later
-            if(strFiscalAuthority=='') {
+            if(strFiscalAuthority=='Fiscal Authority'||strFiscalAuthority=='') {
                 strErrorMessage = strErrorMessage + "<p>Please specify a fiscal authority</p>";
             }
 
@@ -210,8 +215,6 @@
                 strErrorMessage = strErrorMessage + "<p>Division is too long</p>";
             }
 
-
-            
             // if the error message exists, show it and let the user fix their problems
             if(strErrorMessage.length > 0) {
                 console.log(strErrorMessage);
@@ -220,6 +223,9 @@
             }
             //otherwise send the post request
             else {
+                console.log("Sending Data:", intAccountNumber, ",",
+                strDescription, ",", strFiscalAuthority, ",", strDivision);
+
                 $.ajax({
                     type: 'POST',
                     url: 'http://34.224.145.158:8000/addAccount',
