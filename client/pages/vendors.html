@@ -83,8 +83,10 @@
     <script>
         function viewPage(pageName, vendorName) {
             window.location.href = pageName + "?VendorName=" + vendorName;
+            sessionStorage.setItem('VendorName', vendorName);
+            $('#divMain').load(pageName);
         }
-
+        
         $(document).ready(function () {
             $.ajax({
             type: 'POST',
@@ -166,12 +168,12 @@
               strErrorMessage = strErrorMessage + "<p>link is too long</p>";
             }
 
-            if(strVendorContactName.length > 50) {
-              strErrorMessage = strErrorMessage + "<p>contact name is too long</p>";
+            if(strVendorContactName == '') {
+              strErrorMessage = strErrorMessage + "<p>Please specify a Vendor Contact.</p>";
             }
 
-            if(strVendorContactName == '') {
-              strErrorMessage = strErrorMessage + "<p>Please specify a contact name.</p>";
+            if(strVendorContactName.length > 100) {
+              strErrorMessage = strErrorMessage + "<p>Vendor Contact is too long</p>";
             }
          
             // if the error message exists, show it and let the user fix their problems
@@ -191,7 +193,6 @@
                         function(results) {
                             console.log('Response:', results);
                             $('#newVendor').modal('hide');
-                            returnHome("vendors");
                         },
                     error:
                         function (xhr, status, error) {

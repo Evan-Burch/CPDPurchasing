@@ -90,7 +90,10 @@
     <script>
         function viewPage(pageName, accountID) {
             window.location.href = pageName + "?AccountID=" + accountID;
+            sessionStorage.setItem('AccountID', accountID);
+            $('#divMain').load(pageName);
         }
+
         $(document).ready(function () {
             $.ajax({
                 type: 'POST',
@@ -161,20 +164,23 @@
         // send the create request to the server
         $('#btnCreateNewAccount').on('click', function () {
             console.log("accounts.html create new account clicked")
-            let strAccountNumber = $('#txtAccountNum').val();
+            let txtAccountNum = $('#txtAccountNum').val();
             let strDescription = $('#txtDescription').val();
             // evan: Fiscal authority is hardcoded here becauce It isnt being sent correctly and I needed to test the rest of the functionality
             let strFiscalAuthority = 'Randy Brown' //$('#txtFiscal').val();
             let strDivision = $('#txtDivision').val();
+
+            console.log("Sending Data:", txtAccountNum, ",",
+                strDescription, ",", strFiscalAuthority, ",", strDivision);
             
             // ***** Client side error handling *****
             let strErrorMessage = '';
 
-            if(strAccountNumber=='') {
+            if(txtAccountNum=='') {
                 strErrorMessage = strErrorMessage + "<p>Please specify an account number</p>";
             }
 
-            if(strAccountNumber > 10) {
+            if(txtAccountNum.length > 10) {
                 strErrorMessage = strErrorMessage + "<p>Account number is too long</p>";
             }
 
@@ -223,13 +229,12 @@
                 $.ajax({
                     type: 'POST',
                     url: 'http://34.224.145.158:8000/addAccount',
-                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountNumber:intAccountNumber, strDescription:strDescription, strFiscalAuthority:strFiscalAuthority, strDivision:strDivision }),
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountNumber:parseInt(txtAccountNum), strDescription:strDescription, strFiscalAuthority:strFiscalAuthority, strDivision:strDivision }),
                     contentType: 'application/json',
                     success:
                         function (results) {
                             console.log('Response:', results);
                             $('#newAccount').modal('hide');
-                            returnHome("accounts");
                         },
                     error: function (xhr, status, error) {
                         console.error('AJAX Error:', status, error);

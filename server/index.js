@@ -229,12 +229,19 @@ app.post("/addVendor", async (req, res) => {
 		strErrorMessage = strErrorMessage + "<p>Please specify a contact name.</p>";
 	  }
 
+	if(strVendorContactName == '') {
+		strErrorMessage = strErrorMessage + "<p>Please specify a Vendor Contact.</p>";
+	}
+
+	if(strVendorContactName.length > 100) {
+		strErrorMessage = strErrorMessage + "<p>Vendor Contact is too long</p>";
+	}
+
 	if(strErrorMessage.length>0) {
 		return res.status(400).json({"message":strErrorMessage});
 	}
 
 	//HB TODO: check if vendor already exists
-	console.log('backend create vendor: ', strVendorName, ", ", strLink);
 
 	try {
 	  console.log('backend create vendor: ', strVendorName, ", ", strLink, ", ", strVendorContactName);
@@ -709,7 +716,7 @@ app.delete("/deletePO", async (req, res) => {
 app.delete("/deleteAccount", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
-	const intAccountID = clean(req.body.intAccountID);
+	const intAccountID = req.body.intAccountID;
 	
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
@@ -765,6 +772,27 @@ app.post("/status", async (req, res) => {
 		//console.log(poRows[0]["COUNT(*)"]);
 
 		res.status(200).json({"message": "OK", "poRows": parseInt(poRows[0]["COUNT(*)"]), "vendorRows": parseInt(vendorRows[0]["COUNT(*)"]), "accountRows": parseInt(accountRows[0]["COUNT(*)"])});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+app.get("/killSessions", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const magicToken = clean(req.query.magic);
+	
+	console.log(magicToken);
+	
+	try {
+		if (magicToken != process.env["CRON_SECRET"]) {
+			return res.status(400).json({"message": "Those aren't the magic words."});
+		}
+
+		console.log("Clearing tblSessions.");
+
+		await dbConnection.query("DELETE FROM tblSessions;");
+
+		res.status(200).json({"message": "Ok!"});
 	} finally {
 		await dbConnection.close();
 	}

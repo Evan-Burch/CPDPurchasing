@@ -168,13 +168,14 @@
             // ***** Client side error handling *****
             let strErrorMessage = '';
 
-            if(strPurchaseOrderID == '') {
-                strErrorMessage = strErrorMessage + "<p>Please specify a purchase order ID.</p>";
-            }
+            //not needed as purchase order id is auto generated
+            // if(strPurchaseOrderID == '') {
+            //     strErrorMessage = strErrorMessage + "<p>Please specify a purchase order ID.</p>";
+            // }
 
-            if(strPurchaseOrderID.length > 50) {
-                strErrorMessage = strErrorMessage + "<p>purchase order id is too long</p>";
-            }
+            // if(strPurchaseOrderID.length > 50) {
+            //     strErrorMessage = strErrorMessage + "<p>purchase order id is too long</p>";
+            // }
 
             if(strVendorName == 'Select Vendor') {
                 strErrorMessage = strErrorMessage + "<p>Please specify a vendor.</p>";
