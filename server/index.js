@@ -138,14 +138,6 @@ app.post("/addPO", async (req, res) => {
 		//server side error checking
 		let strErrorMessage = '';
 
-		if(strPurchaseOrderID == '') {
-			strErrorMessage = strErrorMessage + "<p>Please specify a purchase order ID.</p>";
-		}
-
-		if(strPurchaseOrderID.length > 50) {
-			strErrorMessage = strErrorMessage + "<p>purchase order id is too long</p>";
-		}
-
 		if(strVendorName == 'Select Vendor') {
 			strErrorMessage = strErrorMessage + "<p>Please specify a vendor.</p>";
 		}
@@ -170,11 +162,6 @@ app.post("/addPO", async (req, res) => {
 			return res.status(400).json({"message": strErrorMessage});
 		}
 
-		var duplicate = await dbConnection.query("SELECT * FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
-		if (duplicate.length != 0) {
-			return res.status(400).json({"message": `Purchase Order ${strPurchaseOrderID} already exists.`});
-		}
-
 		console.log("Creating a new PO");
 
 		const intRequestedForID = await dbConnection.query("SELECT EmployeeID FROM tblUser WHERE DisplayName=?;", [strRequestedFor]);
@@ -194,7 +181,7 @@ app.post("/addVendor", async (req, res) => {
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
 	const strVendorName = clean(req.body.strVendorName);
-	const strLink = clean(req.body.strVendorLink);
+	const strVendorLink = clean(req.body.strVendorLink);
 	const strVendorContactName = clean(req.body.strVendorContactName);
 	const intCreatedBy = req.body.intCreatedBy;
 
@@ -207,27 +194,27 @@ app.post("/addVendor", async (req, res) => {
 
 	if(strVendorName == '') {
 		strErrorMessage = strErrorMessage + "<p>Please specify a vendor name.</p>";
-	  }
+	}
 
-	  if(strVendorName.length > 50) {
-		strErrorMessage = strErrorMessage + "<p>vendor name is too long</p>";
-	  }
+	if(strVendorName.length > 50) {
+	strErrorMessage = strErrorMessage + "<p>vendor name is too long</p>";
+	}
 
-	  if(strVendorLink == '') {
-		strErrorMessage = strErrorMessage + "<p>Please specify a link.</p>";
-	  }
+	if(strVendorLink == '') {
+	strErrorMessage = strErrorMessage + "<p>Please specify a link.</p>";
+	}
 
-	  if(strVendorLink.length > 100) {
-		strErrorMessage = strErrorMessage + "<p>link is too long</p>";
-	  }
+	if(strVendorLink.length > 100) {
+	strErrorMessage = strErrorMessage + "<p>link is too long</p>";
+	}
 
-	  if(strVendorContactName.length > 50) {
-		strErrorMessage = strErrorMessage + "<p>contact name is too long</p>";
-	  }
+	if(strVendorContactName.length > 50) {
+	strErrorMessage = strErrorMessage + "<p>contact name is too long</p>";
+	}
 
-	  if(strVendorContactName == '') {
-		strErrorMessage = strErrorMessage + "<p>Please specify a contact name.</p>";
-	  }
+	if(strVendorContactName == '') {
+	strErrorMessage = strErrorMessage + "<p>Please specify a contact name.</p>";
+	}
 
 	if(strVendorContactName == '') {
 		strErrorMessage = strErrorMessage + "<p>Please specify a Vendor Contact.</p>";
@@ -244,7 +231,7 @@ app.post("/addVendor", async (req, res) => {
 	//HB TODO: check if vendor already exists
 
 	try {
-	  console.log('backend create vendor: ', strVendorName, ", ", strLink, ", ", strVendorContactName);
+	  	console.log('backend create vendor: ', strVendorName, ", ", strVendorLink, ", ", strVendorContactName);
   
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
 		if (userID == -1) {
@@ -255,7 +242,7 @@ app.post("/addVendor", async (req, res) => {
 
 		// Figure out what the next auto-increment ID is for tblVendorContact so we can use it for tblVendor
 		const intVendorContactID = await dbConnection.query("SELECT MAX(ID) AS maxID FROM tblVendorContact;");
-		const insertVendorResult = await dbConnection.query("INSERT INTO tblVendor (VendorName, Website, Status, VendorContactID) VALUES (?, ?, 1, ?);", [strVendorName, strLink, intVendorContactID[0].maxID + 1]);
+		const insertVendorResult = await dbConnection.query("INSERT INTO tblVendor (VendorName, Website, Status, VendorContactID) VALUES (?, ?, 1, ?);", [strVendorName, strVendorLink, intVendorContactID[0].maxID + 1]);
 		
 		console.log("Creating new VendorContact: " + strVendorContactName);
 

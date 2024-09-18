@@ -53,9 +53,6 @@
                 </div>
                 <form>
                     <div class="modal-body">
-                        <label for="txtPurchaseOrderID" class="form-label">Purchase Order ID</label>
-                        <input type="text" class="form-control req" id="txtPurchaseOrderID" placeholder="Purchase Order ID" required>
-
                         <label for="txtVendor" class="form-label">Vendor</label>
                         <select class="form-select req" id="txtVendor" aria-label="Vendor" required>
                             <option selected>Select Vendor</option>
@@ -158,7 +155,6 @@
 
         //send the create request to the server
         $('#btnCreatePO').on('click', function () {
-            let strPurchaseOrderID = $('#txtPurchaseOrderID').val();
             let strVendorName = $('#txtVendor').val();
             let intStatus = 1;
             let strRequestedFor = $('#txtSelectedFor').val();
