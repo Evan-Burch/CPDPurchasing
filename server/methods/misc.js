@@ -5,6 +5,7 @@ var db_pool = require("./db.js");
 var {clean, getUserIDBySessionToken, getUserNameBySessionToken} = require("./helper.js");
 
 var bodyParser = require("body-parser");
+const crypto = require("crypto");
 
 //This route is called whenever a webhook is triggered from a push to Github
 router.post('/build', bodyParser.json(), (req, res) => {
