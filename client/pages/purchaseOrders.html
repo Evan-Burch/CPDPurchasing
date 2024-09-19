@@ -210,7 +210,7 @@
                         function (results) {
                             console.log('Response:', results);
                             $('#newPO').modal('hide');
-                            returnHome("purchaseOrders");
+                            location.reload();
                         },
                     error:
                         function (xhr, status, error) {

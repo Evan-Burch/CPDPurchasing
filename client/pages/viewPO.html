@@ -209,7 +209,7 @@
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
                 success: function(results){
-                    javascript:switchPage('./pages/purchaseOrders.html')
+                    returnHome('purchaseOrders')
                 }
             })
         });

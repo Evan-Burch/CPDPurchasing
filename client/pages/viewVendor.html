@@ -202,7 +202,7 @@
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: sessionStorage.getItem('VendorName') }),
                 contentType: 'application/json',
                 success: function(results){
-                    javascript:switchPage('./pages/vendors.html')
+                    returnHome('vendors');
                 }
             })
         })
