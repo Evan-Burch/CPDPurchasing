@@ -110,7 +110,7 @@ router.post("/fillAccountTable", async (req, res) => {
 
 		console.log("Filling the New account Modal");
 
-		const FiscalAuthorities = await dbConnection.query("SELECT FiscalAuthority FROM tblAccount;");
+		const FiscalAuthorities = await dbConnection.query("select distinct tblUser.DisplayName as FiscalAuthority from tblAccount left join tblUser on tblAccount.FiscalAuthority = tblUser.EmployeeID;");
 
 		res.status(200).json({"message": "Success.", "FiscalAuthorities": FiscalAuthorities});
 	} finally {
