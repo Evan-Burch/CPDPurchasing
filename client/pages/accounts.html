@@ -62,7 +62,7 @@
 
                         <label for="txtFiscal" class="form-label">Fiscal Authority</label>
                         <select class="form-select req" id="txtFiscal" required>
-                            <option selected>Fiscal Authority</option>
+                            <option selected disabled>Fiscal Authority</option>
                         </select>
 
                         <label for="txtDivision" class="form-label">Division</label>
@@ -155,7 +155,7 @@
                 success:
                     function (results) {
                         results.FiscalAuthorities.forEach(element => {
-                            $('#txtFiscal').append('<option value="' + element.FiscalAuthority + '">' + element.FiscalAuthority + '</option>');
+                            $('#txtFiscal').append('<option value="' + element.FiscalAuthorityID + '">' + element.FiscalAuthority + '</option>');
                         });
                     }
             });
@@ -167,7 +167,7 @@
             let strAccountNumber = $('#txtAccountNum').val();
             let strDescription = $('#txtDescription').val();
             // evan: Fiscal authority is hardcoded here becauce It isnt being sent correctly and I needed to test the rest of the functionality
-            let strFiscalAuthority = 'Randy Brown' //$('#txtFiscal').val();
+            let strFiscalAuthority = $('#txtFiscal').val();
             let strDivision = $('#txtDivision').val();
 
             console.log("Sending Data:", strAccountNumber, ",",
