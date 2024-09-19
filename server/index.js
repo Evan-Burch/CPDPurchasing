@@ -12,11 +12,11 @@ app.use(express.json());
 app.use(cors());
 app.use(bodyParser.json());
 
-app.use("/", require("./purchase-orders.js"));
-app.use("/", require("./vendor.js"));
-app.use("/", require("./account.js"));
-app.use("/", require("./user.js"));
-app.use("/", require("./misc.js"));
+app.use("/", require("./methods/purchase-orders.js"));
+app.use("/", require("./methods/vendor.js"));
+app.use("/", require("./methods/account.js"));
+app.use("/", require("./methods/user.js"));
+app.use("/", require("./methods/misc.js"));
 
 var server = app.listen(8000, function() {
 	var currentBranch = "missingno";
