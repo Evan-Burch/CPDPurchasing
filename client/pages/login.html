@@ -1,41 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<style>
-    .invalid {
-        box-shadow: 0 0 2px 2px #fd0000;
-    }
-</style>
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POModule</title>
+    <title>CPD-POModule</title>
+    <link rel="icon" href="../assets/images/logo.png">
     <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/css/login.css" rel="stylesheet">
 </head>
 
-<body style="background-image: url(../assets/images/pd-hero-image.jpg); background-repeat:no-repeat; background-size:cover;">
-  <div class="d-flex vh-100 vw-100 justify-content-center align-items-center">
-      <!-- Use Bootstrap utilities to center the card both vertically and horizontally -->
-      <div class="login-page">
-        <div class="form bg-primary">
-          <img class="mx-auto d-block mb-3" src="../assets/images/logo.png" style="width: 120px; height: 120px; opacity: 70%;">
-          <form class="login-form">
-            <input class = "req" type="text" id="txtUsername" placeholder="username" aria-label="Username" required>
-            <input class = "req" type="password" id="txtPassword" placeholder="password" aria-label="Password" required>
-            <button type="button" class="mb-1 col-5" id="btnLogin" aria-label="Login">login</button>
-            <button type="button" class="col-5" id="btnSAMLLogin" aria-label="Login with SAML">SAML</button>
-          </form>
+<body
+    style="background-image: url(../assets/images/pd-hero-image.jpg); background-repeat:no-repeat; background-size:cover;">
+    <div class="d-flex vh-100 vw-100 justify-content-center align-items-center">
+        <!-- Use Bootstrap utilities to center the card both vertically and horizontally -->
+        <div class="login-page">
+            <div id="warningError" class="alert alert-dismissible alert-danger position-absolute"
+                style="display: none; z-index: 100; top: 10%; left: 50%; transform: translateX(-50%); width: 90%; max-width: 600px;">
+                <button id="btnWarningClose" type="button" class="btn-close" aria-label="Close"
+                    data-bs-dismiss="alert"></button>
+                <h4 class="alert-heading">Warning!</h4>
+                <p class="mb-0" id="txtLoginError"></p>
+            </div>
+            <div class="form bg-primary">
+                <img class="mx-auto d-block mb-3" src="../assets/images/logo.png"
+                    style="width: 120px; height: 120px; opacity: 70%;">
+                <form class="login-form">
+                    <input class="req" type="text" id="txtUsername" placeholder="username" aria-label="Username"
+                        required>
+                    <input class="req" type="password" id="txtPassword" placeholder="password" aria-label="Password"
+                        required>
+                    <button type="button" class="mb-1 col-5" id="btnLogin" aria-label="Login">login</button>
+                    <button type="button" class="col-5" id="btnSAMLLogin" aria-label="Login with SAML">SAML</button>
+                </form>
+            </div>
         </div>
-      </div>
-  </div>
+    </div>
 
     <script src="../assets/js/jquery-3.7.1.min.js"></script>
     <script src="../assets/js/utils.js"></script>
     <script>
         $(document).ready(function () {
             handleBrowserNav(); // stop the user from going back/forwards/whatever
+        });
+
+        $('#btnWarningClose').on('click', function () {
+            $('#warningError').hide();
         });
 
         $('#btnLogin').on('click', function () {
@@ -53,9 +63,17 @@
                     contentType: 'application/json',
                     success:
                         function (results) {
-                            if (results.status == 200) { // this was missing
-                                sessionStorage.setItem('SimpleSession', results.uuidSessionToken);
-                                window.location.href = "../index.html";
+                            // don't panic, now that the status codes are being returned correctly,
+                            // that bit of code i wrote can really go away now
+                            sessionStorage.setItem('SimpleSession', results.uuidSessionToken);
+                            window.location.href = "../index.html";
+                        },
+                    error:
+                        function (results) {
+                            if (results.status == 400) {
+                                // console.log(results);
+                                $('#txtLoginError').text('Invalid Login Information');
+                                $('#warningError').show();
                             }
                         }
                 });

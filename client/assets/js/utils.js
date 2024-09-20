@@ -6,14 +6,6 @@ function handleBrowserNav() {
     });
 }
 
-function cacheJSON(key, json) {
-    localStorage.setItem(key, JSON.stringify(json));
-}
-
-function recallJSON(key) {
-    return localStorage.getItem(key);
-}
-
 // Function for input validation on client-side
 // Checks that required input fields are not empty/default values 
 function validateInput() {
@@ -28,6 +20,39 @@ function validateInput() {
         }
         else {
             e.classList.remove('invalid');
+        }
+    });
+}
+
+function returnHome(referrer) {
+    window.location.href = "../index.html?table=" + referrer;
+}
+
+function getUserSettings() {
+    $.ajax({
+        type: 'POST',
+        url: 'http://34.224.145.158:8000/getUserSettings',
+        data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+        contentType: 'application/json',
+        success: function (results) {
+            if (results.user_settings != undefined) {
+            var userSettingsArray = results.user_settings;
+            for (var i = 0; i < userSettingsArray.length; i++) {
+                var currentKey = Object.keys(userSettingsArray[i])[0];
+                var currentValue = userSettingsArray[i][currentKey];
+
+                switch (currentKey) {
+                case "theme":
+                    if (currentValue != $('html').attr('data-bs-theme')) {
+                    $('html').attr('data-bs-theme', currentValue);
+                    }
+                    break;
+                default:
+                    console.warn("Unrecognized setting key " + currentKey + "!");
+                    break;
+                }
+            }
+            }
         }
     });
 }
