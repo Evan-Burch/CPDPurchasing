@@ -8,7 +8,7 @@ router.post("/addAccount", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
-	const intAccountNumber = req.body.intAccountNumber;
+	const intAccountNumber = clean(req.body.intAccountNumber);
 	const strDescription = clean(req.body.strDescription);
 	const strFiscalAuthority = clean(req.body.strFiscalAuthority);
 	const strDivision = clean(req.body.strDivision);
@@ -22,11 +22,11 @@ router.post("/addAccount", async (req, res) => {
 		//server side error checking
 		let strErrorMessage = '';
 
-		if(intAccountNumber=='') {
+		if(intAccountNumber == '') {
 			strErrorMessage = strErrorMessage + "<p>Please specify an account number</p>";
 		}
     
-		if(strDescription=='') {
+		if(strDescription == '') {
 			strErrorMessage = strErrorMessage + "<p>Please specify a description</p>";
 		}
 
@@ -34,36 +34,34 @@ router.post("/addAccount", async (req, res) => {
 			strErrorMessage = strErrorMessage + "<p>Description is too long</p>";
 		}
 
-		if(strFiscalAuthority=='Fiscal Authority') {
+		if(strFiscalAuthority == 'Fiscal Authority') {
 			strErrorMessage = strErrorMessage + "<p>Please specify a fiscal authority</p>";
 		}
 
-		if(strFiscalAuthority>100) {
+		if(strFiscalAuthority.length > 100) {
 			strErrorMessage = strErrorMessage + "<p>Fiscal authority is too long</p>";
 		}
 
-		if(strDivision=='') {
+		if(strDivision == '') {
 			strErrorMessage = strErrorMessage + "<p>Please specify a division</p>";
 		}
 
-		if(strDivision>100) {
+		if(strDivision.length > 100) {
 			strErrorMessage = strErrorMessage + "<p>Division is too long</p>";
 		}
 
-		if(strErrorMessage.length>0) {
+		if(strErrorMessage.length > 0) {
 			return res.status(400).json({"message":strErrorMessage});
 		}
 
 		var duplicate = await dbConnection.query("SELECT * FROM tblAccount WHERE AccountID=?;", [intAccountNumber]);
 		if (duplicate.length != 0) {
-			return res.status(400).json({"message": `Account ${intAccountNumber} already exists.`});
+			return res.status(400).json({"message": "Account " + intAccountNumber + " already exists."});
 		}
 
 		console.log("Creating a new Account: ", intAccountNumber, ", ", strDescription, ", ", strFiscalAuthority, ", ", strDivision);
 
-		const intFiscalAuthorityID = await dbConnection.query("SELECT EmployeeID FROM tblUser WHERE DisplayName=?;", [strFiscalAuthority]);
-
-		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [intAccountNumber, strDescription, intFiscalAuthorityID[0].EmployeeID, strDivision]);
+		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [intAccountNumber, strDescription, strFiscalAuthority, strDivision]);
 
 		res.status(200).json({"message": "Success."});
 	} finally {
@@ -98,8 +96,8 @@ router.post("/fillAccountTable", async (req, res) => {
 });
 
   
-	// HB TODO Note: currently fills with many "unknowns" so check if SQL is correct
-  router.post("/fillNewAccountModal", async (req, res) => {
+
+router.post("/fillNewAccountModal", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 	try {
@@ -111,8 +109,9 @@ router.post("/fillAccountTable", async (req, res) => {
 		console.log("Filling the New account Modal");
 
 		const FiscalAuthorities = await dbConnection.query("select distinct tblAccount.FiscalAuthority as FiscalAuthorityID, tblUser.DisplayName as FiscalAuthority from tblAccount left join tblUser on tblAccount.FiscalAuthority = tblUser.EmployeeID;");
+		const Divisions = await dbConnection.query("select * from tblDivision;");
 
-		res.status(200).json({"message": "Success.", "FiscalAuthorities": FiscalAuthorities});
+		res.status(200).json({"message": "Success.", "FiscalAuthorities": FiscalAuthorities, "Divisions": Divisions});
 	} finally {
 		await dbConnection.close();
 	}
@@ -147,7 +146,7 @@ router.post("/getAccountInfo", async (req, res) => {
 router.delete("/deleteAccount", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
-	const intAccountID = req.body.intAccountID;
+	const intAccountID = clean(req.body.intAccountID);
 	
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);

@@ -11,7 +11,7 @@ router.post("/addVendor", async (req, res) => {
 	const strVendorName = clean(req.body.strVendorName);
 	const strVendorLink = clean(req.body.strVendorLink);
 	const strVendorContactName = clean(req.body.strVendorContactName);
-	const intCreatedBy = req.body.intCreatedBy;
+	const intCreatedBy = clean(req.body.intCreatedBy);
 
 
 	let strVendorID = 123;

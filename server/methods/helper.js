@@ -1,8 +1,11 @@
 var db_pool = require("./db.js");
 
 function clean(str) {
-	if (str === undefined || typeof str !== 'string') {
+	if (str === undefined) {
 		return "error";
+	}
+	if (typeof str !== 'string' || typeof str !== 'number') {
+		return "datatype error";	
 	}
 	return str.replace(/[^0-9a-zA-Z_\-@.\s]/gi, "");
 }
