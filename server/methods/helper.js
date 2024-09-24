@@ -4,10 +4,13 @@ function clean(str) {
 	if (str === undefined) {
 		return "error";
 	}
-	if (typeof str !== 'string' || typeof str !== 'number') {
-		return "datatype error";	
+	if (typeof str == 'string') {
+		return str.replace(/[^0-9a-zA-Z_\-@.\s]/gi, "");	
+	} else if (typeof str == 'number') {
+		return str;
+	} else {
+		return "datatype error";
 	}
-	return str.replace(/[^0-9a-zA-Z_\-@.\s]/gi, "");
 }
 
 async function getUserIDBySessionToken(uuidSessionToken) {
