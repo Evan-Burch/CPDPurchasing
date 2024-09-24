@@ -15,6 +15,7 @@ app.use(bodyParser.json());
 app.use("/", require("./methods/purchase-orders.js"));
 app.use("/", require("./methods/vendor.js"));
 app.use("/", require("./methods/account.js"));
+app.use("/", require("./methods/reports.js"));
 app.use("/", require("./methods/user.js"));
 app.use("/", require("./methods/misc.js"));
 
