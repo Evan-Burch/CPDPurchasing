@@ -55,11 +55,11 @@
                     <div class="modal-body">
                         <label for="txtVendor" class="form-label">Vendor</label>
                         <select class="form-select req" id="txtVendor" aria-label="Vendor" required>
-                            <option selected>Select Vendor</option>
+                            <option selected disabled>Select Vendor</option>
                         </select>
                         <label for="txtSelectedFor" class="form-label">Requested For</label>
                         <select class="form-select req" id="txtSelectedFor" aria-label="Requested For" required>
-                            <option selected>Select Requested For</option>
+                            <option selected disabled>Select Requested For</option>
                         </select>
                         <label for="txtNotes" class="form-label">Notes</label>
                         <textarea class="form-control" id="txtNotes" placeholder="Notes"></textarea>
@@ -143,11 +143,11 @@
                 contentType: 'application/json',
                 success:
                     function (results) {
-                        results.VendorNames.forEach(element => {
-                            $('#txtVendor').append('<option value="' + element.VendorName + '">' + element.VendorName + '</option>');
+                        results.Vendors.forEach(element => {
+                            $('#txtVendor').append('<option value="' + element.VendorID + '">' + element.VendorName + '</option>');
                         });
                         results.Users.forEach(element => {
-                            $('#txtSelectedFor').append('<option value="' + element.DisplayName + '">' + element.DisplayName + '</option>');
+                            $('#txtSelectedFor').append('<option value="' + element.EmployeeID + '">' + element.DisplayName + '</option>');
                         })
                     }
             });
@@ -163,15 +163,6 @@
 
             // ***** Client side error handling *****
             let strErrorMessage = '';
-
-            //not needed as purchase order id is auto generated
-            // if(strPurchaseOrderID == '') {
-            //     strErrorMessage = strErrorMessage + "<p>Please specify a purchase order ID.</p>";
-            // }
-
-            // if(strPurchaseOrderID.length > 50) {
-            //     strErrorMessage = strErrorMessage + "<p>purchase order id is too long</p>";
-            // }
 
             if(strVendorName == 'Select Vendor') {
                 strErrorMessage = strErrorMessage + "<p>Please specify a vendor.</p>";
