@@ -27,45 +27,82 @@
                         <option value="2021">2021</option>
                         <option value="2022">2022</option>
                         <option value="2023">2023</option>
-                        <option value="2024">2024</option>
-                        <option value="2025">2025</option>
+                        <option value="2024" selected>2024</option>
                     </select>
                 </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped responsive" id="tblReports">
-                        <thead>
-                            <tr>
-                                <th>Account ID</th>
-                                <th>Description</th>
-                                <th>Division</th>
-                                <th>Budget Amount</th>
-                                <th>Spent Amount</th>
-                                <th>Available Balance</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
     <script>
-        $('#tblReports').DataTable({
-            layout: {
-                topStart: {
-                    buttons: [
-                        { extend: 'copy', className: 'copyButton' },
-                        { extend: 'excel', className: 'excelButton' },
-                        { extend: 'print', className: 'printButton' }
-                    ]
-                }
-            },
-            "autowidth": false
-        })
+        function doReportCall(intYear) {
+            $.ajax({
+                type: 'POST',
+                url: 'http://34.224.145.158:8000/fillReportsTable',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intYear:intYear}),
+                contentType: 'application/json',
+                success:
+                    function (results) {
+                        console.log('Response:', results);
+                        $('#tblReports').DataTable({
+                            layout: {
+                                topStart: {
+                                    buttons: [
+                                        { extend: 'copy', className: 'copyButton' },
+                                        { extend: 'excel', className: 'excelButton' },
+                                        { extend: 'print', className: 'printButton' }
+                                    ]
+                                }
+                            },
+                            data: results.Reports,
+                            columns: [
+                                {data: "AccountID", title: "Account ID"},
+                                {data: "AccountDescription", title: "Description"},
+                                {data: "DivisionDescription", title: "Division"},
+                                {data: "Budget", title: "Budget Amount"},
+                                {data: "Expenses", title: "Spent Amount"},
+                                {data: "Available", title: "Available Balance"}
+                            ],
+                            rowCallback: function(row, data, dataIndex) {
+                                var floatAvailable = parseFloat(data.Available);
+                                var floatBudget = parseFloat(data.Budget);
+
+                                // are we in the red, literally?
+                                if (floatAvailable <= 0.0) {
+                                    $('td', row).addClass("bg-danger");
+                                }
+                                // is there nothing to spend to begin with?
+                                if (floatBudget == 0.0) {
+                                    $('td', row).addClass("bg-warning");
+                                }
+                            },
+                            "autowidth": false
+                        });
+                    },
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                    //pop up the error message from server side validation
+                    $('#txtErrorMsg').html(xhr.responseJSON.message);
+                    $('#WarningErrorMessagePopUp').show();
+                }                    
+            });
+        }
+
+        $(document).ready(function() {
+            var intYear = parseInt($("#selFiscalYear").val());
+
+            doReportCall(intYear);
+        });
+
+        $("#selFiscalYear").on("change", function() {
+            $("#tblReports").DataTable().destroy();
+            doReportCall(this.value);
+        });
     </script>
 </body>
 
