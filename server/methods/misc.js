@@ -7,6 +7,8 @@ var {clean, getUserIDBySessionToken, getUserNameBySessionToken} = require("./hel
 var bodyParser = require("body-parser");
 const crypto = require("crypto");
 
+var { exec } = require('child_process');
+
 //This route is called whenever a webhook is triggered from a push to Github
 router.post('/build', bodyParser.json(), (req, res) => {
 	// Validate the webhook signature
