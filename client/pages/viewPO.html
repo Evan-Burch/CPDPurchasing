@@ -62,12 +62,10 @@
                         <button type="button" class="btn btn-primary col-12 offset-3 mb-2"><!-- Add Functionality -->
                             Print
                         </button>
-                        <button type="button" class="btn btn-info col-12 offset-3 mb-2" data-bs-toggle="modal"
-                            data-bs-target="#editPO"><!-- Add Functionality -->
+                        <button type="button" class="btn btn-info col-12 offset-3 mb-2" data-bs-toggle="modal" data-bs-target="#editPO"><!-- Add Functionality -->
                             Edit PO
                         </button>
-                        <button type="button" class="btn btn-success col-12 offset-3 mb-2" data-bs-toggle="modal"
-                            data-bs-target="#addPOItem"><!-- Add Functionality -->
+                        <button type="button" class="btn btn-success col-12 offset-3 mb-2" data-bs-toggle="modal" data-bs-target="#addPOItem"><!-- Add Functionality -->
                             Add Item
                         </button>
                         <button id="btnDelete" type="button" class="btn btn-danger col-12 offset-3 mb-2"><!-- Add Functionality -->
@@ -75,25 +73,13 @@
                         </button>
                     </div>
                 </div>
-            
+
 
                 <label for="txtNotes" class="form-label mt-3"><b>Notes</b></label>
                 <textarea id="txtNotes" class="form-control mb-2">Notes</textarea>
 
                 <div class="table-responsive">
                     <table class="table table-striped responsive" id="tblPOItems">
-                        <thead>
-                            <tr>
-                                <th>Account ID</th>
-                                <th>Item Description</th>
-                                <th>Quantity</th>
-                                <th>Price Each</th>
-                                <th>Total Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
                     </table>
                 </div>
                 <hr>
@@ -132,7 +118,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success" aria-label="Finish PO edit">Edit</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="CLose edit modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                        aria-label="CLose edit modal">Close</button>
                 </div>
             </div>
         </div>
@@ -179,14 +166,14 @@
         var PurchaseOrderID = -1;
         $(document).ready(function () {
             PurchaseOrderID = new URL(window.location.href).searchParams.get("POID");
-            
+
             $('#poTitle').text('Purchase Order ' + PurchaseOrderID);
             $.ajax({
                 type: 'POST',
                 url: 'http://34.224.145.158:8000/getPOInfo',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
-                success: function(results){
+                success: function (results) {
                     console.log(results);
                     $('#pVendor').text(results.POInfo[0].VendorName);
                     $('#pCreatedBy').text(results.POInfo[0].CreatedBy);
@@ -197,22 +184,65 @@
                     $('#txtNotes').val(results.POInfo[0].Notes);
                 }
             });
+            $.ajax({
+                type: 'POST',
+                url: 'http://34.224.145.158:8000/fillPOItemTable',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results);
+                    if (Array.isArray(results.POItemTable)) {
+                        $('#tblPOItems').DataTable({
+                            data: results.POItemTable,
+                            columns: [
+                                { data: "AccountID", title: "Account ID" },
+                                { data: "Description", title: "Item Description" },
+                                { data: "Quantity", title: "Quantity" },
+                                { data: "PriceEach", title: "Price Each" },
+                                { data: "Price", title: "Total Price", footer: "Total"}
+                            ],
+                            rowCallback: function (row, data, dataIndex) {
+                                var quantity = parseInt(data.Quantity);
+                                var totalPrice = parseFloat(data.Price);
+
+                                if (quantity <= 0) {
+                                    $('td', row).addClass('bg-warning');
+                                }
+                                if (totalPrice <= 0.0) {
+                                    $('td', row).addClass('bg-danger');
+                                }
+                            },
+                            footerCallback: function(tr, data, start, end, display) {
+                                var api = this.api();
+                                var grandTotal = api.column(4).data().reduce((a, b) => parseFloat(a) + parseFloat(b), 0).toFixed(2);
+                                var pageTotal = api.column(4, {page: "current"}).data().reduce((a, b) => parseFloat(a) + parseFloat(b), 0).toFixed(2);
+
+                                api.column(4).footer().innerHTML = '$' + pageTotal + ' ($' + grandTotal + ' total)';
+                            },
+                            autowidth: false,
+                            responsive: true,
+                            order: [[0, 'desc']]
+                        });
+                    } else {
+                        console.error('Unexpected response format or status:', results);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                }
+            });
 
             //getUserSettings();
         })
 
-        $('#tblPOItems').DataTable({
-            responsive: true,
-        })
-
-        $('#btnDelete').on('click', function(){
+        $('#btnDelete').on('click', function () {
             // Add functionality to delete PO
             $.ajax({
                 type: 'DELETE',
                 url: 'http://34.224.145.158:8000/deletePO',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
-                success: function(results){
+                success: function (results) {
                     returnHome('purchaseOrders')
                 }
             })

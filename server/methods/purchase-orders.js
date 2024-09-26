@@ -130,6 +130,31 @@ router.post("/getPOInfo", async (req, res) => {
 	}
 });
 
+router.post("/fillPOItemTable", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+
+		console.log("Filling the PO Item Table");
+
+		const POItemTable = await dbConnection.query("select poi.AccountID, poi.Description, poi.Quantity, case when poi.Quantity = 0 then poi.Price else round(poi.Price / poi.Quantity, 2) end as PriceEach, poi.Price from tblPurchaseOrderItem poi where poi.PurchaseOrderID=?;", [strPurchaseOrderID]);
+		if (POItemTable.length == 0) {
+			return res.status(500).json({"message": "There are no purchase order items."});
+		}
+		//console.log(POItemTable);
+		res.status(200).json({"message": "Success.", "POItemTable": POItemTable});
+
+	} finally {
+		await dbConnection.close();
+	}
+});
+
 router.delete("/deletePO", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
