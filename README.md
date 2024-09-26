@@ -1,5 +1,5 @@
 # Hubble
-Software Engineering City of Cookeville
+Software Engineering City of Cookeville Police Department
 
 ## Setting up the Frontend to be hosted on Debian EC2 with Apache
 - Run `sudo apt-get install apache2` to install the apache http server
