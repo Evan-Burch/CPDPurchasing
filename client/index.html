@@ -47,8 +47,8 @@
                 Dropdown
               </button>
               <ul id="dropdownMenu" style="z-index: 99; right: 0px" class="dropdown-menu dropdown-menu-end">
-                <li><a id="btnSwitch" class="dropdown-item" href="#">Switch Theme</a></li>
-                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><a id="btnSettings" class="dropdown-item" href="#" data-bs-toggle="modal"
+                  data-bs-target="#settings">Settings</a></li>
                 <li><a id="btnLogout" class="dropdown-item" href="#">Logout</a></li>
               </ul>
             </li>
@@ -59,6 +59,72 @@
 
     <div id="divMain">
       <!-- Main content area, will load dynamically based on the user's selection -->
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal fade" id="settings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Settings</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    Switch Theme <br>
+                    <label class="switch">
+                      <input type="checkbox" id="btnSwitch">
+                      <div class="slider"></div>
+                      <div class="slider-card">
+                        <div id="btnSwitch" class="slider-card-face slider-card-front"></div>
+                        <div class="slider-card-face slider-card-back"></div>
+                      </div>
+                    </label> <br> <br>
+                    <button id="btnChangePassword" type="button" class="btn btn-primary col-4" 
+                      data-bs-toggle="modal" data-bs-target="#ChangePassword">Change Password</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close Settings modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div class="modal fade" id="ChangePassword" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Change Password</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <label for="txtCurrentPassword" class="form-label">Current Password</label>
+                    <input type="text" class="form-control req" id="txtCurrentPassword" placeholder="Current Password" required>
+
+                    <label for="txtNewPassword" class="form-label">New Password</label>
+                    <input type="text" class="form-control req" id="txtNewPassword" placeholder="New Password" required>
+
+                    <label for="txtConfirmPassword" class="form-label">Confirm New Password</label>
+                    <input type="text" class="form-control req" id="txtConfirmPassword" placeholder="Confirm New Password" required>
+
+                </div>
+                <!--Error messages. Default Hidden-->
+                <div id="WarningErrorMessagePopUp" class="alert alert-warning" style="display:none;">
+                    <h4 class="alert-heading">Warning!</h4>
+                    <p class="mb-0" id="txtErrorMsg"></p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSendChangedPassword" type="button" class="btn btn-success" aria-label="Change password">Change</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close change password modal">Close</button>
+                </div>
+            </form>
+        </div>
     </div>
   </div>
 
@@ -184,6 +250,53 @@
 
     $('#username').click(function () {
       $('#dropdownMenu').toggleClass('show');
+    });
+
+    $('#btnSendChangedPassword').on('click', function () {
+        let strCurrentPassword = $('#txtCurrentPassword').val();
+        let strNewPassword = $('#txtNewPassword').val();
+        let strConfirmPassword = $('#txtConfirmPassword').val();
+
+        // ***** Client side error handling *****
+        let strErrorMessage = '';
+
+        if(strCurrentPassword == '')
+            strErrorMessage = strErrorMessage + "<p>Please specify your current password</p>";
+
+        if(strNewPassword == '')
+            strErrorMessage = strErrorMessage + "<p>Please specify your new password</p>";
+
+        if(strConfirmPassword == '')
+            strErrorMessage = strErrorMessage + "<p>Please confirm your new password</p>";
+
+        if(strNewPassword != strConfirmPassword)
+            strErrorMessage = strErrorMessage + "<p>Your new password and confirm password do not match</p>";
+        
+        // if the error message exists, show it and let the user fix their problems
+        if(strErrorMessage.length > 0) {
+            console.log(strErrorMessage);
+            $('#txtErrorMsg').html(strErrorMessage);
+            $('#WarningErrorMessagePopUp').show();
+        }
+        //otherwise send the post request
+        else {
+            $.ajax({
+                type: 'PUT',
+                url: 'http://34.224.145.158:8000/changeUserPassword',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strCurrentPassword: strCurrentPassword, strNewPassword: strNewPassword }),
+                contentType: 'application/json',
+                success:
+                  function (results) {
+                    window.location.href = "./index.html";
+                  },
+                error:
+                  function (xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                    $('#txtErrorMsg').html(xhr.responseJSON.message);
+                    $('#WarningErrorMessagePopUp').show();
+                  }
+            });
+        }
     });
 
     $('#btnLogout').click(function () {
