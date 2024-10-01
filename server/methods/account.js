@@ -95,7 +95,56 @@ router.post("/fillAccountTable", async (req, res) => {
 	}
 });
 
-  
+router.post("/fillAccountBudgetTable", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strAccountID = clean(req.body.strAccountID);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+
+		console.log("Filling the Accounts Budget Table");
+
+		const AccountBudgetTable = await dbConnection.query("select act.FiscalYear, actt.Description as AccountType, act.Amount, DATE_FORMAT(act.DateCreated, '%m/%d/%Y %h:%i %p') as DateCreated from tblAccountTransaction act left join tblAccountTransactionType actt on actt.ID = act.AccountType where act.AccountID=?;", [strAccountID]);
+		if (AccountBudgetTable.length == 0) {
+			return res.status(500).json({"message": "There is no account budget information."});
+		} else {
+			res.status(200).json({"message": "Success.", "AccountBudgetTable": AccountBudgetTable});
+		}
+
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+router.post("/fillAccountPOTable", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strAccountID = clean(req.body.strAccountID);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+
+		console.log("Filling the Account POs Table");
+
+		const AccountPOTable = await dbConnection.query("select distinct po.PurchaseOrderID, DATE_FORMAT(po.CreatedDateTime, '%m/%d/%Y %h:%i %p') as DateCreated, ven.VendorName, usr.DisplayName as CreatedBy, po.Amount, actt.FiscalYear from tblPurchaseOrder po left join tblPurchaseOrderItem poi on po.PurchaseOrderID = poi.PurchaseOrderID left join tblAccountTransaction actt on poi.AccountID = actt.AccountID left join tblVendor ven on po.VendorID = ven.VendorID left join tblUser usr on po.CreatedBy = usr.EmployeeID where actt.FiscalYear - YEAR(po.CreatedDateTime) = 1 and actt.AccountID=?;", [strAccountID]);
+
+		if (AccountPOTable.length == 0) {
+			return res.status(500).json({"message": "There is no account PO information."});
+		} else {
+			res.status(200).json({"message": "Success.", "AccountPOTable": AccountPOTable});
+		}
+
+	} finally {
+		await dbConnection.close();
+	}
+});
 
 router.post("/fillNewAccountModal", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();

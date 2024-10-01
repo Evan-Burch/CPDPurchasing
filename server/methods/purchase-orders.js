@@ -147,7 +147,6 @@ router.post("/fillPOItemTable", async (req, res) => {
 		if (POItemTable.length == 0) {
 			return res.status(500).json({"message": "There are no purchase order items."});
 		}
-		//console.log(POItemTable);
 		res.status(200).json({"message": "Success.", "POItemTable": POItemTable});
 
 	} finally {

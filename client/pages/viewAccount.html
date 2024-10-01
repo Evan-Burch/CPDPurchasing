@@ -27,118 +27,95 @@
         <div class="card col-12 col-md-10 col-lg-9">
             <div class="card-header">
                 <div class="row">
-                    <h3 id='accountTitle' class="col-8"></h3>
-                    <button type="button" class="btn btn-primary col-2 offset-2"
+                    <h3 id="accountTitle" class="col-8"></h3>
+                    <button type="button" class="btn btn-primary col-4 col-md-2 offset-md-2"
                         onclick="javascript:returnHome('accounts')">Return</button>
                 </div>
             </div>
             <div class="card-body">
                 <div class="row mb-5">
-                    <div class="card col-9 mx-2">
-                        <div class="row">
-                            <div class="col-3 p-3">
-                                <p><b> Description:</b> </b></p>
-                                <p><b> Division: </b></p>
-                            </div>
-                            <div class="col-3 p-3">
-                                <p id="pDescription"> placeholder </p>
-                                <p id="pDivision"> placeholder </p>
-                            </div>
-                            <div class="col-3 p-3">
-                                <p><b> Fiscal Authority: </b></p>
-                                <p><b> Status: </b></p>
-                            </div>
-                            <div class="col-3 p-3">
-                                <p id="pFiscalAuthority"> placeholder </p>
-                                <p id="pStatus"> placeholder </p>
+                    <!-- Account Details Card -->
+                    <div class="col-12 col-md-9">
+                        <div class="card mb-3">
+                            <div class="row g-3 p-3">
+                                <div class="col-6 col-md-3">
+                                    <p><b>Description:</b></p>
+                                    <p><b>Division:</b></p>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <p id="pDescription">placeholder</p>
+                                    <p id="pDivision">placeholder</p>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <p><b>Fiscal Authority:</b></p>
+                                    <p><b>Status:</b></p>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <p id="pFiscalAuthority">placeholder</p>
+                                    <p id="pStatus">placeholder</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-2">
-                        <button type="button" class="btn btn-info col-12 offset-3 mb-2" data-bs-toggle="modal"
-                            data-bs-target="#editAccount"><!-- Add Functionality -->
-                            Edit Account
-                        </button>
 
-                        <button id="btnDelete" type="button" class="btn btn-danger col-12 offset-3 mb-2"><!-- Add Functionality -->
-                            Delete Account
-                        </button>
+                    <!-- Buttons for Account Actions -->
+                    <div class="col-12 col-md-3 d-flex flex-column justify-content-start">
+                        <button type="button" class="btn btn-info mb-2" data-bs-toggle="modal"
+                            data-bs-target="#editAccount">Edit Account</button>
+                        <button id="btnDelete" type="button" class="btn btn-danger mb-2">Delete Account</button>
                     </div>
                 </div>
-                <!-- DECIDE HOW WE WANT TO SHOW THE BUDGET, SPENT, AND REMAINING HERE (CARDS LIKE THEY HAVE, PROGRESS BARS, ETC) -->
-                
-                <div class="table-responsive">
-                    <table class="table table-stripe responsive" id="tblAccountYearlyBudgets">
-                        <thead>
-                            <tr>
-                                <th>Fiscal Year</th>
-                                <th>Type</th>
-                                <th>Amount</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
 
-                        </tbody>
+                <!-- Tables -->
+                <div class="table-responsive mb-3">
+                    <table class="table table-striped" id="tblAccountYearlyBudgets" style="width: 100%;">
+                        <!-- Table content here -->
                     </table>
                 </div>
 
                 <hr>
 
                 <div class="table-responsive">
-                    <table class="table table-striped responsive" id="tblAccountPOs">
-                        <thead>
-                            <tr>
-                                <th>Purchase Order ID</th>
-                                <th>Date</th>
-                                <th>Vendor</th>
-                                <th>Creeated By</th>
-                                <th>Amount</th>
-                                <th>Fiscal Year</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
+                    <table class="table table-striped" id="tblAccountPOs" style="width: 100%;">
+                        <!-- Table content here -->
                     </table>
                 </div>
-
-                <!-- <div class="col-4">
-                    <label for="formFile" class="form-label mt-2"><b>Attachments</b></label>
-                    <input class="form-control col-4" type="file" id="formFile">
-                </div>   NOT SURE IF WE WANT THIS ON THE ACCOUNT OR JUST PO-->
             </div>
-        </div>
-    </div>
 
-    <!-- Edit Account Modal -->
-    <div class="modal fade" id="editAccount" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Purchase Order</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <label for="txtEditVendor" class="form-label">Vendor</label>
-                    <select class="form-select" id="txtEditVendor" aria-label="Vendor">
-                        <option selected>Select Vendor</option>
-                    </select>
-                    <label for="txtEditVendorContact" class="form-label">Vendor Contact</label>
-                    <select class="form-select" id="txtEditVendorContact" aria-label="Vendor Contact">
-                        <option selected>Select Vendor Contact</option>
-                    </select>
-                    <label for="txtEditSelectedFor" class="form-label">Requested For</label>
-                    <select class="form-select" id="txtEditSelectedFor" aria-label="Requested For">
-                        <option selected>Select Requested For</option>
-                    </select>
-                    <label for="txtEditNotes" class="form-label">Notes</label>
-                    <input type="text" class="form-control" id="txtEditNotes" placeholder="Notes">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" aria-label="Finish account edit">Edit</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close edit modal">Close</button>
+        </div>
+
+        <!-- Edit Account Modal -->
+        <div class="modal fade" id="editAccount" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Account</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="txtEditVendor" class="form-label">Vendor</label>
+                        <select class="form-select" id="txtEditVendor">
+                            <option selected>Select Vendor</option>
+                        </select>
+
+                        <label for="txtEditVendorContact" class="form-label">Vendor Contact</label>
+                        <select class="form-select" id="txtEditVendorContact">
+                            <option selected>Select Vendor Contact</option>
+                        </select>
+
+                        <label for="txtEditSelectedFor" class="form-label">Requested For</label>
+                        <select class="form-select" id="txtEditSelectedFor">
+                            <option selected>Select Requested For</option>
+                        </select>
+
+                        <label for="txtEditNotes" class="form-label">Notes</label>
+                        <input type="text" class="form-control" id="txtEditNotes" placeholder="Notes">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success">Edit</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -155,7 +132,7 @@
             $.ajax({
                 type: 'POST',
                 url: 'http://34.224.145.158:8000/getAccountInfo',
-                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountID: AccountID}),
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountID: AccountID }),
                 contentType: 'application/json',
                 success: function (results) {
                     console.log(results);
@@ -164,30 +141,74 @@
                     $('#pFiscalAuthority').text(results.AccountInfo[0].FiscalAuthority);
                     $('#pStatus').text((results.AccountInfo[0].Status == "1") ? "Active" : "Inactive");
                 }
-            })
+            });
+            $.ajax({
+                type: 'POST',
+                url: 'http://34.224.145.158:8000/fillAccountBudgetTable',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountID: AccountID }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results);
+                    if (Array.isArray(results.AccountBudgetTable)) {
+                        $('#tblAccountYearlyBudgets').DataTable({
+                            data: results.AccountBudgetTable,
+                            columns: [
+                                { data: "FiscalYear", title: "Fiscal Year" },
+                                { data: "AccountType", title: "Type" },
+                                { data: "Amount", title: "Amount" },
+                                { data: "DateCreated", title: "Date" }
+                            ],
+                            autowidth: false,
+                            responsive: true,
+                            pageLength: 5
+                        });
+                    } else {
+                        console.error('Unexpected response format or status:', results);
+                    }
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: 'http://34.224.145.158:8000/fillAccountPOTable',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountID: AccountID }),
+                contentType: 'application/json',
+                success: function (results) {
+                    if (Array.isArray(results.AccountPOTable)) {
+                        $("#tblAccountPOs").DataTable({
+                            data: results.AccountPOTable,
+                            columns: [
+                                { data: "PurchaseOrderID", title: "Purchase Order ID" },
+                                { data: "DateCreated", title: "Date" },
+                                { data: "VendorName", title: "Vendor" },
+                                { data: "CreatedBy", title: "Created By" },
+                                { data: "Amount", title: "Amount" },
+                                { data: "FiscalYear", title: "Fiscal Year" }
+                            ],
+                            autowidth: false,
+                            responsive: true,
+                            pageLength: 5,
+                            order: [[5, 'desc']]
+                        });
+                    } else {
+                        console.error('Unexpected response format or status:', results);
+                    }
+                }
+            });
 
             //getUserSettings();
-        })
+        });
 
-        $('#tblAccountYearlyBudgets').DataTable({
-            responsive: true,
-        })
-
-        $('#tblAccountPOs').DataTable({
-            responsive: true,
-        })
-
-        $('#btnDelete').on('click', function(){
+        $('#btnDelete').on('click', function () {
             $.ajax({
                 type: 'DELETE',
                 url: 'http://34.224.145.158:8000/deleteAccount',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountID: sessionStorage.getItem('AccountID') }),
                 contentType: 'application/json',
-                success: function(results){
-                    returnHome('accounts')
+                success: function (results) {
+                    returnHome('accounts');
                 }
-            })
-        })
+            });
+        });
     </script>
 </body>
 
