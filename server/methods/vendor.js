@@ -136,6 +136,73 @@ router.post("/getVendorInfo", async (req, res) => {
 	}
 });
 
+router.post("/fillVendorContactTable", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strVendorName = clean(req.body.strVendorName);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+
+		// pull Vendor ID (vendor name is passed to backend, but using ID is easier for queries)
+		strVendorID = await dbConnection.query("select VendorID from tblVendor where VendorName=?", [strVendorName]);
+		if (strVendorID.length == 0) {
+			strVendorID = 0;
+		} else {
+			strVendorID = strVendorID[0].VendorID;
+		}
+
+		console.log("Filling the Vendor Contact Table");
+
+		const VendorContactTable = await dbConnection.query("select vct.Name, CONCAT(TRIM(vct.StreetAddress1), ' ', TRIM(vct.StreetAddress2), ' ', TRIM(vct.City), ', ', TRIM(vct.State), ' ', TRIM(vct.ZipCode)) as Address, vct.OfficePhone, vct.MobilePhone, vct.Email from tblVendorContact vct where vct.VendorID=?;", [strVendorID]);
+
+		if (VendorContactTable.length == 0) {
+			return res.status(500).json({"message": "There are no vendor contacts."});
+		} else {
+			res.status(200).json({"message": "Success.", "VendorContactTable": VendorContactTable});
+		}
+
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+router.post("/fillVendorPOTable", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strVendorName = clean(req.body.strVendorName);
+	
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+
+		// pull Vendor ID (vendor name is passed to backend, but using ID is easier for queries)
+		strVendorID = await dbConnection.query("select VendorID from tblVendor where VendorName=?", [strVendorName]);
+		if (strVendorID.length == 0) {
+			strVendorID = 0;
+		} else {
+			strVendorID = strVendorID[0].VendorID;
+		}
+
+		console.log("Filling the Vendor POs Table");
+
+		const VendorPOTable = await dbConnection.query("select distinct po.PurchaseOrderID, DATE_FORMAT(po.CreatedDateTime, '%m/%d/%Y %h:%i %p') as CreatedDate, usr.DisplayName, actt.FiscalYear from tblPurchaseOrder po left join tblUser usr on po.CreatedBy = usr.EmployeeID left join tblPurchaseOrderItem poi on po.PurchaseOrderID = poi.PurchaseOrderID left join tblAccountTransaction actt on poi.AccountID = actt.AccountID where actt.FiscalYear - YEAR(po.CreatedDateTime) = 1 and po.VendorID=?;", [strVendorID]);
+
+		 if (VendorPOTable.length == 0) {
+			return res.status(500).json({"message": "There are no POs for this vendor."});
+		} else {
+			res.status(200).json({"message": "Success.", "VendorPOTable": VendorPOTable});
+		}
+
+	} finally {
+		await dbConnection.close();
+	}
+});
 
 router.delete("/deleteVendor", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
