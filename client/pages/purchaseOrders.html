@@ -201,7 +201,7 @@
                         function (results) {
                             console.log('Response:', results);
                             $('#newPO').modal('hide');
-                            location.reload();
+                            returnHome("purchaseOrders", false);
                         },
                     error:
                         function (xhr, status, error) {

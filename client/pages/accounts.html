@@ -241,7 +241,7 @@
                         function (results) {
                             console.log('Response:', results);
                             $('#newAccount').modal('hide');
-                            location.reload();
+                            returnHome("accounts", false);
                         },
                     error: function (xhr, status, error) {
                         console.error('AJAX Error:', status, error);

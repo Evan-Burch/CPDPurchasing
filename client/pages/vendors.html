@@ -193,7 +193,7 @@
                         function(results) {
                             console.log('Response:', results);
                             $('#newVendor').modal('hide');
-                            location.reload();
+                            returnHome("vendors", false);
                         },
                     error:
                         function (xhr, status, error) {

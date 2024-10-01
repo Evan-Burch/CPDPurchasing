@@ -33,7 +33,7 @@
                 <div class="row">
                     <h3 class="col-12 col-md-8" id="poTitle"></h3>
                     <button type="button" class="btn btn-primary col-12 col-md-4 col-lg-2 offset-lg-2 mt-2 mt-md-0"
-                        onclick="javascript:returnHome('purchaseOrders')">Return</button>
+                        onclick="javascript:returnHome('purchaseOrders', true)">Return</button>
                 </div>
             </div>
             <div class="card-body">
@@ -343,7 +343,7 @@
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
                 success: function (results) {
-                    returnHome('purchaseOrders')
+                    returnHome('purchaseOrders', true);
                 }
             })
         });

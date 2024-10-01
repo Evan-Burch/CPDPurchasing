@@ -48,6 +48,12 @@
             $('#warningError').hide();
         });
 
+        $("input").on("keydown", function(e) {
+            if (e.key == "Enter") {
+                $("#btnLogin").trigger("click");
+            }
+        });
+
         $('#btnLogin').on('click', function () {
             let strUserName = $('#txtUsername').val();
             let strPassword = $('#txtPassword').val();

@@ -25,19 +25,19 @@
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <!-- Add margin-bottom for better spacing on smaller screens -->
             <li class="nav-item">
-              <a class="nav-link" href="javascript:switchPage('./pages/home.html')">Home</a>
+              <a class="nav-link" href="javascript:switchPage('home')">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="javascript:switchPage('./pages/purchaseOrders.html')">Purchase Orders</a>
+              <a class="nav-link" href="javascript:switchPage('purchaseOrders')">Purchase Orders</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="javascript:switchPage('./pages/accounts.html')">Accounts</a>
+              <a class="nav-link" href="javascript:switchPage('accounts')">Accounts</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="javascript:switchPage('./pages/vendors.html')">Vendors</a>
+              <a class="nav-link" href="javascript:switchPage('vendors')">Vendors</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="javascript:switchPage('./pages/reports.html')">Reports</a>
+              <a class="nav-link" href="javascript:switchPage('reports')">Reports</a>
             </li>
           </ul>
           <ul class="navbar-nav">
@@ -145,7 +145,8 @@
   <!-- Custom JS -->
   <script>
     function switchPage(pageName) {
-      $('#divMain').load(pageName);
+      $('#divMain').load("./pages/" + pageName + ".html");
+      window.location.href = "index.html?table=" + pageName;
       var bsCollapse = new bootstrap.Collapse($('#navbarNav'), {
         toggle: false
       });
@@ -181,11 +182,10 @@
       var referrer = new URL(window.location.href).searchParams.get("table");
       
       if (referrer != undefined) {
-        //console.log("got here");
-        //window.location.href = "index.html";
         $('#divMain').load("pages/" + referrer + ".html");
+        //window.location.href = window.location.href.split("?")[0];
       } else {
-        switchPage('./pages/home.html');
+        $('#divMain').load("pages/home.html");
       }
     });
 

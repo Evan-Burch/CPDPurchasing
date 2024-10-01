@@ -30,7 +30,7 @@
                 <div class="row">
                     <h3 id="vendorTitle" class="col-8">(Vendor Name here)</h3>
                     <button type="button" class="btn btn-primary col-2 offset-2"
-                        onclick="javascript:returnHome('vendors')">Return</button>
+                        onclick="javascript:returnHome('vendors', true)">Return</button>
                 </div>
             </div>
             <div class="card-body">
@@ -236,7 +236,7 @@
                     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: sessionStorage.getItem('VendorName') }),
                     contentType: 'application/json',
                     success: function (results) {
-                        returnHome('vendors');
+                        returnHome('vendors', true);
                     }
                 });
             });
