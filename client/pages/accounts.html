@@ -92,7 +92,6 @@
     <script>
         function viewPage(pageName, accountID) {
             window.location.href = pageName + "?AccountID=" + accountID;
-            sessionStorage.setItem('AccountID', accountID);
             $('#divMain').load(pageName);
         }
 
@@ -160,7 +159,7 @@
                             $('#txtFiscal').append('<option value="' + element.FiscalAuthorityID + '">' + element.FiscalAuthority + '</option>');
                         });
                         results.Divisions.forEach(element => {
-                            $('#txtDivision').append('<option value="' + (element.ID == "" ? "0" : element.ID) + '">' + element.Description + '</opton>');
+                            $('#txtDivision').append('<option value="' + (element.ID) + '">' + element.Description + '</opton>');
                         });
                     }
             });
@@ -213,7 +212,7 @@
                 strErrorMessage = strErrorMessage + "<p>Fiscal authority is too long</p>";
             }
 
-            if(strDivision == '') {
+            if(strDivision == null) {
                 strErrorMessage = strErrorMessage + "<p>Please specify a division</p>";
             }
 

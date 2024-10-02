@@ -233,10 +233,19 @@
                 $.ajax({
                     type: 'DELETE',
                     url: 'http://34.224.145.158:8000/deleteVendor',
-                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: sessionStorage.getItem('VendorName') }),
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
                     contentType: 'application/json',
                     success: function (results) {
-                        returnHome('vendors', true);
+                        Swal.fire({
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            width: '500px',
+                            icon: 'success',
+                            text: 'Vendor successfully deleted'
+                        });
+                        setTimeout(() => {
+                            returnHome('vendors', true);
+                        }, 1000*2);
                     }
                 });
             });

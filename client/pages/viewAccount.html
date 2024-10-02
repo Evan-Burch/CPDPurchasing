@@ -66,6 +66,28 @@
                     </div>
                 </div>
 
+                <div class="row col-12 g-3">
+                    <div class="card bg-info col-12 col-md-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Budget</h5>
+                            <p id="pBudget" class="card-text"></p>
+                        </div>
+                    </div>
+                    <div class="card bg-danger col-12 col-md-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Expenses</h5>
+                            <p id="pExpenses" class="card-text"></p>
+                        </div>
+                    </div>
+                    <div class="card bg-warning col-12 col-md-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Available</h5>
+                            <p id="pAvailable" class="card-text"></p>
+                        </div>
+                    </div>
+                </div>
+                
+
                 <!-- Tables -->
                 <div class="table-responsive mb-3">
                     <table class="table table-striped" id="tblAccountYearlyBudgets" style="width: 100%;">
@@ -144,6 +166,18 @@
             });
             $.ajax({
                 type: 'POST',
+                url: 'http://34.224.145.158:8000/getReport',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountID: AccountID }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results.Report);
+                    $('#pBudget').text(results.Report.Budget);
+                    $('#pExpenses').text(results.Report.Expenses);
+                    $('#pAvailable').text(results.Report.Available);
+                }
+            });
+            $.ajax({
+                type: 'POST',
                 url: 'http://34.224.145.158:8000/fillAccountBudgetTable',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountID: AccountID }),
                 contentType: 'application/json',
@@ -202,10 +236,19 @@
             $.ajax({
                 type: 'DELETE',
                 url: 'http://34.224.145.158:8000/deleteAccount',
-                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountID: sessionStorage.getItem('AccountID') }),
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountID: AccountID }),
                 contentType: 'application/json',
-                success: function(results){
-                    returnHome('accounts', true);
+                success: function (results) {
+                    Swal.fire({
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        width: '500px',
+                        icon: 'success',
+                        text: 'Account successfully deleted'
+                    });
+                    setTimeout(() => {
+                        returnHome('accounts', true);
+                    }, 1000 * 2);
                 }
             });
         });

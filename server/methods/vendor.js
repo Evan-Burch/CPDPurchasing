@@ -28,10 +28,6 @@ router.post("/addVendor", async (req, res) => {
 	strErrorMessage = strErrorMessage + "<p>vendor name is too long</p>";
 	}
 
-	if(strVendorLink == '') {
-	strErrorMessage = strErrorMessage + "<p>Please specify a link.</p>";
-	}
-
 	if(strVendorLink.length > 100) {
 	strErrorMessage = strErrorMessage + "<p>link is too long</p>";
 	}

@@ -331,7 +331,6 @@
                 }
             });
 
-
             //getUserSettings();
         })
 
@@ -343,9 +342,18 @@
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
                 success: function (results) {
-                    returnHome('purchaseOrders', true);
+                    Swal.fire({
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        width: '500px',
+                        icon: 'success',
+                        text: 'Purchase Order successfully deleted'
+                    });
+                    setTimeout(() => {
+                        returnHome('purchaseOrders', true);
+                    }, 1000*2);
                 }
-            })
+            });
         });
 
         document.getElementById('formFile').addEventListener('change', function () {

@@ -42,7 +42,7 @@ router.post("/addAccount", async (req, res) => {
 			strErrorMessage = strErrorMessage + "<p>Fiscal authority is too long</p>";
 		}
 
-		if(strDivision == '') {
+		if(strDivision == null) {
 			strErrorMessage = strErrorMessage + "<p>Please specify a division</p>";
 		}
 

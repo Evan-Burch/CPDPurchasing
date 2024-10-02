@@ -83,7 +83,6 @@
     <script>
         function viewPage(pageName, vendorName) {
             window.location.href = pageName + "?VendorName=" + vendorName;
-            sessionStorage.setItem('VendorName', vendorName);
             $('#divMain').load(pageName);
         }
         
@@ -158,10 +157,6 @@
 
             if(strVendorName.length > 50) {
               strErrorMessage = strErrorMessage + "<p>vendor name is too long</p>";
-            }
-
-            if(strVendorLink == '') {
-              strErrorMessage = strErrorMessage + "<p>Please specify a link.</p>";
             }
 
             if(strVendorLink.length > 100) {
