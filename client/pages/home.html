@@ -20,45 +20,43 @@
 </style>
 
 <body>
+    <!-- create a container spanning the entire width of the viewport -->
     <div class="container-fluid">
-        <!-- Data Chart Carousel taking the entire top row -->
-        <div class="row mb-2 justify-content-center">
-            <!-- Data Chart Carousel -->
-            <div class="col-md-12 col-sm-12 p-3">
-                <div class="card h-100 d-flex flex-column">
-                    <div class="card-header">
-                        <h4>Data</h4>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#chartCarousel"
-                            data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#chartCarousel"
-                            data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
+        <!-- card for the carousel -->
+        <div class="card mt-3">
+            <div class="card-header" id="Chartdiv">
+                <h4>Charts</h4>
+            </div>
+            <!-- carousel for Charts -->
+            <div id="carousel" class="carousel slide">
+                <div class="carousel-inner">
+                    <!-- First Slide -->
+                    <div class="carousel-item active" style="color:white">
+                        <div class="d-flex justify-content-center align-items-center p-3">
+                            <canvas id="chart1" height=200 width=400></canvas>
+                        </div>
                     </div>
-                    <div class="card-body flex-grow-1">
-                        <!-- Bootstrap Carousel -->
-                        <div id="chartCarousel" class="carousel slide">
-                            <div class="carousel-inner">
-                                <!-- First Slide -->
-                                <div class="carousel-item active">
-                                    <canvas id="chart1" width="600" height="200"></canvas>
-                                </div>
-                                <!-- Second Slide -->
-                                <div class="carousel-item">
-                                    <canvas id="chart2" width="600" height="200"></canvas>
-                                </div>
-                                <!-- Third Slide -->
-                                <div class="carousel-item">
-                                    <canvas id="chart3" width="600" height="200"></canvas>
-                                </div>
-                            </div>
+                    <!-- Second Slide -->
+                    <div class="carousel-item">
+                        <div class="d-flex justify-content-center align-items-center">
+                            <canvas id="chart2"></canvas>
+                        </div>
+                    </div>
+                    <!-- Third Slide -->
+                    <div class="carousel-item">
+                        <div class="d-flex justify-content-center align-items-center">
+                            <canvas id="chart3"></canvas>
                         </div>
                     </div>
                 </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
         </div>
 
@@ -99,6 +97,9 @@
 
     <!-- JavaScript to initialize Chart.js charts -->
     <script>
+
+        Chart.defaults.color = 'white';
+
         var recentActivity = [];
 
         var upcomingBilling = [];
@@ -165,13 +166,19 @@
                                         'rgba(255, 206, 86, 0.6)',
                                         'rgba(75, 192, 192, 0.6)',
                                         'rgba(153, 102, 255, 0.6)'
-                                    ]
-                                }]
-                            },
+                                    ],
+                                    borderColor: 'white',
+                                    borderWidth: 2,
+                                  }]
+                                },
                             options: {
-                                responsive: true,
-                                maintainAspectRatio: false
-                            }
+                                responsive: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'right',
+                                    },
+                                },
+                            },
                         });
                     }
 
@@ -221,14 +228,14 @@
                         backgroundColor: 'rgba(255, 206, 86, 0.6)',
                         borderColor: 'rgba(255, 206, 86, 1)',
                         fill: true
-                    }]
-                },
+                    }],
                 options: {
                     responsive: false,
-                    maintainAspectRatio: false
+                    maintainAspectRatio: false,         
                 }
-            });
+            }
         });
+    });
     </script>
 </body>
 
