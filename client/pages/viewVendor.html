@@ -24,105 +24,82 @@
     <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.print.min.js"></script>
     <div class="col-12 d-flex justify-content-center mt-2">
+
         <div class="card col-12 col-md-10 col-lg-9">
             <div class="card-header">
                 <div class="row">
                     <h3 id="vendorTitle" class="col-8">(Vendor Name here)</h3>
                     <button type="button" class="btn btn-primary col-2 offset-2"
-                        onclick="javascript:returnHome('vendors')">Return</button>
+                        onclick="javascript:returnHome('vendors', true)">Return</button>
                 </div>
             </div>
             <div class="card-body">
                 <div class="row mb-5">
-                    <div class="card col-9 mx-2">
-                        <div class="row">
-                            <div class="col-3 p-3">
-                                <!-- NOT IN LOVE WITH THIS, THINK OF WHAT ELSE WE COULD ADD IN HERE -->
-                                <p><b> Wesbite: </b> </b></p>
-                                <p><b> Status: </b></p>
-                            </div>
-                            <div class="col-3 p-3">
-                                <p id="pWebsite"> placeholder </p>
-                                <p id="pStatus"> placeholder </p>
+                    <!-- Vendor Details Card -->
+                    <div class="col-12 col-md-9">
+                        <div class="card mb-3">
+                            <div class="row g-3 p-3">
+                                <div class="col-6 col-md-3">
+                                    <p><b>Website:</b></p>
+                                    <p><b>Status:</b></p>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <p id="pWebsite"> placeholder </p>
+                                    <p id="pStatus"> placeholder </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-2">
-                        <button type="button" class="btn btn-info col-12 offset-3 mb-2" data-bs-toggle="modal"
-                            data-bs-target="#editVendor"><!-- Add Functionality -->
-                            Edit Vendor
-                        </button>
 
-                        <button type="button" class="btn btn-success col-12 offset-3 mb-2" data-bs-toggle="modal"
-                            data-bs-target="#addContact"><!-- Add Functionality -->
-                            Add Contact
-                        </button>
-
-                        <button id="btnDelete" type="button" class="btn btn-danger col-12 offset-3 mb-2"><!-- Add Functionality -->
-                            Delete Vendor
-                        </button>
-
-
+                    <!-- Vendor Actions Buttons -->
+                    <div class="col-12 col-md-3 d-flex flex-column">
+                        <button type="button" class="btn btn-info mb-2" data-bs-toggle="modal"
+                            data-bs-target="#editVendor">Edit Vendor</button>
+                        <button type="button" class="btn btn-success mb-2" data-bs-toggle="modal"
+                            data-bs-target="#addContact">Add Contact</button>
+                        <button id="btnDelete" type="button" class="btn btn-danger mb-2">Delete Vendor</button>
                     </div>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table table-stripe responsive" id="tblVendorContacts">
-                        <thead>
-                            <tr>
-                                <th>Contact Name</th>
-                                <th>Address</th>
-                                <th>Office Phone</th>
-                                <th>Mobile Phone</th>
-                                <th>Email</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
+                <!-- Vendor Contacts Table -->
+                <div class="table-responsive mb-3">
+                    <table class="table table-striped" id="tblVendorContacts" style="width: 100%;">
+                        <!-- Table content goes here -->
                     </table>
                 </div>
-                
+
                 <hr>
 
+                <!-- Vendor Purchase Orders Table -->
                 <div class="table-responsive">
-                    <table class="table table-stripe responsive" id="tblVendorPOs">
-                        <thead>
-                            <tr>
-                                <th>Purchase Order ID</th>
-                                <th>Date</th>
-                                <th>Created By</th>
-                                <th>Fiscal Year</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
+                    <table class="table table-striped" id="tblVendorPOs" style="width: 100%;">
+                        <!-- Table content goes here -->
                     </table>
                 </div>
             </div>
         </div>
     </div>
+    </div>
 
     <!-- Edit Vendor Modal -->
     <div class="modal fade" id="editVendor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        aria-labelledby="editVendorLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Vendor</h1>
+                    <h5 class="modal-title" id="editVendorLabel">Edit Vendor</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <label for="txtEditVendorName" class="form-label">Vendor</label>
+                    <label for="txtEditVendorName" class="form-label">Vendor Name</label>
                     <input type="text" class="form-control" id="txtEditVendorName" placeholder="Vendor Name">
 
-                    <label for="txtEditVendorLink" class="form-label">Website</label>
+                    <label for="txtEditVendorLink" class="form-label mt-2">Website</label>
                     <input type="text" class="form-control" id="txtEditVendorLink" placeholder="Website">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" aria-label="Finish vendor edit">Edit</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close edit modal">Close</button>
+                    <button type="button" class="btn btn-success">Edit</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -130,88 +107,150 @@
 
     <!-- Add Contact Modal -->
     <div class="modal fade" id="addContact" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        aria-labelledby="addContactLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Add Contact</h1>
+                    <h5 class="modal-title" id="addContactLabel">Add Contact</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <label for="txtContactName" class="form-label">Contact Name</label>
                     <input type="text" class="form-control" id="txtContactName" placeholder="Contact Name">
 
-                    <label for="txtContactAddress" class="form-label">Address</label>
+                    <label for="txtContactAddress" class="form-label mt-2">Address</label>
                     <input type="text" class="form-control" id="txtContactAddress" placeholder="Address">
 
-                    <label for="txtOfficePhone" class="form-label">Office Phone</label>
+                    <label for="txtOfficePhone" class="form-label mt-2">Office Phone</label>
                     <input type="tel" class="form-control" id="txtOfficePhone" placeholder="123-456-7890">
 
-                    <label for="txtMobilePhone" class="form-label">Mobile Phone</label>
+                    <label for="txtMobilePhone" class="form-label mt-2">Mobile Phone</label>
                     <input type="tel" class="form-control" id="txtMobilePhone" placeholder="123-456-7890">
 
-                    <label for="txtVendorEmail" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="txtVendorEmail" placeholder="johndoe@gmail.com">
+                    <label for="txtVendorEmail" class="form-label mt-2">Email</label>
+                    <input type="email" class="form-control" id="txtVendorEmail" placeholder="example@gmail.com">
 
-                    <label for="chkPrimaryContact" class="form-label">Primary Contact</label>
-                    <input type="checkbox" class="form-check-input" id="chkPrimaryContact">
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" id="chkPrimaryContact">
+                        <label class="form-check-label" for="chkPrimaryContact">Primary Contact</label>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" aria-label="Add vendor contact">Add</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close edit model">Close</button>
+                    <button type="button" class="btn btn-success">Add Contact</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
+
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
-        integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
-        crossorigin="anonymous"></script>
-    <script>
-        var VendorName = "";
-        $(document).ready(function () {
-            VendorName = new URL(window.location.href).searchParams.get("VendorName");
-            $('#vendorTitle').text(VendorName);
-            $.ajax({
-                type: 'POST',
-                url: 'http://34.224.145.158:8000/getVendorInfo',
-                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName}),
-                contentType: 'application/json',
-                success: function (results) {
-                    console.log(results);
-                    if(results.VendorInfo[0].Website != '') {
-                        $('#pWebsite').html('<a href="http://' + results.VendorInfo[0].Website + '" target="_blank">' + results.VendorInfo[0].Website + '<a>');
-                    } else {
-                        $('#pWebsite').text('N/A');
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
+            integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
+            crossorigin="anonymous"></script>
+        <script>
+            var VendorName = "";
+            $(document).ready(function () {
+                VendorName = new URL(window.location.href).searchParams.get("VendorName");
+                $('#vendorTitle').text(VendorName);
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://34.224.145.158:8000/getVendorInfo',
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
+                    contentType: 'application/json',
+                    success: function (results) {
+                        console.log(results);
+                        if (results.VendorInfo[0].Website != '') {
+                            $('#pWebsite').html('<a href="http://' + results.VendorInfo[0].Website + '" target="_blank">' + results.VendorInfo[0].Website + '<a>');
+                        } else {
+                            $('#pWebsite').text('N/A');
+                        }
+                        $('#pStatus').text((results.VendorInfo[0].Status == "1") ? "Active" : "Inactive");
                     }
-                    $('#pStatus').text((results.VendorInfo[0].Status == "1") ? "Active" : "Inactive");
-                }
-            })
+                });
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://34.224.145.158:8000/fillVendorContactTable',
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
+                    contentType: 'application/json',
+                    success: function (results) {
+                        console.log(results);
+                        if (Array.isArray(results.VendorContactTable)) {
+                            $('#tblVendorContacts').DataTable({
+                                data: results.VendorContactTable,
+                                columns: [
+                                    { data: "Name", title: "Contact Name" },
+                                    { data: "Address", title: "Address" },
+                                    { data: "OfficePhone", title: "Office Phone" },
+                                    { data: "MobilePhone", title: "Mobile Phone" },
+                                    { data: "Email", title: "Email" }
+                                ],
+                                autowidth: false,
+                                responsive: true,
+                                pageLength: 5
+                            });
+                        } else {
+                            console.error('Unexpected response format or status:', results);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
+                    }
+                });
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://34.224.145.158:8000/fillVendorPOTable',
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
+                    contentType: 'application/json',
+                    success: function (results) {
+                        console.log(results);
+                        if (Array.isArray(results.VendorPOTable)) {
+                            $('#tblVendorPOs').DataTable({
+                                data: results.VendorPOTable,
+                                columns: [
+                                    { data: "PurchaseOrderID", title: "Purchase Order ID" },
+                                    { data: "CreatedDate", title: "Date" },
+                                    { data: "DisplayName", title: "Created By" },
+                                    { data: "FiscalYear", title: "Fiscal Year" }
+                                ],
+                                autowidth: false,
+                                responsive: true,
+                                pageLength: 5,
+                                order: [[3, 'desc']]
+                            });
+                        } else {
+                            console.error('Unexpected response format or status:', results);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
+                    }
+                });
 
-            //getUserSettings();
-        })
+                //getUserSettings();
+            });
 
-        $('#tblVendorContacts').DataTable({
-            responsive: true,
-        })
+            $('#btnDelete').on('click', function () {
+                $.ajax({
+                    type: 'DELETE',
+                    url: 'http://34.224.145.158:8000/deleteVendor',
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
+                    contentType: 'application/json',
+                    success: function (results) {
+                        Swal.fire({
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            width: '500px',
+                            icon: 'success',
+                            text: 'Vendor successfully deleted'
+                        });
+                        setTimeout(() => {
+                            returnHome('vendors', true);
+                        }, 1000*2);
+                    }
+                });
+            });
 
-        $('#tblVendorPOs').DataTable({
-            responsive: true,
-        })
-
-        $('#btnDelete').on('click', function(){
-            $.ajax({
-                type: 'DELETE',
-                url: 'http://34.224.145.158:8000/deleteVendor',
-                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: sessionStorage.getItem('VendorName') }),
-                contentType: 'application/json',
-                success: function(results){
-                    returnHome('vendors');
-                }
-            })
-        })
-
-    </script>
+        </script>
 </body>
 
 </html>
