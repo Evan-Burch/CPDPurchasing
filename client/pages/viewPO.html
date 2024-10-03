@@ -11,6 +11,7 @@
 </head>
 
 <body>
+
     <script src="../assets/js/jquery-3.7.1.min.js"></script>
     <script src="../assets/js/utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -23,170 +24,168 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.print.min.js"></script>
-    <div class="col-12 d-flex justify-content-center mt-2">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
+        integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
+        crossorigin="anonymous"></script>
+    <div class="container-fluid d-flex justify-content-center mt-2">
         <div class="card col-12 col-md-10 col-lg-9">
             <div class="card-header">
                 <div class="row">
-                    <h3 class="col-8" id="poTitle"></h3>
-                    <button type="button" class="btn btn-primary col-2 offset-2"
-                        onclick="javascript:returnHome('purchaseOrders')">Return</button>
+                    <h3 class="col-12 col-md-8" id="poTitle"></h3>
+                    <button type="button" class="btn btn-primary col-12 col-md-4 col-lg-2 offset-lg-2 mt-2 mt-md-0"
+                        onclick="javascript:returnHome('purchaseOrders', true)">Return</button>
                 </div>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="card col-9 mx-2">
-                        <div class="row">
-                            <div class="col-3 p-3">
-                                <p><b> Vendor: </b></p>
-                                <p><b> Created By:</b> </b></p>
-                                <p><b> Requested For: </b></p>
-                            </div>
-                            <div class="col-3 p-3">
-                                <p id="pVendor"> placeholder </p>
-                                <p id="pCreatedBy"> placeholder </p>
-                                <p id="pRequestedFor"> placeholder </p>
-                            </div>
-                            <div class="col-3 p-3">
-                                <p><b> Date: </b></p>
-                                <p><b> Status: </b></p>
-                                <p><b> Route: </b></p>
-                            </div>
-                            <div class="col-3 p-3">
-                                <p id="pDate"> placeholder </p>
-                                <p id="pStatus"> placeholder </p>
-                                <p id="pRoute"> placeholder </p>
+                    <!-- Purchase Order Information Card -->
+                    <div class="col-12 col-md-9">
+                        <div class="card mb-3">
+                            <div class="row g-3 p-3">
+                                <div class="col-6 col-md-3">
+                                    <p><b>Vendor:</b></p>
+                                    <p><b>Created By:</b></p>
+                                    <p><b>Requested For:</b></p>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <p id="pVendor"> placeholder </p>
+                                    <p id="pCreatedBy"> placeholder </p>
+                                    <p id="pRequestedFor"> placeholder </p>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <p><b>Date:</b></p>
+                                    <p><b>Status:</b></p>
+                                    <p><b>Route:</b></p>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <p id="pDate"> placeholder </p>
+                                    <p id="pStatus"> placeholder </p>
+                                    <p id="pRoute"> placeholder </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-2">
-                        <button type="button" class="btn btn-primary col-12 offset-3 mb-2"><!-- Add Functionality -->
-                            Print
-                        </button>
-                        <button type="button" class="btn btn-info col-12 offset-3 mb-2" data-bs-toggle="modal"
-                            data-bs-target="#editPO"><!-- Add Functionality -->
-                            Edit PO
-                        </button>
-                        <button type="button" class="btn btn-success col-12 offset-3 mb-2" data-bs-toggle="modal"
-                            data-bs-target="#addPOItem"><!-- Add Functionality -->
-                            Add Item
-                        </button>
-                        <button id="btnDelete" type="button" class="btn btn-danger col-12 offset-3 mb-2"><!-- Add Functionality -->
-                            Delete PO
-                        </button>
+
+                    <!-- Action Buttons -->
+                    <div class="col-12 col-md-3 d-flex flex-column">
+                        <button type="button" class="btn btn-primary mb-2">Print</button>
+                        <button type="button" class="btn btn-info mb-2" data-bs-toggle="modal"
+                            data-bs-target="#editPO">Edit PO</button>
+                        <button type="button" class="btn btn-success mb-2" data-bs-toggle="modal"
+                            data-bs-target="#addPOItem">Add Item</button>
+                        <button id="btnDelete" type="button" class="btn btn-danger mb-2">Delete PO</button>
                     </div>
                 </div>
-            
 
+                <!-- Notes Section -->
                 <label for="txtNotes" class="form-label mt-3"><b>Notes</b></label>
                 <textarea id="txtNotes" class="form-control mb-2">Notes</textarea>
 
+                <!-- PO Items Table -->
                 <div class="table-responsive">
-                    <table class="table table-striped responsive" id="tblPOItems">
-                        <thead>
-                            <tr>
-                                <th>Account ID</th>
-                                <th>Item Description</th>
-                                <th>Quantity</th>
-                                <th>Price Each</th>
-                                <th>Total Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
-                    </table>
+                    <table class="table table-striped" id="tblPOItems"></table>
                 </div>
+
                 <hr>
-                <div class="col-4">
-                    <label for="formFile" class="form-label mt-2"><b>Attachments</b></label>
-                    <input class="form-control col-4" type="file" id="formFile">
+
+                <!-- Attachments Section -->
+                <div class="row">
+                    <div class="col-12 col-md-8 mb-3">
+                        <label for="formFile" class="form-label mt-2"><b>Attachments</b></label>
+                        <input class="form-control mb-3" type="file" id="formFile">
+                        <div class="card" style="min-height: 150px;">
+                            <ul id="attachmentList" class="list-group">
+                                <!-- List items will be dynamically added here -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+        </div>
+
+        <!-- Edit PO Modal -->
+        <div class="modal fade" id="editPO" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Purchase Order</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="txtEditVendor" class="form-label">Vendor</label>
+                        <select class="form-select" id="txtEditVendor" aria-label="Vendor">
+                            <option selected>Select Vendor</option>
+                        </select>
+
+                        <label for="txtEditVendorContact" class="form-label">Vendor Contact</label>
+                        <select class="form-select" id="txtEditVendorContact" aria-label="Vendor Contact">
+                            <option selected>Select Vendor Contact</option>
+                        </select>
+
+                        <label for="txtEditSelectedFor" class="form-label">Requested For</label>
+                        <select class="form-select" id="txtEditSelectedFor" aria-label="Requested For">
+                            <option selected>Select Requested For</option>
+                        </select>
+
+                        <label for="txtEditNotes" class="form-label">Notes</label>
+                        <input type="text" class="form-control" id="txtEditNotes" placeholder="Notes">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success">Edit</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add PO Item Modal -->
+        <div class="modal fade" id="addPOItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Add PO Item</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="txtEditVendor" class="form-label">Account</label>
+                        <select class="form-select" id="txtEditVendor" aria-label="Vendor">
+                            <option selected>Select Account</option>
+                        </select>
+
+                        <label for="txtItemDescription" class="form-label">Item Description</label>
+                        <input type="text" class="form-control" id="txtItemDescription" placeholder="Item Description">
+
+                        <label for="txtEditSelectedFor" class="form-label">Requested For</label>
+                        <select class="form-select" id="txtEditSelectedFor" aria-label="Requested For">
+                            <option selected>Select Requested For</option>
+                        </select>
+
+                        <label for="txtEditNotes" class="form-label">Notes</label>
+                        <input type="text" class="form-control" id="txtEditNotes" placeholder="Notes">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success">Add</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Edit PO Modal -->
-    <div class="modal fade" id="editPO" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Purchase Order</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <label for="txtEditVendor" class="form-label">Vendor</label>
-                    <select class="form-select" id="txtEditVendor" aria-label="Vendor">
-                        <option selected>Select Vendor</option>
-                    </select>
-                    <label for="txtEditVendorContact" class="form-label">Vendor Contact</label>
-                    <select class="form-select" id="txtEditVendorContact" aria-label="Vendor Contact">
-                        <option selected>Select Vendor Contact</option>
-                    </select>
-                    <label for="txtEditSelectedFor" class="form-label">Requested For</label>
-                    <select class="form-select" id="txtEditSelectedFor" aria-label="Requested For">
-                        <option selected>Select Requested For</option>
-                    </select>
-                    <label for="txtEditNotes" class="form-label">Notes</label>
-                    <input type="text" class="form-control" id="txtEditNotes" placeholder="Notes">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" aria-label="Finish PO edit">Edit</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="CLose edit modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add PO Item Modal -->
-    <div class="modal fade" id="addPOItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Add PO Item</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <label for="txtEditVendor" class="form-label">Account</label>
-                    <select class="form-select" id="txtEditVendor" aria-label="Vendor">
-                        <option selected>Select Account</option>
-                    </select>
-
-                    <label for="txtItemDescription" class="form-label">Item Description</label>
-                    <input type="text" class="form-control" id="txtItemDescription" placeholder="Item Description">
-
-                    <label for="txtEditSelectedFor" class="form-label">Requested For</label>
-                    <select class="form-select" id="txtEditSelectedFor" aria-label="Requested For">
-                        <option selected>Select Requested For</option>
-                    </select>
-
-                    <label for="txtEditNotes" class="form-label">Notes</label>
-                    <input type="text" class="form-control" id="txtEditNotes" placeholder="Notes">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success">Add</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
-        integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
-        crossorigin="anonymous"></script>
     <script>
         var PurchaseOrderID = -1;
         $(document).ready(function () {
             PurchaseOrderID = new URL(window.location.href).searchParams.get("POID");
-            
+
             $('#poTitle').text('Purchase Order ' + PurchaseOrderID);
             $.ajax({
                 type: 'POST',
                 url: 'http://34.224.145.158:8000/getPOInfo',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
-                success: function(results){
+                success: function (results) {
                     console.log(results);
                     $('#pVendor').text(results.POInfo[0].VendorName);
                     $('#pCreatedBy').text(results.POInfo[0].CreatedBy);
@@ -197,25 +196,192 @@
                     $('#txtNotes').val(results.POInfo[0].Notes);
                 }
             });
+            $.ajax({
+                type: 'POST',
+                url: 'http://34.224.145.158:8000/fillPOItemTable',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results);
+                    if (Array.isArray(results.POItemTable)) {
+                        $('#tblPOItems').DataTable({
+                            data: results.POItemTable,
+                            columns: [
+                                { data: "AccountID", title: "Account ID" },
+                                { data: "Description", title: "Item Description" },
+                                { data: "Quantity", title: "Quantity" },
+                                { data: "PriceEach", title: "Price Each" },
+                                { data: "Price", title: "Total Price", footer: "Total" }
+                            ],
+                            rowCallback: function (row, data, dataIndex) {
+                                var quantity = parseInt(data.Quantity);
+                                var totalPrice = parseFloat(data.Price);
+
+                                if (quantity <= 0) {
+                                    $('td', row).addClass('bg-warning');
+                                }
+                                if (totalPrice <= 0.0) {
+                                    $('td', row).addClass('bg-danger');
+                                }
+                            },
+                            footerCallback: function (tr, data, start, end, display) {
+                                var api = this.api();
+                                var grandTotal = api.column(4).data().reduce((a, b) => parseFloat(a) + parseFloat(b), 0).toFixed(2);
+                                var pageTotal = api.column(4, { page: "current" }).data().reduce((a, b) => parseFloat(a) + parseFloat(b), 0).toFixed(2);
+
+                                api.column(4).footer().innerHTML = '$' + pageTotal + ' ($' + grandTotal + ' total)';
+                            },
+                            autowidth: false,
+                            responsive: true,
+                            order: [[0, 'desc']]
+                        });
+                    } else {
+                        console.error('Unexpected response format or status:', results);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                }
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: 'http://34.224.145.158:8000/getPOAttachments',
+                data: JSON.stringify({
+                    uuidSessionToken: sessionStorage.getItem('SimpleSession'),
+                    strPurchaseOrderID: PurchaseOrderID
+                }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results);
+                    const attachmentList = document.getElementById("attachmentList");
+
+                    // Dynamically add attachments to the list
+                    results.POAttachments.forEach(attachment => {
+                        let listItem = `
+                <li id="${attachment.AttachmentID}" class="list-group-item attachment-item d-flex justify-content-between align-items-center" data-filename="${attachment.Filename}">
+                    <span class="filename">${attachment.Filename}</span>
+                    <div>
+                        <button class="btn btn-primary btn-sm open-btn" data-id="${attachment.AttachmentID}" data-filename="${attachment.Filename}">Open</button>
+                        <button class="btn btn-danger btn-sm delete-btn" data-id="${attachment.AttachmentID}">Delete</button>
+                    </div>
+                </li>`;
+                        $('#attachmentList').append(listItem);
+                    });
+                    //this should be working
+                    // Open file event
+                    $('.open-btn').on('click', function () {
+                        const attachmentID = $(this).data('id');
+                        const filename = $(this).data('filename');
+
+                        console.log("Downloading attachment ID " + attachmentID);
+
+                        // AJAX call to get file data
+                        $.ajax({
+                            type: 'POST',
+                            url: 'http://34.224.145.158:8000/getAttachment',
+                            data: JSON.stringify({
+                                uuidSessionToken: sessionStorage.getItem('SimpleSession'),
+                                intAttachmentID: attachmentID
+                            }),
+                            contentType: 'application/json',
+                            success: function (result) {
+                                const base64Data = result.AttachmentData;
+
+                                // Create a downloadable link and trigger download
+                                const link = document.createElement('a');
+                                link.href = 'data:application/octet-stream;base64,' + base64Data;
+                                link.download = filename;
+                                link.click();
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error downloading attachment:', status, error);
+                            }
+                        });
+                    });
+
+                    // Delete file event
+                    $('.delete-btn').on('click', function () {
+                        const attachmentID = $(this).data('id');
+                        const listItem = $(this).closest('li');
+
+                        console.log(attachmentID);
+
+                        // AJAX call to delete the attachment
+                        $.ajax({
+                            type: 'DELETE',
+                            url: 'http://34.224.145.158:8000/deleteAttachment', // Replace with correct backend route
+                            data: JSON.stringify({
+                                uuidSessionToken: sessionStorage.getItem('SimpleSession'),
+                                intAttachmentID: attachmentID
+                            }),
+                            contentType: 'application/json',
+                            success: function (response) {
+                                console.log("successfully deleted file file");
+                                location.reload();
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error deleting attachment:', status, error);
+                            }
+                        });
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching attachments:', status, error);
+                }
+            });
 
             //getUserSettings();
         })
 
-        $('#tblPOItems').DataTable({
-            responsive: true,
-        })
-
-        $('#btnDelete').on('click', function(){
+        $('#btnDelete').on('click', function () {
             // Add functionality to delete PO
             $.ajax({
                 type: 'DELETE',
                 url: 'http://34.224.145.158:8000/deletePO',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
-                success: function(results){
-                    returnHome('purchaseOrders')
+                success: function (results) {
+                    Swal.fire({
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        width: '500px',
+                        icon: 'success',
+                        text: 'Purchase Order successfully deleted'
+                    });
+                    setTimeout(() => {
+                        returnHome('purchaseOrders', true);
+                    }, 1000*2);
                 }
-            })
+            });
+        });
+
+        document.getElementById('formFile').addEventListener('change', function () {
+            var file = document.querySelector('#formFile').files[0];
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+                // console.log(reader.result);
+                var base64String = (reader.result.split("base64,")[1]);
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://34.224.145.158:8000/addPOAttachment',
+                    data: JSON.stringify({
+                        uuidSessionToken: sessionStorage.getItem('SimpleSession'),
+                        strPurchaseOrderID: PurchaseOrderID, // Ensure PurchaseOrderID is set correctly
+                        strFilename: file.name,              // Use file.name to get the filename
+                        strFileBody: base64String            // Send the Base64 encoded string
+                    }),
+                    contentType: 'application/json',
+                    success: function (result) {
+                        console.log("successfully added file");
+                        location.reload();
+                    }
+                })
+            };
+            reader.onerror = function (error) {
+                console.log('Error: ', error);
+            };
         });
     </script>
 </body>

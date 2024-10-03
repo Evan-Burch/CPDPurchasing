@@ -13,10 +13,14 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use("/", require("./methods/purchase-orders.js"));
+app.use("/", require("./methods/purchase-order-attachments.js"));
 app.use("/", require("./methods/vendor.js"));
 app.use("/", require("./methods/account.js"));
+app.use("/", require("./methods/reports.js"));
 app.use("/", require("./methods/user.js"));
 app.use("/", require("./methods/misc.js"));
+app.use("/", require("./methods/settings.js"));
+app.use("/", require("./methods/home-page.js"));
 
 var server = app.listen(8000, function() {
 	var currentBranch = "missingno";

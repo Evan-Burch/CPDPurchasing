@@ -83,7 +83,6 @@
     <script>
         function viewPage(pageName, vendorName) {
             window.location.href = pageName + "?VendorName=" + vendorName;
-            sessionStorage.setItem('VendorName', vendorName);
             $('#divMain').load(pageName);
         }
         
@@ -160,10 +159,6 @@
               strErrorMessage = strErrorMessage + "<p>vendor name is too long</p>";
             }
 
-            if(strVendorLink == '') {
-              strErrorMessage = strErrorMessage + "<p>Please specify a link.</p>";
-            }
-
             if(strVendorLink.length > 100) {
               strErrorMessage = strErrorMessage + "<p>link is too long</p>";
             }
@@ -193,7 +188,7 @@
                         function(results) {
                             console.log('Response:', results);
                             $('#newVendor').modal('hide');
-                            location.reload();
+                            returnHome("vendors", false);
                         },
                     error:
                         function (xhr, status, error) {

@@ -9,9 +9,9 @@ router.post("/addPO", async (req, res) => {
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
 	const strVendorName = clean(req.body.strVendorName);
-	const intStatus = req.body.intStatus;
+	const intStatus = clean(req.body.intStatus);
 	const strRequestedFor = clean(req.body.strRequestedFor); 
-	const intCreatedBy = req.body.intCreatedBy;
+	const intCreatedBy = clean(req.body.intCreatedBy);
 	const strNotes = clean(req.body.strNotes);
 
 	try {
@@ -50,10 +50,7 @@ router.post("/addPO", async (req, res) => {
 
 		console.log("Creating a new PO");
 
-		const intRequestedForID = await dbConnection.query("SELECT EmployeeID FROM tblUser WHERE DisplayName=?;", [strRequestedFor]);
-		const intVendorID = await dbConnection.query("SELECT VendorID FROM tblVendor WHERE VendorName=?;", [strVendorName]);
-
-		await dbConnection.query("INSERT INTO tblPurchaseOrder (VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, NOW(), ?, ?, 0);", [intVendorID[0].VendorID, intStatus, intRequestedForID[0].EmployeeID, intCreatedBy, strNotes]);
+		await dbConnection.query("INSERT INTO tblPurchaseOrder (VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, NOW(), ?, ?, 0);", [strVendorName, intStatus, strRequestedFor, intCreatedBy, strNotes]);
 
 		res.status(200).json({"message": "Success."});
 	} finally {
@@ -97,10 +94,10 @@ router.post("/fillNewPOModal", async (req, res) => {
 
 		console.log("Filling the New PO Modal");
 
-		const VendorNames = await dbConnection.query("SELECT VendorName FROM tblVendor;");
-		const Users = await dbConnection.query("SELECT DisplayName FROM tblUser;");
+		const Vendors = await dbConnection.query("select distinct VendorID, VendorName from tblVendor;");
+		const Users = await dbConnection.query("select distinct EmployeeID, DisplayName from tblUser;");
 
-		res.status(200).json({"message": "Success.", "VendorNames": VendorNames, "Users": Users});
+		res.status(200).json({"message": "Success.", "Vendors": Vendors, "Users": Users});
 
 	} finally {
 		await dbConnection.close();
@@ -128,6 +125,30 @@ router.post("/getPOInfo", async (req, res) => {
 			// If there is a PO with that ID, list it
 			res.status(200).json({"message": "Success.", "POInfo": POInfo});
 		}
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+router.post("/fillPOItemTable", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+
+		console.log("Filling the PO Item Table");
+
+		const POItemTable = await dbConnection.query("select poi.AccountID, poi.Description, poi.Quantity, case when poi.Quantity = 0 then poi.Price else round(poi.Price / poi.Quantity, 2) end as PriceEach, poi.Price from tblPurchaseOrderItem poi where poi.PurchaseOrderID=?;", [strPurchaseOrderID]);
+		if (POItemTable.length == 0) {
+			return res.status(500).json({"message": "There are no purchase order items."});
+		}
+		res.status(200).json({"message": "Success.", "POItemTable": POItemTable});
+
 	} finally {
 		await dbConnection.close();
 	}

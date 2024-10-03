@@ -1,10 +1,22 @@
 var db_pool = require("./db.js");
 
 function clean(str) {
-	if (str === undefined || typeof str !== 'string') {
+	if (str === undefined) {
 		return "error";
 	}
-	return str.replace(/[^0-9a-zA-Z_\-@.\s]/gi, "");
+	if (typeof str == 'string') {
+		return str.replace(/[^0-9a-zA-Z_\-@.\s]/gi, "");	
+	} else if (typeof str == 'number') {
+		return str;
+	} else {
+		return "datatype error";
+	}
+}
+
+function clean_base64(str) {
+	if (typeof str != 'string') return "datatype error";
+	if (str.match(/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/gi) == str) return str;
+	return "error";
 }
 
 async function getUserIDBySessionToken(uuidSessionToken) {
@@ -39,4 +51,4 @@ async function getUserNameBySessionToken(uuidSessionToken) {
 	}
 }
 
-module.exports = {clean, getUserIDBySessionToken, getUserNameBySessionToken};
+module.exports = {clean, clean_base64, getUserIDBySessionToken, getUserNameBySessionToken};
