@@ -43,7 +43,6 @@ CREATE TABLE `tblAccount` (
 LOCK TABLES `tblAccount` WRITE;
 /*!40000 ALTER TABLE `tblAccount` DISABLE KEYS */;
 INSERT INTO `tblAccount` VALUES
-(9999999,'fake',194,'ASD',1),
 (42110148,'Employee Education and Training',193,'ASD',1),
 (42110150,'Tuition Reimbursement',154,'ASD',1),
 (42110176,'Recruiting and Testing',193,'ASD',1),
@@ -961,6 +960,34 @@ INSERT INTO `tblAccountTransactionType` VALUES
 UNLOCK TABLES;
 
 --
+-- Table structure for table `tblActivityLog`
+--
+
+DROP TABLE IF EXISTS `tblActivityLog`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tblActivityLog` (
+  `ActivityID` int(9) NOT NULL AUTO_INCREMENT,
+  `ActivityDescription` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `ActivityArgument` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `Time` date NOT NULL,
+  `ResponsibleUser` int(9) NOT NULL,
+  PRIMARY KEY (`ActivityID`),
+  KEY `ResponsibleUser` (`ResponsibleUser`),
+  CONSTRAINT `tblActivityLog_ibfk_1` FOREIGN KEY (`ResponsibleUser`) REFERENCES `tblUser` (`EmployeeID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tblActivityLog`
+--
+
+LOCK TABLES `tblActivityLog` WRITE;
+/*!40000 ALTER TABLE `tblActivityLog` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tblActivityLog` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `tblAttachmentData`
 --
 
@@ -971,7 +998,7 @@ CREATE TABLE `tblAttachmentData` (
   `AttachmentID` int(9) NOT NULL AUTO_INCREMENT,
   `AttachmentData` longtext NOT NULL,
   PRIMARY KEY (`AttachmentID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -18993,28 +19020,9 @@ CREATE TABLE `tblSessions` (
 LOCK TABLES `tblSessions` WRITE;
 /*!40000 ALTER TABLE `tblSessions` DISABLE KEYS */;
 INSERT INTO `tblSessions` VALUES
-('1edbb666-03da-453d-bfb6-eaf4f205614e',154,'2024-09-26 15:06:44'),
-('3aba9276-0d6a-499d-86d3-c816c8b47eff',154,'2024-09-26 14:24:55'),
-('3d102780-c3d1-4f5b-af92-3339514bc7e6',154,'2024-09-26 14:23:52'),
-('46ee9a9b-950f-4fad-975e-8b2dc0f6a3d2',154,'2024-09-26 20:42:51'),
-('4a3ba1d4-6336-4d3e-bd42-ac53aea87e0c',154,'2024-09-26 14:15:10'),
-('53f57a73-f064-48ca-aed4-445b83abc12f',154,'2024-09-26 19:00:56'),
-('5e849528-7c41-42a4-9d1a-0c49e0843ff9',154,'2024-09-26 15:20:13'),
-('63f5ecd9-098c-4b0b-a729-cc2381805414',154,'2024-09-26 21:15:11'),
-('6700edbd-ac68-4559-8dcd-f99c649afefe',154,'2024-09-26 14:37:55'),
-('696faae2-d3ae-4980-b3dc-2b08ae75226c',154,'2024-09-26 17:40:00'),
-('6b2d905f-cad5-47a7-babd-5056db58b7f5',154,'2024-09-26 19:16:35'),
-('6e2a30cd-1915-448e-ae01-de3b537e25c8',154,'2024-09-26 19:18:44'),
-('848ebd71-2052-4f55-b330-0f83ba4584e7',154,'2024-09-26 21:15:12'),
-('8dd375dc-db91-4c77-a29f-12007f53ba92',154,'2024-09-26 22:56:01'),
-('a6bc53d5-c249-48c9-b2d5-f82d16e55105',154,'2024-09-26 19:17:16'),
-('a96369af-5107-464d-ab76-45c6a583d286',154,'2024-09-26 14:39:36'),
-('c712b95c-403b-44d2-942f-9ff0ed1d003e',154,'2024-09-26 15:23:20'),
-('d8b0b448-e14d-4d26-8384-64d324235a96',154,'2024-09-26 14:38:03'),
-('dafb488b-236f-4f66-8722-91144cd42f5f',154,'2024-09-26 19:05:32'),
-('f8bdd1a5-a39d-4d96-aa71-723f6de47976',154,'2024-09-26 17:20:09'),
-('fa4f9bb8-22c1-41d8-b07f-cfc0467211a1',154,'2024-09-26 19:15:50'),
-('fe158951-ae89-4f7f-aa4b-252b8000e8b5',154,'2024-09-26 12:38:09');
+('203ee16c-7b3d-4c94-ba41-64174b9f4b2b',154,'2024-10-04 17:19:39'),
+('a5882654-5ac2-4c57-b33a-f8b6ce6369f2',154,'2024-10-04 13:38:58'),
+('c511c6ec-5283-4ef1-9222-3dfeb46dae0d',302,'2024-10-04 02:08:09');
 /*!40000 ALTER TABLE `tblSessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -19221,7 +19229,8 @@ CREATE TABLE `tblUserSettings` (
 LOCK TABLES `tblUserSettings` WRITE;
 /*!40000 ALTER TABLE `tblUserSettings` DISABLE KEYS */;
 INSERT INTO `tblUserSettings` VALUES
-(154,'theme,dark');
+(154,'theme,dark'),
+(302,'theme,dark');
 /*!40000 ALTER TABLE `tblUserSettings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -19239,7 +19248,7 @@ CREATE TABLE `tblVendor` (
   `Status` tinyint(4) NOT NULL,
   `VendorContactID` smallint(6) NOT NULL,
   PRIMARY KEY (`VendorID`)
-) ENGINE=InnoDB AUTO_INCREMENT=966 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=969 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -20099,8 +20108,7 @@ INSERT INTO `tblVendor` VALUES
 (950,'Sage Dynamics','www.sagedynamics.org',1,945),
 (951,'PMG Newspapers, Alabama','',1,946),
 (952,'DOUG FREEMAN TIRE COMPANY, LLC','',1,948),
-(953,'James Clint Cannon','',1,949),
-(965,'test','google.com',1,958);
+(953,'James Clint Cannon','',1,949);
 /*!40000 ALTER TABLE `tblVendor` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -20999,7 +21007,10 @@ INSERT INTO `tblVendorContact` VALUES
 (955,962,'Evan Burch',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,'2024-09-18 15:40:50',154,1,NULL),
 (956,963,'123',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,'2024-09-19 02:00:19',154,1,NULL),
 (957,964,'123',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,'2024-09-19 02:23:24',154,1,NULL),
-(958,965,'bill',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,'2024-09-20 19:24:34',154,1,NULL);
+(958,965,'bill',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,'2024-09-20 19:24:34',154,1,NULL),
+(959,966,'john smith',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,'2024-09-30 18:20:09',154,1,NULL),
+(960,967,'HIM',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,'2024-10-01 20:02:55',154,1,NULL),
+(961,968,'Bob',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,'2024-10-03 20:07:07',154,1,NULL);
 /*!40000 ALTER TABLE `tblVendorContact` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -21041,4 +21052,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-26 23:20:23
+-- Dump completed on 2024-10-04 17:25:26

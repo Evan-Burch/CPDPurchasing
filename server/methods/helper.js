@@ -51,4 +51,15 @@ async function getUserNameBySessionToken(uuidSessionToken) {
 	}
 }
 
-module.exports = {clean, clean_base64, getUserIDBySessionToken, getUserNameBySessionToken};
+async function updateActivityLog(uuidSessionToken, description, argument) {
+	const dbConnection = await db_pool.getConnection();
+
+	var userID = await getUserIDBySessionToken(uuidSessionToken);
+	try {
+		await dbConnection.query("insert into tblActivityLog (ActivityDescription, ActivityArgument, Time, ResponsibleUser) values (?, ?, NOW(), ?);", [description, argument, userID]);
+	} finally {
+		await dbConnection.end();
+	}
+}
+
+module.exports = {clean, clean_base64, getUserIDBySessionToken, getUserNameBySessionToken, updateActivityLog};

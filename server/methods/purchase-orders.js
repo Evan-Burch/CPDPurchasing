@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 var db_pool = require("./db.js");
-var {clean, getUserIDBySessionToken, getUserNameBySessionToken} = require("./helper.js");
+var {clean, getUserIDBySessionToken, getUserNameBySessionToken, updateActivityLog} = require("./helper.js");
 
 router.post("/addPO", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
@@ -51,6 +51,12 @@ router.post("/addPO", async (req, res) => {
 		console.log("Creating a new PO");
 
 		await dbConnection.query("INSERT INTO tblPurchaseOrder (VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, NOW(), ?, ?, 0);", [strVendorName, intStatus, strRequestedFor, intCreatedBy, strNotes]);
+		
+		var poIDQuery = await dbConnection.query("select PurchaseOrderID from tblPurchaseOrder where CreatedDateTime=NOW();"); // this might fail
+		
+		if (poIDQuery.length != 0) {
+			await updateActivityLog(uuidSessionToken, "Added PO " + poIDQuery[0].PurchaseOrderID + ".", poIDQuery[0].PurchaseOrderID);
+		}
 
 		res.status(200).json({"message": "Success."});
 	} finally {
@@ -168,6 +174,8 @@ router.delete("/deletePO", async (req, res) => {
 		console.log("Deleting PO " + strPurchaseOrderID);
 
 		await dbConnection.query("DELETE FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
+		
+		await updateActivityLog(uuidSessionToken, "Deleted PO " + strPurchaseOrderID + ".", strPurchaseOrderID);
 
 		res.status(200).json({"message": "Success."});
 	} finally {

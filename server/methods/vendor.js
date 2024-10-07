@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 var db_pool = require("./db.js");
-var {clean, getUserIDBySessionToken, getUserNameBySessionToken} = require("./helper.js");
+var {clean, getUserIDBySessionToken, getUserNameBySessionToken, updateActivityLog} = require("./helper.js");
 
 router.post("/addVendor", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
@@ -73,8 +73,11 @@ router.post("/addVendor", async (req, res) => {
 		// Get the ID of the newly inserted vendor to use for tblVendorContact
 		const intVendorID = insertVendorResult.insertId;
 		await dbConnection.query("INSERT INTO tblVendorContact (ID, VendorID, Name, `Primary`, DateAdded, CreatedBy, Status) VALUES (?, ?, ?, 1, NOW(), ?, 1);", [intVendorContactID[0].maxID + 1, intVendorID, strVendorContactName, intCreatedBy]);
+		
+		await updateActivityLog(uuidSessionToken, "Added Vendor " + strVendorName + ".", strVendorName);
+		await updateActivityLog(uuidSessionToken, "Added Vendor Contact " + strVendorContactName + ".", strVendorContactName);
 
-    	res.json({"message": "Success.", "status": 200});
+    		res.json({"message": "Success.", "status": 200});
 	} finally {
 		await dbConnection.close();
 	}
@@ -214,6 +217,8 @@ router.delete("/deleteVendor", async (req, res) => {
 		console.log("Deleting Vendor " + strVendorName);
 
 		await dbConnection.query("DELETE FROM tblVendor WHERE VendorName=?;", [strVendorName]);
+		
+		await updateActivityLog(uuidSessionToken, "Deleted Vendor " + strVendorName + ".", strVendorName);
 
 		res.status(200).json({"message": "Success."});
 	} finally {

@@ -260,7 +260,7 @@
                     results.POAttachments.forEach(attachment => {
                         let listItem = `
                 <li id="${attachment.AttachmentID}" class="list-group-item attachment-item d-flex justify-content-between align-items-center" data-filename="${attachment.Filename}">
-                    <span class="filename">${attachment.Filename}</span>
+                    <span class="filename"><img src="../assets/icons/file-solid.svg" style="width: 16px; height: 16px; margin-right: 8px; margin-bottom: 4px">${attachment.Filename}</span>
                     <div>
                         <button class="btn btn-primary btn-sm open-btn" data-id="${attachment.AttachmentID}" data-filename="${attachment.Filename}">Open</button>
                         <button class="btn btn-danger btn-sm delete-btn" data-id="${attachment.AttachmentID}">Delete</button>

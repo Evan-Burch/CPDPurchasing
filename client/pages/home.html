@@ -68,7 +68,7 @@
                     <div class="card-header">
                         <h4>Recent Activity</h4>
                     </div>
-                    <div class="card-body flex-grow-1 scrollbar1" style="overflow-y: auto; max-height: 350px;">
+                    <div class="card-body flex-grow-1 scrollbar1" style="overflow-y: auto; max-height: 450px;">
                         <ul id="recentActivityList" class="list-group">
                             <!-- List items will be dynamically added here -->
                         </ul>
@@ -100,19 +100,45 @@
 
         Chart.defaults.color = 'white';
 
-        var recentActivity = [];
-
         var upcomingBilling = [];
 
         $(document).ready(function () {
-
+            //the hex code for the icons is #3A6EA1
             const recentActivityList = document.getElementById("recentActivityList");
-            recentActivity.forEach(activity => {
-                let listItem = document.createElement("li");
-                listItem.classList.add("list-group-item");
-                listItem.textContent = activity;
-                recentActivityList.appendChild(listItem);
-            });
+            $.ajax({
+                type: 'POST',
+                url: 'http://34.224.145.158:8000/getActivity',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intLimit: 15 }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results);
+                    results.Activity.forEach(activity => {
+                        let listItem = '';
+                        if (activity.ActivityDescription.includes('Deleted')) {
+                            listItem = `
+                            <li class="list-group-item">
+                                <img src="assets/icons/trash-solid.svg" alt="Trash Icon" style="width: 16px; height: 16px; margin-right: 8px;">
+                                ${activity.ResponsibleUser} ${activity.ActivityDescription}
+                            </li>`;
+                        }
+                        else if(activity.ActivityDescription.includes('Added')){
+                            listItem = `
+                            <li class="list-group-item">
+                                <img src="assets/icons/plus-solid.svg" alt="Trash Icon" style="width: 16px; height: 16px; margin-right: 8px;">
+                                ${activity.ResponsibleUser} ${activity.ActivityDescription}
+                            </li>`;
+                        }
+                        else{
+                            listItem = `
+                            <li class="list-group-item">
+                                <img src="assets/icons/user-pin-solid.svg" alt="Trash Icon" style="width: 16px; height: 16px; margin-right: 8px;">
+                                ${activity.ResponsibleUser} ${activity.ActivityDescription}
+                            </li>`;
+                        }
+                        $('#recentActivityList').append(listItem);
+                    });
+                }
+            })
 
             const upcomingBillingList = document.getElementById("upcomingBillingList");
             upcomingBilling.forEach(activity => {
@@ -149,10 +175,10 @@
                             type: 'doughnut',
                             data: {
                                 labels: ['Administration' + '(' + AccountTotals.accountTotals[0].account_category + ')',
-                                         'Uniform Patrol' + '(' + AccountTotals.accountTotals[1].account_category + ')',
-                                         'Investigative' + '(' + AccountTotals.accountTotals[2].account_category + ')',
-                                         'Traffic' + '(' + AccountTotals.accountTotals[3].account_category + ')',
-                                         AccountTotals.accountTotals[4].account_category],
+                                'Uniform Patrol' + '(' + AccountTotals.accountTotals[1].account_category + ')',
+                                'Investigative' + '(' + AccountTotals.accountTotals[2].account_category + ')',
+                                'Traffic' + '(' + AccountTotals.accountTotals[3].account_category + ')',
+                                AccountTotals.accountTotals[4].account_category],
                                 datasets: [{
                                     label: 'category total $',
                                     data: [AccountTotals.accountTotals[0].total,
@@ -169,8 +195,8 @@
                                     ],
                                     borderColor: 'white',
                                     borderWidth: 2,
-                                  }]
-                                },
+                                }]
+                            },
                             options: {
                                 responsive: false,
                                 plugins: {
@@ -186,7 +212,7 @@
                     console.error("Error Filling Donut Chart: ", error);
                 }
             };
-            
+
             //call the async function
             fillDonutChart();
 
@@ -229,13 +255,13 @@
                         borderColor: 'rgba(255, 206, 86, 1)',
                         fill: true
                     }],
-                options: {
-                    responsive: false,
-                    maintainAspectRatio: false,         
+                    options: {
+                        responsive: false,
+                        maintainAspectRatio: false,
+                    }
                 }
-            }
+            });
         });
-    });
     </script>
 </body>
 
