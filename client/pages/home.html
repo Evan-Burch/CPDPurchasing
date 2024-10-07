@@ -37,17 +37,17 @@
                         </div>
                     </div>
                     <!-- Second Slide -->
-                    <!-- <div class="carousel-item">
+                    <div class="carousel-item">
                         <div class="d-flex justify-content-center align-items-center">
-                            <canvas id="chart2"></canvas>
+                            <canvas id="chart2" height=200 width=400></canvas>
                         </div>
-                    </div> -->
+                    </div>
                     <!-- Third Slide -->
-                    <!-- <div class="carousel-item">
+                    <div class="carousel-item">
                         <div class="d-flex justify-content-center align-items-center">
                             <canvas id="chart3"></canvas>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -178,7 +178,8 @@
                                 'Uniform Patrol' + '(' + AccountTotals.accountTotals[1].account_category + ')',
                                 'Investigative' + '(' + AccountTotals.accountTotals[2].account_category + ')',
                                 'Traffic' + '(' + AccountTotals.accountTotals[3].account_category + ')',
-                                AccountTotals.accountTotals[4].account_category],
+                                AccountTotals.accountTotals[4].account_category
+                                ],
                                 datasets: [{
                                     label: 'category total $',
                                     data: [AccountTotals.accountTotals[0].total,
@@ -216,31 +217,59 @@
             //call the async function
             fillDonutChart();
 
-
             // Chart 2: Bar chart
-            let ctx2 = document.getElementById('chart2').getContext('2d');
-            new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-                    datasets: [{
-                        label: 'Sales',
-                        data: [150, 200, 180, 220, 240, 250],
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    },
-                    responsive: false,
-                    maintainAspectRatio: false
+            async function fillBarChart() {
+                try {
+                    const response = await fetch('http://34.224.145.158:8000/fillDonutChart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'uuidSessionToken': sessionStorage.getItem('SimpleSession'),
+                        },
+                        body: JSON.stringify({})
+                    });
+
+                    const AccountTotals = await response.json();
+
+                    //check if the response is valid
+                    if(!response.ok) {
+                        console.error("Error Filling Bar Chart: ", jsonResponse);
+                    } else {
+                        //once the data is ready, make the bar chart
+                        let ctx2 = document.getElementById('chart2').getContext('2d');
+                        new Chart(ctx2, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Administration' + '(' + AccountTotals.accountTotals[0].account_category + ')',
+                                'Uniform Patrol' + '(' + AccountTotals.accountTotals[1].account_category + ')',
+                                'Investigative' + '(' + AccountTotals.accountTotals[2].account_category + ')',
+                                'Traffic' + '(' + AccountTotals.accountTotals[3].account_category + ')',
+                                ],
+                                datasets: [{
+                                    label: 'category total $',
+                                    data: [AccountTotals.accountTotals[0].total,
+                                    AccountTotals.accountTotals[1].total,
+                                    AccountTotals.accountTotals[2].total,
+                                    AccountTotals.accountTotals[3].total],
+                                }],
+                            },
+                            options: {
+                                // scales: {
+                                //     y: {
+                                //         beginAtZero: true
+                                //     }
+                                // },
+                                responsive: false,
+                                maintainAspectRatio: false,
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error Filling Bar Chart: ", error);
                 }
-            });
+            };
+
+            fillBarChart();
 
             // Chart 3: Line chart
             let ctx3 = document.getElementById('chart3').getContext('2d');
