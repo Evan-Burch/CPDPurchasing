@@ -68,7 +68,7 @@
                     <div class="card-header">
                         <h4>Recent Activity</h4>
                     </div>
-                    <div class="card-body flex-grow-1 scrollbar1" style="overflow-y: auto; max-height: 450px;">
+                    <div class="card-body flex-grow-1 scrollbar1" style="overflow-y: auto;">
                         <ul id="recentActivityList" class="list-group">
                             <!-- List items will be dynamically added here -->
                         </ul>
@@ -82,10 +82,8 @@
                     <div class="card-header">
                         <h4>Upcoming Billing</h4>
                     </div>
-                    <div class="card-body flex-grow-1 scrollbar1" style="overflow-y: auto; max-height: 350px;">
-                        <ul id="upcomingBillingList" class="list-group"></ul>
-                        <!-- List items will be dynamically added here -->
-                        </ul>
+                    <div class="card-body flex-grow-1 scrollbar1" style="overflow-y: auto;">
+                        <div id='calendar'></div>
                     </div>
                 </div>
             </div>
@@ -103,6 +101,16 @@
         var upcomingBilling = [];
 
         $(document).ready(function () {
+
+            // FullCalendar
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                themeSystem: 'bootstrap',
+            });
+            calendar.render();
+
+
             //the hex code for the icons is #3A6EA1
             const recentActivityList = document.getElementById("recentActivityList");
             $.ajax({
@@ -121,14 +129,14 @@
                                 ${activity.ResponsibleUser} ${activity.ActivityDescription}
                             </li>`;
                         }
-                        else if(activity.ActivityDescription.includes('Added')){
+                        else if (activity.ActivityDescription.includes('Added')) {
                             listItem = `
                             <li class="list-group-item">
                                 <img src="assets/icons/plus-solid.svg" alt="Trash Icon" style="width: 16px; height: 16px; margin-right: 8px;">
                                 ${activity.ResponsibleUser} ${activity.ActivityDescription}
                             </li>`;
                         }
-                        else{
+                        else {
                             listItem = `
                             <li class="list-group-item">
                                 <img src="assets/icons/user-pin-solid.svg" alt="Trash Icon" style="width: 16px; height: 16px; margin-right: 8px;">
