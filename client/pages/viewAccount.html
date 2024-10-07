@@ -33,7 +33,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="row mb-5">
+                <div class="row mb-3">
                     <!-- Account Details Card -->
                     <div class="col-12 col-md-9">
                         <div class="card mb-3">
@@ -66,27 +66,21 @@
                     </div>
                 </div>
 
-                <div class="row col-12 g-3">
-                    <div class="card bg-info col-12 col-md-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Budget</h5>
-                            <p id="pBudget" class="card-text"></p>
+                <div class="row">
+                    <div class="progress-container col-12 position-relative mt-1">
+                        <div class="progress mb-3" style="height: 30px;">
+                            <div class="progress-bar bg-danger" id="progressBar" role="progressbar" style="width: 0%;"
+                                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                    </div>
-                    <div class="card bg-danger col-12 col-md-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Expenses</h5>
-                            <p id="pExpenses" class="card-text"></p>
-                        </div>
-                    </div>
-                    <div class="card bg-warning col-12 col-md-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Available</h5>
-                            <p id="pAvailable" class="card-text"></p>
+                        <div class="tooltip-expenses bg-primary text-white p-2 rounded position-absolute"
+                            style="display: none; top: -35px; left: 0;">
+                            <p class="mb-1">Budget: $<span id="totalBudget"></span></p>
+                            <p class="mb-1">Expenses: $<span id="totalExpenses"></span></p>
+                            <p class="mb-1">Available: $<span id="totalAvailable"></span></p>
                         </div>
                     </div>
                 </div>
-                
+
 
                 <!-- Tables -->
                 <div class="table-responsive mb-3">
@@ -171,9 +165,34 @@
                 contentType: 'application/json',
                 success: function (results) {
                     console.log(results.Report);
-                    $('#pBudget').text(results.Report.Budget);
-                    $('#pExpenses').text(results.Report.Expenses);
-                    $('#pAvailable').text(results.Report.Available);
+
+                    const expenses = results.Report.Expenses;
+                    const budget = results.Report.Budget;
+                    const available = results.Report.Available
+
+                    const percentageSpent = (expenses / budget) * 100;
+
+                    // Set progress bar width and aria attributes
+                    $('#progressBar').css('width', percentageSpent + '%').attr('aria-valuenow', percentageSpent);
+
+                    // Set the budget and expenses text
+                    $('#totalBudget').text(budget);
+                    $('#totalExpenses').text(expenses);
+                    $('#totalAvailable').text(available);
+
+                    // Show tooltip on hover
+                    $('#progressBar').hover(
+                        function () {
+                            // Position the tooltip and show it
+                            const tooltip = $('.tooltip-expenses');
+                            const progressBarWidth = $(this).width();
+                            tooltip.css('left', progressBarWidth - tooltip.outerWidth() / 2).fadeIn();
+                        },
+                        function () {
+                            // Hide tooltip when not hovering
+                            $('.tooltip-expenses').fadeOut();
+                        }
+                    );
                 }
             });
             $.ajax({
