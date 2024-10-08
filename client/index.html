@@ -23,7 +23,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <ul id="poNav" class="navbar-nav me-auto mb-2 mb-lg-0">
             <!-- Add margin-bottom for better spacing on smaller screens -->
             <li class="nav-item">
               <a class="nav-link" href="javascript:switchPage('home')">Home</a>
@@ -167,6 +167,11 @@
         success: function (results) {
           $('#username').text(results.UserName);
           sessionStorage.setItem('userId', results.UserID);
+
+          if(results.IsAdmin === true){
+            console.log('Admin user detected');
+            $('#poNav').append('<li class="nav-item"><a class="nav-link" href="javascript:switchPage(\'admin\')">Admin Portal</a></li>');
+          }
         }
       });
 
