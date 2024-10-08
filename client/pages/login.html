@@ -63,12 +63,13 @@
                 console.log("invalid username/password");
             } else {
                 $.ajax({
-                    type: 'POST',
-                    url: 'http://34.224.145.158:8000/login',
+                    type: "POST",
+                    url: "https://api.cpd-purchasing.cookeville-tn.org/login",
                     data: JSON.stringify({ strUserName: strUserName, strPassword: strPassword }),
-                    contentType: 'application/json',
+                    contentType: "application/json",
                     success:
                         function (results) {
+                            console.log("Success:", results);
                             // don't panic, now that the status codes are being returned correctly,
                             // that bit of code i wrote can really go away now
                             sessionStorage.setItem('SimpleSession', results.uuidSessionToken);
@@ -77,7 +78,7 @@
                     error:
                         function (results) {
                             if (results.status == 400) {
-                                // console.log(results);
+                                console.log(results);
                                 $('#txtLoginError').text('Invalid Login Information');
                                 $('#warningError').show();
                             }

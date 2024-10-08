@@ -43,7 +43,7 @@
         function doReportCall(intYear) {
             $.ajax({
                 type: 'POST',
-                url: 'http://34.224.145.158:8000/fillReportsTable',
+                url: 'https://api.cpd-purchasing.cookeville-tn.org/fillReportsTable',
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intYear:intYear}),
                 contentType: 'application/json',
                 success:

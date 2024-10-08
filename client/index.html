@@ -158,7 +158,7 @@
 
       $.ajax({
         type: 'POST',
-        url: 'http://34.224.145.158:8000/getUserName',
+        url: 'https://api.cpd-purchasing.cookeville-tn.org/getUserName',
         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
         contentType: 'application/json',
         success: function (results) {
@@ -191,7 +191,7 @@
       $('html').attr('data-bs-theme', $('html').attr('data-bs-theme') === 'dark' ? 'light' : 'dark');
       $.ajax({
         type: 'POST',
-        url: 'http://34.224.145.158:8000/updateUserSettings',
+        url: 'https://api.cpd-purchasing.cookeville-tn.org/updateUserSettings',
         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), "strKey": "theme", "strValue": $('html').attr('data-bs-theme') }),
         contentType: 'application/json',
         success: function (results) {
@@ -234,7 +234,7 @@
       else {
         $.ajax({
           type: 'PUT',
-          url: 'http://34.224.145.158:8000/changeUserPassword',
+          url: 'https://api.cpd-purchasing.cookeville-tn.org/changeUserPassword',
           data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strCurrentPassword: strCurrentPassword, strNewPassword: strNewPassword }),
           contentType: 'application/json',
           success:
@@ -254,7 +254,7 @@
     $('#btnLogout').click(function () {
       $.ajax({
         type: 'DELETE',
-        url: 'http://34.224.145.158:8000/logout',
+        url: 'https://api.cpd-purchasing.cookeville-tn.org/logout',
         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
         contentType: 'application/json',
         success: function (results) {
