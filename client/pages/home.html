@@ -218,49 +218,49 @@
 
 
             // Chart 2: Bar chart
-            let ctx2 = document.getElementById('chart2').getContext('2d');
-            new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-                    datasets: [{
-                        label: 'Sales',
-                        data: [150, 200, 180, 220, 240, 250],
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    },
-                    responsive: false,
-                    maintainAspectRatio: false
-                }
-            });
+            // let ctx2 = document.getElementById('chart2').getContext('2d');
+            // new Chart(ctx2, {
+            //     type: 'bar',
+            //     data: {
+            //         labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+            //         datasets: [{
+            //             label: 'Sales',
+            //             data: [150, 200, 180, 220, 240, 250],
+            //             backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            //             borderColor: 'rgba(54, 162, 235, 1)',
+            //             borderWidth: 1
+            //         }]
+            //     },
+            //     options: {
+            //         scales: {
+            //             y: {
+            //                 beginAtZero: true
+            //             }
+            //         },
+            //         responsive: false,
+            //         maintainAspectRatio: false
+            //     }
+            // });
 
             // Chart 3: Line chart
-            let ctx3 = document.getElementById('chart3').getContext('2d');
-            new Chart(ctx3, {
-                type: 'line',
-                data: {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                    datasets: [{
-                        label: 'Website Visitors',
-                        data: [140, 150, 170, 130],
-                        backgroundColor: 'rgba(255, 206, 86, 0.6)',
-                        borderColor: 'rgba(255, 206, 86, 1)',
-                        fill: true
-                    }],
-                    options: {
-                        responsive: false,
-                        maintainAspectRatio: false,
-                    }
-                }
-            });
+            // let ctx3 = document.getElementById('chart3').getContext('2d');
+            // new Chart(ctx3, {
+            //     type: 'line',
+            //     data: {
+            //         labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            //         datasets: [{
+            //             label: 'Website Visitors',
+            //             data: [140, 150, 170, 130],
+            //             backgroundColor: 'rgba(255, 206, 86, 0.6)',
+            //             borderColor: 'rgba(255, 206, 86, 1)',
+            //             fill: true
+            //         }],
+            //         options: {
+            //             responsive: false,
+            //             maintainAspectRatio: false,
+            //         }
+            //     }
+            // });
         });
     </script>
 </body>
