@@ -39,13 +39,13 @@ async function getUserNameBySessionToken(uuidSessionToken) {
 
 	var userID = await getUserIDBySessionToken(uuidSessionToken);
 	try {
-		const result = await dbConnection.query("SELECT UserName FROM tblUser WHERE EmployeeID=?;", [userID]);
+		const result = await dbConnection.query("SELECT UserName, IsAdmin FROM tblUser WHERE EmployeeID=?;", [userID]);
 		
 		if (result.length == 0) {
 			console.log("UserID " + userID + " does not belong to any user.");
 			return -1;
 		}
-		return result[0].UserName;
+		return result[0];
 	} finally {
 		await dbConnection.end();
 	}
