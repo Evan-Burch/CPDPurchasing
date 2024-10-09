@@ -31,7 +31,7 @@ function returnHome(referrer, goBack) {
 function getUserSettings() {
     $.ajax({
         type: 'POST',
-        url: 'https://api.cpd-purchasing.cookeville-tn.org/getUserSettings',
+        url: `${apiCall}/getUserSettings`,
         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
         contentType: 'application/json',
         success: function (results) {
@@ -106,7 +106,7 @@ function idleTimeout() { // Auto logs out users after 2 seconds
     setTimeout(() => {
         $.ajax({
             type: 'DELETE',
-            url: 'https://api.cpd-purchasing.cookeville-tn.org/logout',
+            url: `${apiCall}/logout`,
             data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
             contentType: 'application/json',
             success: function (results) {

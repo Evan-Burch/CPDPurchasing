@@ -7,8 +7,7 @@ const db_pool = mariadb.createPool({
 	password: process.env["MARIADB_PASSWORD"],
 	idleTimeout: 5,
 	database: "hubble",
-	// port: 4433
-	port: 3306
+	port: process.env["MARIADB_PORT"]
 });
 
 module.exports = db_pool;

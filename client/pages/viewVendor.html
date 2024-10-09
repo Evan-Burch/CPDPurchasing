@@ -148,13 +148,15 @@
             integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
             crossorigin="anonymous"></script>
         <script>
+            const apiCall = sessionStorage.getItem('apiCall');
+
             var VendorName = "";
             $(document).ready(function () {
                 VendorName = new URL(window.location.href).searchParams.get("VendorName");
                 $('#vendorTitle').text(VendorName);
                 $.ajax({
                     type: 'POST',
-                    url: 'https://api.cpd-purchasing.cookeville-tn.org/getVendorInfo',
+                    url: `${apiCall}/getVendorInfo`,
                     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
                     contentType: 'application/json',
                     success: function (results) {
@@ -169,7 +171,7 @@
                 });
                 $.ajax({
                     type: 'POST',
-                    url: 'https://api.cpd-purchasing.cookeville-tn.org/fillVendorContactTable',
+                    url: `${apiCall}/fillVendorContactTable`,
                     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
                     contentType: 'application/json',
                     success: function (results) {
@@ -198,7 +200,7 @@
                 });
                 $.ajax({
                     type: 'POST',
-                    url: 'https://api.cpd-purchasing.cookeville-tn.org/fillVendorPOTable',
+                    url: `${apiCall}/fillVendorPOTable`,
                     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
                     contentType: 'application/json',
                     success: function (results) {
@@ -232,7 +234,7 @@
             $('#btnDelete').on('click', function () {
                 $.ajax({
                     type: 'DELETE',
-                    url: 'https://api.cpd-purchasing.cookeville-tn.org/deleteVendor',
+                    url: `${apiCall}/deleteVendor`,
                     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
                     contentType: 'application/json',
                     success: function (results) {

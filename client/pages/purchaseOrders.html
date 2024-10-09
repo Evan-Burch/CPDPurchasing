@@ -89,7 +89,7 @@
         $(document).ready(function () {
             $.ajax({
                 type: 'POST',
-                url: 'https://api.cpd-purchasing.cookeville-tn.org/fillPOTable',
+                url: `${apiCall}/fillPOTable`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
                 contentType: 'application/json',
                 success: function (results) {
@@ -138,7 +138,7 @@
             console.log("new po clicked");
             $.ajax({
                 type: 'POST',
-                url: 'https://api.cpd-purchasing.cookeville-tn.org/fillNewPOModal',
+                url: `${apiCall}/fillNewPOModal`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
                 contentType: 'application/json',
                 success:
@@ -194,7 +194,7 @@
             else {
                 $.ajax({
                     type: 'POST',
-                    url: 'https://api.cpd-purchasing.cookeville-tn.org/addPO',
+                    url: `${apiCall}/addPO`,
                     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: strVendorName, intStatus: intStatus, strRequestedFor: strRequestedFor, intCreatedBy: intCreatedBy, strNotes: strNotes }),
                     contentType: 'application/json',
                     success:
