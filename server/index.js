@@ -10,7 +10,7 @@ var bodyParser = require("body-parser");
 const corsOptions ={
 	origin:'*', 
 	methods: 'GET, POST, PUT, DELETE, OPTIONS', // Allowed methods
-	allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization', // Allowed headers
+	allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, uuidSessionToken', // Allowed headers
 	credentials: true // Allow cookies and other credentials to be sent
 }
 
