@@ -17,6 +17,7 @@ const corsOptions ={
 var app = express();
 app.use(express.json());
 app.options('*', cors(corsOptions)); // Enable pre-flight for all routes
+app.use(cors());
 app.use(bodyParser.json());
 
 app.use("/", require("./methods/purchase-orders.js"));
