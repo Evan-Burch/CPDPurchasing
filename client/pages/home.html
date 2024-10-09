@@ -221,7 +221,7 @@
             // Chart 2: Bar chart
             async function fillBarChart() {
                 try {
-                    const response = await fetch('http://34.224.145.158:8000/fillDonutChart', {
+                    const response = await fetch('http://34.224.145.158:8000/fillBarChart', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -242,17 +242,11 @@
                         new Chart(ctx2, {
                             type: 'bar',
                             data: {
-                                labels: ['Administration' + '(' + AccountTotals.accountTotals[0].account_category + ')',
-                                'Uniform Patrol' + '(' + AccountTotals.accountTotals[1].account_category + ')',
-                                'Investigative' + '(' + AccountTotals.accountTotals[2].account_category + ')',
-                                'Traffic' + '(' + AccountTotals.accountTotals[3].account_category + ')',
+                                labels: ['todo', 'todo', 'todo', 'todo'
                                 ],
                                 datasets: [{
-                                    label: 'category total $',
-                                    data: [AccountTotals.accountTotals[0].total,
-                                    AccountTotals.accountTotals[1].total,
-                                    AccountTotals.accountTotals[2].total,
-                                    AccountTotals.accountTotals[3].total],
+                                    'todo': 'todo',
+                                    
                                 }],
                             },
                             options: {
