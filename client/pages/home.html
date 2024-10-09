@@ -33,7 +33,7 @@
                     <!-- First Slide -->
                     <div class="carousel-item active" style="color:white">
                         <div class="d-flex justify-content-center align-items-center p-3">
-                            <canvas id="chart1" height=200 width=400></canvas>
+                            <canvas id="chart1" class="" height=200 width=400></canvas>
                         </div>
                     </div>
                     <!-- Second Slide -->
@@ -97,12 +97,13 @@
 
     <!-- JavaScript to initialize Chart.js charts -->
     <script>
-
+        // ChartJS Defaults (any settings that should be applied to all charts)
         Chart.defaults.color = 'white';
 
         var upcomingBilling = [];
 
         $(document).ready(function () {
+
             //the hex code for the icons is #3A6EA1
             const recentActivityList = document.getElementById("recentActivityList");
             $.ajax({
@@ -235,6 +236,7 @@
                     if(!response.ok) {
                         console.error("Error Filling Bar Chart: ", jsonResponse);
                     } else {
+
                         //once the data is ready, make the bar chart
                         let ctx2 = document.getElementById('chart2').getContext('2d');
                         new Chart(ctx2, {
@@ -254,11 +256,6 @@
                                 }],
                             },
                             options: {
-                                // scales: {
-                                //     y: {
-                                //         beginAtZero: true
-                                //     }
-                                // },
                                 responsive: false,
                                 maintainAspectRatio: false,
                             }
