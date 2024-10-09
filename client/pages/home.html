@@ -39,7 +39,7 @@
                     <!-- Second Slide -->
                     <div class="carousel-item">
                         <div class="d-flex justify-content-center align-items-center">
-                            <canvas id="chart2" height=200 width=400></canvas>
+                            <canvas id="chart2" height=200 width=500></canvas>
                         </div>
                     </div>
                     <!-- Third Slide -->
@@ -232,6 +232,8 @@
 
                     const AccountTotals = await response.json();
 
+                    console.log('Account Totals: ', AccountTotals);
+
                     //check if the response is valid
                     if(!response.ok) {
                         console.error("Error Filling Bar Chart: ", jsonResponse);
@@ -242,16 +244,69 @@
                         new Chart(ctx2, {
                             type: 'bar',
                             data: {
-                                labels: ['todo', 'todo', 'todo', 'todo'
+                                labels: [
+                                        'Administration' + '(' + AccountTotals.accountTotals[0].account_category + ')',
+                                        'Uniform Patrol' + '(' + AccountTotals.accountTotals[1].account_category + ')',
+                                        'Investigative' + '(' + AccountTotals.accountTotals[2].account_category + ')',
+                                        'Traffic' + '(' + AccountTotals.accountTotals[3].account_category + ')',
+                                        AccountTotals.accountTotals[4].account_category,
+                                    ],
+                                datasets: [
+                                    {
+                                        label: 'current total $',
+                                        data: [AccountTotals.accountTotals[0].current_total,
+                                            AccountTotals.accountTotals[1].current_total,
+                                            AccountTotals.accountTotals[2].current_total,
+                                            AccountTotals.accountTotals[3].current_total,
+                                            AccountTotals.accountTotals[4].current_total,
+                                        ],
+                                        backgroundColor: [
+                                        'rgba(255, 99, 132, 0.6)',
+                                        'rgba(54, 162, 235, 0.6)',
+                                        'rgba(255, 206, 86, 0.6)',
+                                        'rgba(75, 192, 192, 0.6)',
+                                        'rgba(153, 102, 255, 0.6)',
+                                        ],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+
+                                    },
+                                    {
+                                        label: 'budget total $',
+                                        data: [AccountTotals.accountTotals[0].budget_total,
+                                            AccountTotals.accountTotals[1].budget_total,
+                                            AccountTotals.accountTotals[2].budget_total,
+                                            AccountTotals.accountTotals[3].budget_total,
+                                            AccountTotals.accountTotals[4].budget_total,
+                                        ],
+                                        backgroundColor: [
+                                        'rgba(255, 99, 132, 0.6)',
+                                        'rgba(54, 162, 235, 0.6)',
+                                        'rgba(255, 206, 86, 0.6)',
+                                        'rgba(75, 192, 192, 0.6)',
+                                        'rgba(153, 102, 255, 0.6)',
+                                        ],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
                                 ],
-                                datasets: [{
-                                    'todo': 'todo',
-                                    
-                                }],
                             },
                             options: {
                                 responsive: false,
                                 maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'right',
+                                    },
+                                },
+                                scales: {
+                                    x: {
+                                        stacked: false,
+                                    },
+                                    y: {
+                                        stacked: true,
+                                    }
+                                }
                             }
                         });
                     }
