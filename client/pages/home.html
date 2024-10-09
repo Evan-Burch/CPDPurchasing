@@ -97,7 +97,6 @@
 
     <!-- JavaScript to initialize Chart.js charts -->
     <script>
-
         Chart.defaults.color = 'white';
 
         var upcomingBilling = [];
@@ -107,7 +106,7 @@
             const recentActivityList = document.getElementById("recentActivityList");
             $.ajax({
                 type: 'POST',
-                url: 'http://34.224.145.158:8000/getActivity',
+                url: `${apiCall}/getActivity`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intLimit: 15 }),
                 contentType: 'application/json',
                 success: function (results) {
@@ -152,7 +151,7 @@
             //use asynchronous function to fill the donut chart (avoids error if the data is not ready as soon as the page loads)
             async function fillDonutChart() {
                 try {
-                    const response = await fetch('http://34.224.145.158:8000/fillDonutChart', {
+                    const response = await fetch(`${apiCall}/fillDonutChart`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

@@ -98,7 +98,7 @@
         $(document).ready(function () {
             $.ajax({
                 type: 'POST',
-                url: 'http://34.224.145.158:8000/fillAccountTable',
+                url: `${apiCall}/fillAccountTable`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
                 contentType: 'application/json',
                 success: function (results) {
@@ -150,7 +150,7 @@
             console.log("accounts.html new account clicked");
             $.ajax({
                 type: 'POST',
-                url: 'http://34.224.145.158:8000/fillNewAccountModal',
+                url: `${apiCall}/fillNewAccountModal`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
                 contentType: 'application/json',
                 success:
@@ -233,7 +233,7 @@
                 
                 $.ajax({
                     type: 'POST',
-                    url: 'http://34.224.145.158:8000/addAccount',
+                    url: `${apiCall}/addAccount`,
                     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountNumber:intAccountNumber, strDescription:strDescription, strFiscalAuthority:strFiscalAuthority, strDivision:strDivision }),
                     contentType: 'application/json',
                     success:

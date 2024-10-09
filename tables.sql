@@ -975,7 +975,7 @@ CREATE TABLE `tblActivityLog` (
   PRIMARY KEY (`ActivityID`),
   KEY `ResponsibleUser` (`ResponsibleUser`),
   CONSTRAINT `tblActivityLog_ibfk_1` FOREIGN KEY (`ResponsibleUser`) REFERENCES `tblUser` (`EmployeeID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -984,6 +984,24 @@ CREATE TABLE `tblActivityLog` (
 
 LOCK TABLES `tblActivityLog` WRITE;
 /*!40000 ALTER TABLE `tblActivityLog` DISABLE KEYS */;
+INSERT INTO `tblActivityLog` VALUES
+(1,'Deleted account 9999.','9999','2024-10-04',154),
+(2,'Deleted PO 42-241004001.','42-241004001','2024-10-04',154),
+(3,'Added PO 3.','3','2024-10-04',154),
+(4,'Deleted PO 42-241004001.','42-241004001','2024-10-04',154),
+(5,'Added PO 42-241004001.','42-241004001','2024-10-04',154),
+(6,'Deleted PO 42-241004001.','42-241004001','2024-10-04',154),
+(7,'Added attachment 28 to PO 42-240219002.','42-240219002','2024-10-04',154),
+(8,'Deleted PO Attachment 28.','28','2024-10-04',154),
+(9,'Added Vendor test.','test','2024-10-04',154),
+(10,'Added Vendor Contact me.','me','2024-10-04',154),
+(11,'Deleted Vendor test.','test','2024-10-04',154),
+(12,'Added attachment 29 to PO 42-240219002.','42-240219002','2024-10-04',302),
+(13,'Added attachment test.txt to PO 42-240219002.','42-240219002','2024-10-04',154),
+(14,'Deleted attachment test.txt from PO 42-240219002.','42-240219002','2024-10-04',154),
+(15,'Deleted attachment GarrettHayesResume.pdf from PO 42-240219002.','42-240219002','2024-10-05',154),
+(16,'Added attachment GarrettHayesResume.pdf to PO 42-240219002.','42-240219002','2024-10-06',154),
+(17,'Deleted attachment GarrettHayesResume.pdf from PO 42-240219002.','42-240219002','2024-10-06',154);
 /*!40000 ALTER TABLE `tblActivityLog` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -998,7 +1016,7 @@ CREATE TABLE `tblAttachmentData` (
   `AttachmentID` int(9) NOT NULL AUTO_INCREMENT,
   `AttachmentData` longtext NOT NULL,
   PRIMARY KEY (`AttachmentID`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6594,7 +6612,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`admin`@`%`*/ /*!50003 TRIGGER before_insert_tblPurchaseOrder
+/*!50003 CREATE*/ /*!50003 TRIGGER before_insert_tblPurchaseOrder
 BEFORE INSERT ON tblPurchaseOrder
 FOR EACH ROW
 BEGIN
@@ -18926,7 +18944,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`admin`@`%`*/ /*!50003 TRIGGER after_insert_tblPurchaseOrderItem
+/*!50003 CREATE*/ /*!50003 TRIGGER after_insert_tblPurchaseOrderItem
 AFTER INSERT ON tblPurchaseOrderItem
 FOR EACH ROW
 BEGIN
@@ -18952,7 +18970,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`admin`@`%`*/ /*!50003 TRIGGER after_update_tblPurchaseOrderItem
+/*!50003 CREATE*/ /*!50003 TRIGGER after_update_tblPurchaseOrderItem
 AFTER UPDATE ON tblPurchaseOrderItem
 FOR EACH ROW
 BEGIN
@@ -18978,7 +18996,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`admin`@`%`*/ /*!50003 TRIGGER after_delete_tblPurchaseOrderItem
+/*!50003 CREATE*/ /*!50003 TRIGGER after_delete_tblPurchaseOrderItem
 AFTER DELETE ON tblPurchaseOrderItem
 FOR EACH ROW
 BEGIN
@@ -19020,9 +19038,9 @@ CREATE TABLE `tblSessions` (
 LOCK TABLES `tblSessions` WRITE;
 /*!40000 ALTER TABLE `tblSessions` DISABLE KEYS */;
 INSERT INTO `tblSessions` VALUES
-('203ee16c-7b3d-4c94-ba41-64174b9f4b2b',154,'2024-10-04 17:19:39'),
-('a5882654-5ac2-4c57-b33a-f8b6ce6369f2',154,'2024-10-04 13:38:58'),
-('c511c6ec-5283-4ef1-9222-3dfeb46dae0d',302,'2024-10-04 02:08:09');
+('29f79347-8df6-4ecf-ab80-6e7ef8f38cee',154,'2024-10-08 05:48:55'),
+('62b29599-6924-4bf6-ae26-a0263503666a',154,'2024-10-08 05:56:47'),
+('c9f283f0-bf53-4949-b905-329965e0329c',154,'2024-10-08 06:04:14');
 /*!40000 ALTER TABLE `tblSessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -19248,7 +19266,7 @@ CREATE TABLE `tblVendor` (
   `Status` tinyint(4) NOT NULL,
   `VendorContactID` smallint(6) NOT NULL,
   PRIMARY KEY (`VendorID`)
-) ENGINE=InnoDB AUTO_INCREMENT=969 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=970 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -21010,7 +21028,8 @@ INSERT INTO `tblVendorContact` VALUES
 (958,965,'bill',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,'2024-09-20 19:24:34',154,1,NULL),
 (959,966,'john smith',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,'2024-09-30 18:20:09',154,1,NULL),
 (960,967,'HIM',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,'2024-10-01 20:02:55',154,1,NULL),
-(961,968,'Bob',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,'2024-10-03 20:07:07',154,1,NULL);
+(961,968,'Bob',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,'2024-10-03 20:07:07',154,1,NULL),
+(962,969,'me',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,'2024-10-04 17:53:52',154,1,NULL);
 /*!40000 ALTER TABLE `tblVendorContact` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -21052,4 +21071,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-04 17:25:26
+-- Dump completed on 2024-10-08  6:12:40
