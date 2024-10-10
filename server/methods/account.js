@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 var db_pool = require("./db.js");
-var {clean, getUserIDBySessionToken, getUserNameBySessionToken} = require("./helper.js");
+var {clean, getUserIDBySessionToken, getUserNameBySessionToken, updateActivityLog} = require("./helper.js");
 
 router.post("/addAccount", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
@@ -62,6 +62,8 @@ router.post("/addAccount", async (req, res) => {
 		console.log("Creating a new Account: ", intAccountNumber, ", ", strDescription, ", ", strFiscalAuthority, ", ", strDivision);
 
 		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [intAccountNumber, strDescription, strFiscalAuthority, strDivision]);
+		
+		await updateActivityLog(uuidSessionToken, "Added account " + intAccountNumber + ".", intAccountNumber);
 
 		res.status(200).json({"message": "Success."});
 	} finally {
@@ -206,6 +208,8 @@ router.delete("/deleteAccount", async (req, res) => {
 		console.log("Deleting Account " + intAccountID);
 
 		await dbConnection.query("DELETE FROM tblAccount WHERE AccountID=?;", [intAccountID]);
+		
+		await updateActivityLog(uuidSessionToken, "Deleted account " + intAccountID + ".", intAccountID);
 
 		res.status(200).json({"message": "Success."});
 	} finally {

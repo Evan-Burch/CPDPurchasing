@@ -89,7 +89,7 @@
         $(document).ready(function () {
             $.ajax({
             type: 'POST',
-            url: 'http://34.224.145.158:8000/fillVendorTable',
+            url: `${apiCall}/fillVendorTable`,
             data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
             contentType: 'application/json',
             success: function (results) {
@@ -181,7 +181,7 @@
             else {
                 $.ajax({
                     type: 'POST',
-                    url: 'http://34.224.145.158:8000/addVendor',
+                    url: `${apiCall}/addVendor`,
                     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName:strVendorName, strVendorLink:strVendorLink, strVendorContactName:strVendorContactName, intCreatedBy:intCreatedBy}),
                     contentType: 'application/json',
                     success:
