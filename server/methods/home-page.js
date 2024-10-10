@@ -53,4 +53,23 @@ router.post("/fillDonutChart", async(req,res) => {
 	}
 });
 
+router.post("/getActivity", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const intLimit = (req.body.intLimit == undefined) ? 10 : clean(req.body.intLimit);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+		
+		var Activity = await dbConnection.query("select ActivityDescription, ActivityArgument, Time, tblUser.DisplayName as ResponsibleUser from tblActivityLog left join tblUser on tblActivityLog.ResponsibleUser = tblUser.EmployeeID order by ActivityID desc limit ?;", [intLimit]);
+		res.status(200).json({"message": "OK", "Activity": Activity});
+		
+	} finally {
+		await dbConnection.close();
+	}
+});
+
 module.exports = router;

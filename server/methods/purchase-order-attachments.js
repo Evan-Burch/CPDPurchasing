@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 var db_pool = require("./db.js");
-var {clean, clean_base64, getUserIDBySessionToken, getUserNameBySessionToken} = require("./helper.js");
+var {clean, getUserIDBySessionToken, getUserNameBySessionToken, updateActivityLog} = require("./helper.js");
 
 router.post("/addPOAttachment", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
@@ -10,7 +10,7 @@ router.post("/addPOAttachment", async (req, res) => {
 	
 	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
 	const strFilename = clean(req.body.strFilename);
-	const strFileBody = clean_base64(req.body.strFileBody);
+	const strFileBody = clean(req.body.strFileBody);
 
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
@@ -23,6 +23,8 @@ router.post("/addPOAttachment", async (req, res) => {
 		var intAttachmentID = Number(attachmentQuery.insertId);
 		
 		await dbConnection.query("insert into tblPOAttachments (AttachmentID, PurchaseOrderID, Filename, Added) values (?, ?, ?, NOW());", [intAttachmentID, strPurchaseOrderID, strFilename]);
+		
+		await updateActivityLog(uuidSessionToken, "Added attachment " + strFilename + " to PO " + strPurchaseOrderID + ".", strPurchaseOrderID);
 
 		res.status(200).json({"message": "Success."});
 	} finally {
@@ -93,9 +95,19 @@ router.delete("/deleteAttachment", async (req, res) => {
 		}
 
 		console.log("Deleting PO Attachment with ID " + intAttachmentID);
+
+		var nameQuery = await dbConnection.query("select PurchaseOrderID, Filename from tblPOAttachments where AttachmentID=?;", [intAttachmentID]);
+		var deletedFilename = intAttachmentID.toString();
+		var targetedPO = "error";
+		if (nameQuery.length != 0) {
+			deletedFilename = nameQuery[0].Filename;
+			targetedPO = nameQuery[0].PurchaseOrderID;
+		}
 		
 		await dbConnection.query("delete from tblPOAttachments where AttachmentID=?;", [intAttachmentID]);
 		await dbConnection.query("delete from tblAttachmentData where AttachmentID=?;", [intAttachmentID]);
+		
+		await updateActivityLog(uuidSessionToken, "Deleted attachment " + deletedFilename + " from PO " + targetedPO + ".", targetedPO);
 
 		res.status(200).json({"message": "Success."});
 	} finally {
@@ -104,3 +116,4 @@ router.delete("/deleteAttachment", async (req, res) => {
 });
 
 module.exports = router;
+
