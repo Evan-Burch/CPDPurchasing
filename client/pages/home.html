@@ -33,21 +33,21 @@
                     <!-- First Slide -->
                     <div class="carousel-item active" style="color:white">
                         <div class="d-flex justify-content-center align-items-center p-3">
-                            <canvas id="chart1" height=200 width=400></canvas>
+                            <canvas id="chart1" class="" height=200 width=400></canvas>
                         </div>
                     </div>
                     <!-- Second Slide -->
-                    <!-- <div class="carousel-item">
+                    <div class="carousel-item">
                         <div class="d-flex justify-content-center align-items-center">
-                            <canvas id="chart2"></canvas>
+                            <canvas id="chart2" height=400 width=800></canvas>
                         </div>
-                    </div> -->
+                    </div>
                     <!-- Third Slide -->
-                    <!-- <div class="carousel-item">
+                    <div class="carousel-item">
                         <div class="d-flex justify-content-center align-items-center">
                             <canvas id="chart3"></canvas>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -97,11 +97,13 @@
 
     <!-- JavaScript to initialize Chart.js charts -->
     <script>
+        // ChartJS Defaults (any settings that should be applied to all charts)
         Chart.defaults.color = 'white';
 
         var upcomingBilling = [];
 
         $(document).ready(function () {
+
             //the hex code for the icons is #3A6EA1
             const recentActivityList = document.getElementById("recentActivityList");
             $.ajax({
@@ -177,7 +179,8 @@
                                 'Uniform Patrol' + '(' + AccountTotals.accountTotals[1].account_category + ')',
                                 'Investigative' + '(' + AccountTotals.accountTotals[2].account_category + ')',
                                 'Traffic' + '(' + AccountTotals.accountTotals[3].account_category + ')',
-                                AccountTotals.accountTotals[4].account_category],
+                                AccountTotals.accountTotals[4].account_category
+                                ],
                                 datasets: [{
                                     label: 'category total $',
                                     data: [AccountTotals.accountTotals[0].total,
@@ -199,6 +202,13 @@
                             options: {
                                 responsive: false,
                                 plugins: {
+                                    title: {
+                                        display: true,
+                                        text: 'Budget Categories',
+                                        font: {
+                                            size: 20,
+                                        },
+                                    },
                                     legend: {
                                         position: 'right',
                                     },
@@ -215,31 +225,139 @@
             //call the async function
             fillDonutChart();
 
-
             // Chart 2: Bar chart
-            let ctx2 = document.getElementById('chart2').getContext('2d');
-            new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-                    datasets: [{
-                        label: 'Sales',
-                        data: [150, 200, 180, 220, 240, 250],
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    },
-                    responsive: false,
-                    maintainAspectRatio: false
+            async function fillBarChart() {
+                try {
+                    const response = await fetch(`${apiCall}/fillBarChart`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'uuidSessionToken': sessionStorage.getItem('SimpleSession'),
+                        },
+                        body: JSON.stringify({})
+                    });
+
+                    const AccountTotals = await response.json();
+
+                    console.log('Account Totals: ', AccountTotals);
+
+                    //check if the response is valid
+                    if(!response.ok) {
+                        console.error("Error Filling Bar Chart: ", jsonResponse);
+                    } else {
+
+                        //once the data is ready, make the bar chart
+                        let ctx2 = document.getElementById('chart2').getContext('2d');
+                        new Chart(ctx2, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Budget Categories'],
+                                datasets: [
+                                    {
+                                        label: 'admin current total $',
+                                        data: [AccountTotals.accountTotals[0].current_total],
+                                        backgroundColor: ['rgba(255, 99, 132, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'admin budget total $',
+                                        data: [AccountTotals.accountTotals[0].budget_total],
+                                        backgroundColor: ['rgba(255, 99, 132, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'uniform current total $',
+                                        data: [AccountTotals.accountTotals[1].current_total],
+                                        backgroundColor: ['rgba(54, 162, 235, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'uniform budget total $',
+                                        data: [AccountTotals.accountTotals[1].budget_total],
+                                        backgroundColor: ['rgba(54, 162, 235, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'investigative current total $',
+                                        data: [AccountTotals.accountTotals[2].current_total],
+                                        backgroundColor: ['rgba(255, 206, 86, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'investigative budget total $',
+                                        data: [AccountTotals.accountTotals[2].budget_total],
+                                        backgroundColor: ['rgba(255, 206, 86, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'traffic current total $',
+                                        data: [AccountTotals.accountTotals[3].current_total],
+                                        backgroundColor: ['rgba(75, 192, 192, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'traffic budget total $',
+                                        data: [AccountTotals.accountTotals[3].budget_total],
+                                        backgroundColor: ['rgba(75, 192, 192, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'other current total $',
+                                        data: [AccountTotals.accountTotals[4].current_total],
+                                        backgroundColor: ['rgba(153, 102, 255, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'other budget total $',
+                                        data: [AccountTotals.accountTotals[4].budget_total],
+                                        backgroundColor: ['rgba(153, 102, 255, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                        hidden: true,
+                                    },
+                                ],
+                            },
+                            options: {
+                                responsive: false,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    title: {
+                                        display: true,
+                                        text: 'Current totals and budget totals',
+                                        font: {
+                                            size: 20,
+                                        },
+                                    },
+                                    legend: {
+                                        position: 'right',
+                                    },
+                                },
+                                scales: {
+                                    x: {
+                                        stacked: false,
+                                    },
+                                    y: {
+                                        stacked: false,
+                                    }
+                                }
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error Filling Bar Chart: ", error);
                 }
-            });
+            };
+
+            fillBarChart();
 
             // Chart 3: Line chart
             let ctx3 = document.getElementById('chart3').getContext('2d');
