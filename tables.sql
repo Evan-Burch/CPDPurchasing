@@ -975,7 +975,7 @@ CREATE TABLE `tblActivityLog` (
   PRIMARY KEY (`ActivityID`),
   KEY `ResponsibleUser` (`ResponsibleUser`),
   CONSTRAINT `tblActivityLog_ibfk_1` FOREIGN KEY (`ResponsibleUser`) REFERENCES `tblUser` (`EmployeeID`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1003,7 +1003,15 @@ INSERT INTO `tblActivityLog` VALUES
 (16,'Added attachment GarrettHayesResume.pdf to PO 42-240219002.','42-240219002','2024-10-06',154),
 (17,'Deleted attachment GarrettHayesResume.pdf from PO 42-240219002.','42-240219002','2024-10-06',154),
 (18,'Added attachment GarrettHayesResume.pdf to PO 42-240219002.','42-240219002','2024-10-08',154),
-(19,'Deleted attachment GarrettHayesResume.pdf from PO 42-240219002.','42-240219002','2024-10-08',154);
+(19,'Deleted attachment GarrettHayesResume.pdf from PO 42-240219002.','42-240219002','2024-10-08',154),
+(20,'Added PO 42-241009001.','42-241009001','2024-10-09',154),
+(21,'Deleted PO 42-241009001.','42-241009001','2024-10-09',154),
+(22,'Added reminder for 2024-10-20.','2024-10-20','2024-10-10',154),
+(23,'Updated reminder for Sun Oct 20 2024 00:00:00 GMT+0000 (Coordinated Universal Time).','2024-10-20 0:0:0','2024-10-10',154),
+(24,'Updated reminder for Sun Oct 20 2024 00:00:00 GMT+0000 (Coordinated Universal Time).','2024-10-20 0:0:0','2024-10-10',154),
+(25,'Added reminder for 2024-10-15.','2024-10-15','2024-10-10',154),
+(26,'Updated reminder for Sun Oct 20 2024 00:00:00 GMT+0000 (Coordinated Universal Time).','2024-10-20 0:0:0','2024-10-10',154),
+(27,'Updated reminder for Sun Oct 20 2024 00:00:00 GMT+0000 (Coordinated Universal Time).','2024-10-20 0:0:0','2024-10-10',154);
 /*!40000 ALTER TABLE `tblActivityLog` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -19017,6 +19025,34 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
+-- Table structure for table `tblReminders`
+--
+
+DROP TABLE IF EXISTS `tblReminders`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tblReminders` (
+  `ReminderID` int(9) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(255) NOT NULL,
+  `DueDate` date NOT NULL,
+  `IsPaid` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`ReminderID`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tblReminders`
+--
+
+LOCK TABLES `tblReminders` WRITE;
+/*!40000 ALTER TABLE `tblReminders` DISABLE KEYS */;
+INSERT INTO `tblReminders` VALUES
+(1,'Test','2024-10-20',1),
+(3,'Test 2','2024-10-15',0);
+/*!40000 ALTER TABLE `tblReminders` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `tblSessions`
 --
 
@@ -19040,12 +19076,32 @@ CREATE TABLE `tblSessions` (
 LOCK TABLES `tblSessions` WRITE;
 /*!40000 ALTER TABLE `tblSessions` DISABLE KEYS */;
 INSERT INTO `tblSessions` VALUES
-('17758e7d-25ab-450c-895f-02676e6dd0dd',154,'2024-10-08 20:47:11'),
-('29f79347-8df6-4ecf-ab80-6e7ef8f38cee',154,'2024-10-08 05:48:55'),
-('79f92f7c-f7e6-408a-8148-ad0c0a288049',154,'2024-10-08 18:49:52'),
-('b106b8dc-b677-437f-b982-ebfa8cdec399',154,'2024-10-08 16:50:45'),
-('c0ca924d-aa3f-4c41-9ec4-9bd01a66dd61',154,'2024-10-08 17:00:03'),
-('c9f283f0-bf53-4949-b905-329965e0329c',154,'2024-10-08 06:04:14');
+('03f8acfc-4724-4c7d-b0ee-5a2521c48897',154,'2024-10-09 06:44:22'),
+('0fee2251-c85d-4b92-87f7-5f89b48ff61b',154,'2024-10-09 13:08:37'),
+('11f4525b-648b-4aee-998d-6b899f01f6a1',0,'2024-10-10 18:52:10'),
+('196cc542-087e-4ad7-aea6-c8a0dce3f4c0',0,'2024-10-10 18:41:50'),
+('261ed90e-330c-4332-a2de-dd9549fe4a3c',154,'2024-10-09 04:45:34'),
+('310e5d96-852a-47b3-bd3b-edbe49eb4d38',154,'2024-10-10 14:38:40'),
+('40520e22-ce84-48e1-95cd-c442eca75864',154,'2024-10-09 19:55:30'),
+('4c3ed3f4-5e12-44cf-ae53-baa18968de60',154,'2024-10-09 05:11:34'),
+('55ee2d8f-8bbe-4429-affd-b461b0481e71',154,'2024-10-09 06:44:54'),
+('5c8df8d6-1d83-48c1-a7ef-abf9cef9ca69',154,'2024-10-10 15:28:54'),
+('5d36d943-2f97-4d9a-bc9c-d2bdc17c948e',0,'2024-10-10 16:39:05'),
+('6b6adbce-4ecf-46cf-a6cc-7bf9ae40d5b5',154,'2024-10-09 19:13:34'),
+('6de757d6-6af8-447a-8b99-e54497dfa323',154,'2024-10-09 20:09:45'),
+('7ca47266-ea4c-409b-8a39-63a289e6f621',154,'2024-10-09 13:56:36'),
+('893ff6a8-e210-4afd-addc-babd081bb00f',154,'2024-10-09 20:51:06'),
+('8987519e-47e0-4033-a650-0de4212941e2',154,'2024-10-10 18:34:44'),
+('a0c3f308-a938-4dec-bbbb-e9a2ce75a2ca',0,'2024-10-10 16:44:16'),
+('b4f88978-923a-4853-85a5-8896bbd36c3d',154,'2024-10-10 14:55:46'),
+('c7e58a37-140a-49c8-b759-c878238775c4',154,'2024-10-10 16:24:12'),
+('cd715a52-c187-4403-ae2f-f1f6dd164dda',154,'2024-10-10 15:03:11'),
+('da34ae1f-2522-4fdb-b4da-31c82ec0969c',154,'2024-10-10 14:56:30'),
+('e04dcc32-da87-4132-84b7-3446ded97b39',154,'2024-10-10 03:38:22'),
+('e588e941-e62e-424b-bb7a-f2ff5f613216',154,'2024-10-10 03:25:10'),
+('ea49e6bc-47fe-4369-83ef-29922b8544ed',154,'2024-10-09 04:18:59'),
+('eb629180-279b-4a78-a502-c554b9a0e5ad',0,'2024-10-10 18:43:16'),
+('f0b553aa-bece-46cc-aa5b-9dfe50e98c9d',154,'2024-10-09 15:57:28');
 /*!40000 ALTER TABLE `tblSessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -19076,6 +19132,7 @@ CREATE TABLE `tblUser` (
 LOCK TABLES `tblUser` WRITE;
 /*!40000 ALTER TABLE `tblUser` DISABLE KEYS */;
 INSERT INTO `tblUser` VALUES
+(0,'Dev\n',NULL,'User','Dev User','dev','ef260e9aa3c673af240d17a2660480361a8e081d1ffeca2a5ed0e3219fc18567',0),
 (79,'Mark','','Maxwell','Mark Maxwell','','',0),
 (84,'David','','Dukes','David Dukes','','',0),
 (85,'Nathan','','Honeycutt','Nathan Honeycutt','','',0),
@@ -21077,4 +21134,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-08 20:58:46
+-- Dump completed on 2024-10-10 18:59:55
