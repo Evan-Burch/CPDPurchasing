@@ -175,6 +175,8 @@
     </div>
 
     <script>
+        const apiCall = sessionStorage.getItem('apiCall');
+
         var PurchaseOrderID = -1;
         $(document).ready(function () {
             PurchaseOrderID = new URL(window.location.href).searchParams.get("POID");
@@ -182,7 +184,7 @@
             $('#poTitle').text('Purchase Order ' + PurchaseOrderID);
             $.ajax({
                 type: 'POST',
-                url: 'http://34.224.145.158:8000/getPOInfo',
+                url: `${apiCall}/getPOInfo`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
                 success: function (results) {
@@ -198,7 +200,7 @@
             });
             $.ajax({
                 type: 'POST',
-                url: 'http://34.224.145.158:8000/fillPOItemTable',
+                url: `${apiCall}/fillPOItemTable`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
                 success: function (results) {
@@ -246,7 +248,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: 'http://34.224.145.158:8000/getPOAttachments',
+                url: `${apiCall}/getPOAttachments`,
                 data: JSON.stringify({
                     uuidSessionToken: sessionStorage.getItem('SimpleSession'),
                     strPurchaseOrderID: PurchaseOrderID
@@ -279,7 +281,7 @@
                         // AJAX call to get file data
                         $.ajax({
                             type: 'POST',
-                            url: 'http://34.224.145.158:8000/getAttachment',
+                            url: `${apiCall}/getAttachment`,
                             data: JSON.stringify({
                                 uuidSessionToken: sessionStorage.getItem('SimpleSession'),
                                 intAttachmentID: attachmentID
@@ -310,7 +312,7 @@
                         // AJAX call to delete the attachment
                         $.ajax({
                             type: 'DELETE',
-                            url: 'http://34.224.145.158:8000/deleteAttachment', // Replace with correct backend route
+                            url: `${apiCall}/deleteAttachment`, // Replace with correct backend route
                             data: JSON.stringify({
                                 uuidSessionToken: sessionStorage.getItem('SimpleSession'),
                                 intAttachmentID: attachmentID
@@ -338,7 +340,7 @@
             // Add functionality to delete PO
             $.ajax({
                 type: 'DELETE',
-                url: 'http://34.224.145.158:8000/deletePO',
+                url: `${apiCall}/deletePO`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
                 success: function (results) {
@@ -365,7 +367,7 @@
                 var base64String = (reader.result.split("base64,")[1]);
                 $.ajax({
                     type: 'POST',
-                    url: 'http://34.224.145.158:8000/addPOAttachment',
+                    url: `${apiCall}/addPOAttachment`,
                     data: JSON.stringify({
                         uuidSessionToken: sessionStorage.getItem('SimpleSession'),
                         strPurchaseOrderID: PurchaseOrderID, // Ensure PurchaseOrderID is set correctly

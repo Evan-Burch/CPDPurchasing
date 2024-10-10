@@ -151,6 +151,16 @@
       bsCollapse.hide();
     }
 
+    const fullUrl = window.location.protocol + "//" + window.location.hostname;
+    if (fullUrl == "https://cpd-purchasing.cookeville-tn.org") // Set Prod URL
+      sessionStorage.setItem('apiCall', "https://api.cpd-purchasing.cookeville-tn.org");
+    else if (fullUrl == "http://hubbleportal.me" || fullUrl == "http://127.0.0.1") // Set Dev URL
+      sessionStorage.setItem('apiCall', "http://34.224.145.158:8000");
+    else
+      sessionStorage.setItem('apiCall', "error");
+
+    const apiCall = sessionStorage.getItem('apiCall');
+
     $(document).ready(function () {
       if (sessionStorage.getItem('SimpleSession') == null) {
         window.location.href = "./pages/login.html";
@@ -158,7 +168,7 @@
 
       $.ajax({
         type: 'POST',
-        url: 'http://34.224.145.158:8000/getUserName',
+        url: `${apiCall}/getUserName`,
         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
         contentType: 'application/json',
         success: function (results) {
@@ -191,7 +201,7 @@
       $('html').attr('data-bs-theme', $('html').attr('data-bs-theme') === 'dark' ? 'light' : 'dark');
       $.ajax({
         type: 'POST',
-        url: 'http://34.224.145.158:8000/updateUserSettings',
+        url: `${apiCall}/updateUserSettings`,
         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), "strKey": "theme", "strValue": $('html').attr('data-bs-theme') }),
         contentType: 'application/json',
         success: function (results) {
@@ -234,7 +244,7 @@
       else {
         $.ajax({
           type: 'PUT',
-          url: 'http://34.224.145.158:8000/changeUserPassword',
+          url: `${apiCall}/changeUserPassword`,
           data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strCurrentPassword: strCurrentPassword, strNewPassword: strNewPassword }),
           contentType: 'application/json',
           success:
@@ -254,7 +264,7 @@
     $('#btnLogout').click(function () {
       $.ajax({
         type: 'DELETE',
-        url: 'http://34.224.145.158:8000/logout',
+        url: `${apiCall}/logout`,
         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
         contentType: 'application/json',
         success: function (results) {
