@@ -68,8 +68,9 @@ router.post("/updateReminder", async (req, res) => {
 		await dbConnection.query("update tblReminders set IsPaid = not IsPaid where ReminderID=?;", [intReminderID]);
 		
 		var infoQuery = await dbConnection.query("select DueDate from tblReminders where ReminderID=?;", [intReminderID]);
+		var formattedDate = new Date(infoQuery[0].DueDate).toISOString().split('T')[0];
 		
-		await updateActivityLog(uuidSessionToken, "Updated reminder for " + infoQuery[0].DueDate + ".", infoQuery[0].DueDate);
+		await updateActivityLog(uuidSessionToken, "Updated reminder for " + formattedDate + ".", formattedDate);
 
 		res.status(200).json({"message": "Success."});
 	} finally {
@@ -93,8 +94,9 @@ router.delete("/deleteReminder", async (req, res) => {
 		console.log("Deleting reminder " + intReminderID);
 		
 		var infoQuery = await dbConnection.query("select DueDate from tblReminders where ReminderID=?;", [intReminderID]);
+		var formattedDate = new Date(infoQuery[0].DueDate).toISOString().split('T')[0];
 		
-		await updateActivityLog(uuidSessionToken, "Deleted reminder for " + infoQuery[0].DueDate + ".", infoQuery[0].DueDate);
+		await updateActivityLog(uuidSessionToken, "Deleted reminder for " + formattedDate + ".", formattedDate);
 		
 		await dbConnection.query("delete from tblReminders where ReminderID=?;", [intReminderID]);
 
