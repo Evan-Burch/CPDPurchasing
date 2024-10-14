@@ -46,6 +46,10 @@ function getUserSettings() {
                             if (currentValue != $('html').attr('data-bs-theme')) {
                                 $('html').attr('data-bs-theme', currentValue);
                             }
+                            if (currentValue === 'dark')
+                                $('#btnSwitch').prop('checked', false);  // Switch the toggle to the right
+                            else if (currentValue === 'light')
+                                $('#btnSwitch').prop('checked', true);  // Switch the toggle to the left
                             break;
                         default:
                             console.warn("Unrecognized setting key " + currentKey + "!");
