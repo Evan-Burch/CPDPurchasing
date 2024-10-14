@@ -1,3 +1,6 @@
+import swal from 'sweetalert2';
+window.swal = swal;
+
 function handleBrowserNav() {
     history.pushState(null, document.title, location.href);
     window.addEventListener("popstate", function (e) {

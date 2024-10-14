@@ -4,15 +4,16 @@
     "description": "",
     "main": "index.html",
     "scripts": {
-      "start": "vite",
-      "build": "vite build",
-      "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "vite",
+        "build": "vite build",
+        "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
-      "vite": "^5.2.8"
+        "print-js": "^1.6.0",
+        "sweetalert2": "^11.14.3",
+        "vite": "^5.2.8"
     },
     "homepage": "https://ec2-34-224-145-158.compute-1.amazonaws.com/var/www/html/"
-  }
-  
+}

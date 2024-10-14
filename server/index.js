@@ -1,3 +1,6 @@
+import swal from 'sweetalert2';
+window.swal = swal;
+
 var express = require("express");
 var cors = require("cors");
 require("dotenv").config();
