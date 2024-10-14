@@ -107,6 +107,20 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 themeSystem: 'bootstrap',
+                editable: true,
+                selectable: true,
+                dateClick: function (info) {
+                    console.log(info);
+                    var title = prompt('Enter Event Title:');
+                    if (title) {
+                        calendar.addEvent({
+                            title: title,
+                            dateStr: info.dateStr,
+                            allDay: true
+                        });
+                    }
+                },
+                events: [],
             });
             calendar.render();
 
