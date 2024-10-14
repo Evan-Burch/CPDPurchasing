@@ -98,31 +98,86 @@
 
         Chart.defaults.color = 'white';
 
-        var upcomingBilling = [];
-
         $(document).ready(function () {
 
-            // FullCalendar
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                themeSystem: 'bootstrap',
-                editable: true,
-                selectable: true,
-                dateClick: function (info) {
-                    console.log(info);
-                    var title = prompt('Enter Event Title:');
-                    if (title) {
-                        calendar.addEvent({
-                            title: title,
-                            dateStr: info.dateStr,
-                            allDay: true
-                        });
-                    }
-                },
-                events: [],
+
+            var calendarEvents = [];
+
+            // Fetch reminders via AJAX
+            $.ajax({
+                type: 'POST',
+                url: 'http://34.224.145.158:8000/getReminders',
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+                contentType: 'application/json',
+                success: function (results) {
+                    calendarEvents = results.Reminders;
+                    console.log(calendarEvents)
+
+                    let formattedReminders = calendarEvents.map(reminder => {
+                        let formattedDate = reminder.DueDate.split('T')[0];  // Split by 'T' to get the date part
+                        return { id: reminder.ReminderID, title: reminder.Name, start: formattedDate };
+                    });
+
+                    console.log(formattedReminders);
+
+                    // Initialize FullCalendar after fetching events
+                    var calendarEl = document.getElementById('calendar');
+                    var calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'dayGridMonth',
+                        themeSystem: 'bootstrap',
+                        editable: true,
+                        selectable: true,
+                        dateClick: function (info) {
+                            var title = prompt('Enter Event Title:');
+                            if (title) {
+                                calendar.addEvent({
+                                    title: title,
+                                    start: info.dateStr,  // Use `start` instead of `dateStr`
+                                    allDay: true
+                                });
+
+                                // Add event to the server
+                                $.ajax({
+                                    type: 'POST',
+                                    url: 'http://34.224.145.158:8000/addReminder',
+                                    data: JSON.stringify({
+                                        uuidSessionToken: sessionStorage.getItem('SimpleSession'),
+                                        strName: title,
+                                        strDueDate: info.dateStr
+                                    }),
+                                    contentType: 'application/json'
+                                });
+                            }
+                        },
+                        events: formattedReminders,  // Use the events fetched from the server
+                        eventClick: function (info) {
+                            if (confirm(`Do you really want to delete the event '${info.event.title}'?`)) {
+                                // Remove event from FullCalendar
+                                info.event.remove();
+
+                                // Send delete request to the server
+                                $.ajax({
+                                    type: 'DELETE',
+                                    url: 'http://34.224.145.158:8000/deleteReminder',  // Assuming you have a delete endpoint
+                                    data: JSON.stringify({
+                                        uuidSessionToken: sessionStorage.getItem('SimpleSession'),
+                                        intReminderID: info.event.id  // Send the event ID for deletion
+                                    }),
+                                    contentType: 'application/json',
+                                    success: function () {
+                                        alert('Event deleted successfully!');
+                                    },
+                                    error: function () {
+                                        alert('Failed to delete the event.');
+                                    }
+                                });
+                            }
+                        }
+                    });
+
+                    calendar.render();  // Render calendar after initializing it
+                }
             });
-            calendar.render();
 
 
             //the hex code for the icons is #3A6EA1
@@ -161,15 +216,6 @@
                     });
                 }
             })
-
-            const upcomingBillingList = document.getElementById("upcomingBillingList");
-            upcomingBilling.forEach(activity => {
-                let listItem = document.createElement("li");
-                listItem.classList.add("list-group-item");
-                listItem.textContent = activity;
-                upcomingBillingList.appendChild(listItem);
-            });
-
             // Chart 1: Doughnut chart
             //use asynchronous function to fill the donut chart (avoids error if the data is not ready as soon as the page loads)
             async function fillDonutChart() {

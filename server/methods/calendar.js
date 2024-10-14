@@ -50,33 +50,35 @@ router.post("/getReminders", async (req, res) => {
 	}
 });
 
-// toggles the row IsPaid
-router.post("/updateReminder", async (req, res) => {
-	const dbConnection = await db_pool.getConnection();
-	const uuidSessionToken = clean(req.body.uuidSessionToken);
-	
-	const intReminderID = clean(req.body.intReminderID);
-	
-	try {
-		var userID = await getUserIDBySessionToken(uuidSessionToken);
-		if (userID == -1) {
-			return res.status(400).json({"message": "You must be logged in to do that"});
-		}
-		
-		console.log("Updating reminder " + intReminderID);
-		
-		await dbConnection.query("update tblReminders set IsPaid = not IsPaid where ReminderID=?;", [intReminderID]);
-		
-		var infoQuery = await dbConnection.query("select DueDate from tblReminders where ReminderID=?;", [intReminderID]);
-		var formattedDate = new Date(infoQuery[0].DueDate).toISOString().split('T')[0];
-		
-		await updateActivityLog(uuidSessionToken, "Updated reminder for " + formattedDate + ".", formattedDate);
 
-		res.status(200).json({"message": "Success."});
-	} finally {
-		await dbConnection.close();
-	}
-});
+//No Longer Needed, But save incase updated later
+// // toggles the row IsPaid
+// router.post("/updateReminder", async (req, res) => {
+// 	const dbConnection = await db_pool.getConnection();
+// 	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	
+// 	const intReminderID = clean(req.body.intReminderID);
+	
+// 	try {
+// 		var userID = await getUserIDBySessionToken(uuidSessionToken);
+// 		if (userID == -1) {
+// 			return res.status(400).json({"message": "You must be logged in to do that"});
+// 		}
+		
+// 		console.log("Updating reminder " + intReminderID);
+		
+// 		await dbConnection.query("update tblReminders set IsPaid = not IsPaid where ReminderID=?;", [intReminderID]);
+		
+// 		var infoQuery = await dbConnection.query("select DueDate from tblReminders where ReminderID=?;", [intReminderID]);
+// 		var formattedDate = new Date(infoQuery[0].DueDate).toISOString().split('T')[0];
+		
+// 		await updateActivityLog(uuidSessionToken, "Updated reminder for " + formattedDate + ".", formattedDate);
+
+// 		res.status(200).json({"message": "Success."});
+// 	} finally {
+// 		await dbConnection.close();
+// 	}
+// });
 
 // just in case, i don't see how this would be very useful though
 router.delete("/deleteReminder", async (req, res) => {
