@@ -11,20 +11,7 @@
 </head>
 
 <body>
-    <script src="../assets/js/jquery-3.7.1.min.js"></script>
-    <script src="../assets/js/utils.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.datatables.net/2.0.1/js/dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.0/js/dataTables.buttons.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.bootstrap5.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.dataTables.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.print.min.js"></script>
     <div class="col-12 d-flex justify-content-center mt-2">
-
         <div class="card col-12 col-md-10 col-lg-9">
             <div class="card-header">
                 <div class="row">
@@ -53,10 +40,8 @@
 
                     <!-- Vendor Actions Buttons -->
                     <div class="col-12 col-md-3 d-flex flex-column">
-                        <button type="button" class="btn btn-info mb-2" data-bs-toggle="modal"
-                            data-bs-target="#editVendor">Edit Vendor</button>
-                        <button type="button" class="btn btn-success mb-2" data-bs-toggle="modal"
-                            data-bs-target="#addContact">Add Contact</button>
+                        <button type="button" class="btn btn-info mb-2" data-bs-toggle="modal" data-bs-target="#editVendor">Edit Vendor</button>
+                        <button id="btnFillState" type="button" class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#addContact">Add Contact</button>
                         <button id="btnDelete" type="button" class="btn btn-danger mb-2">Delete Vendor</button>
                     </div>
                 </div>
@@ -79,7 +64,6 @@
             </div>
         </div>
     </div>
-    </div>
 
     <!-- Edit Vendor Modal -->
     <div class="modal fade" id="editVendor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -90,17 +74,24 @@
                     <h5 class="modal-title" id="editVendorLabel">Edit Vendor</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <label for="txtEditVendorName" class="form-label">Vendor Name</label>
-                    <input type="text" class="form-control" id="txtEditVendorName" placeholder="Vendor Name">
+                <form>
+                    <div class="modal-body">
+                        <label for="txtEditVendorName" class="form-label">Vendor Name</label>
+                        <input type="text" class="form-control" id="txtEditVendorName" placeholder="Vendor Name">
 
-                    <label for="txtEditVendorLink" class="form-label mt-2">Website</label>
-                    <input type="text" class="form-control" id="txtEditVendorLink" placeholder="Website">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success">Edit</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                </div>
+                        <label for="txtEditVendorLink" class="form-label mt-2">Website</label>
+                        <input type="text" class="form-control" id="txtEditVendorLink" placeholder="Website">
+                    </div>
+                    <!--Error messages. Default Hidden-->
+                    <div id="WarningErrorMessagePopUp" class="alert alert-warning" style="display:none;">
+                        <h4 class="alert-heading">Warning!</h4>
+                        <p class="mb-0" id="txtErrorMsg"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnEditVendor" type="button" class="btn btn-success">Edit</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -114,128 +105,184 @@
                     <h5 class="modal-title" id="addContactLabel">Add Contact</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <label for="txtContactName" class="form-label">Contact Name</label>
-                    <input type="text" class="form-control" id="txtContactName" placeholder="Contact Name">
+                <form>
+                    <div class="modal-body">
+                        <label for="txtContactName" class="form-label">Contact Name</label>
+                        <input type="text" class="form-control" id="txtContactName" placeholder="Contact Name">
 
-                    <label for="txtContactAddress" class="form-label mt-2">Address</label>
-                    <input type="text" class="form-control" id="txtContactAddress" placeholder="Address">
+                        <label for="txtStreetAddress1" class="form-label">Street Address 1</label>
+                        <input type="text" class="form-control" id="txtStreetAddress1" placeholder="Street Address 1">
 
-                    <label for="txtOfficePhone" class="form-label mt-2">Office Phone</label>
-                    <input type="tel" class="form-control" id="txtOfficePhone" placeholder="123-456-7890">
+                        <label for="txtStreetAddress2" class="form-label">Street Address 2</label>
+                        <input type="text" class="form-control" id="txtStreetAddress2" placeholder="Street Address 2">
 
-                    <label for="txtMobilePhone" class="form-label mt-2">Mobile Phone</label>
-                    <input type="tel" class="form-control" id="txtMobilePhone" placeholder="123-456-7890">
+                        <label for="txtCity" class="form-label">City</label>
+                        <input type="text" class="form-control" id="txtCity" placeholder="City">
 
-                    <label for="txtVendorEmail" class="form-label mt-2">Email</label>
-                    <input type="email" class="form-control" id="txtVendorEmail" placeholder="example@gmail.com">
+                        <label for="txtState" class="form-label relative">State</label>
+                        <select type="text" class="form-select" id="txtState" aria-label="State Select">
+                            <option selected disabled>Select State...</option>
+                        </select>
 
-                    <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" id="chkPrimaryContact">
-                        <label class="form-check-label" for="chkPrimaryContact">Primary Contact</label>
+                        <label for="txtZip" class="form-label">ZIP Code</label>
+                        <input type="text" class="form-control" id="txtZip" placeholder="ZIP Code">
+
+                        <label for="txtOfficePhone" class="form-label mt-2">Office Phone</label>
+                        <input type="tel" class="form-control" id="txtOfficePhone" placeholder="123-456-7890">
+
+                        <label for="txtMobilePhone" class="form-label mt-2">Mobile Phone</label>
+                        <input type="tel" class="form-control" id="txtMobilePhone" placeholder="123-456-7890">
+
+                        <label for="txtVendorEmail" class="form-label mt-2">Email</label>
+                        <input type="email" class="form-control" id="txtVendorEmail" placeholder="example@gmail.com">
+
+                        <label for="txtFax" class="form-label mt-2">Fax Number</label>
+                        <input type="text" class="form-control" id="txtFax" placeholder="123456789">
+
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="chkPrimaryContact">
+                            <label class="form-check-label" for="chkPrimaryContact">Primary Contact</label>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success">Add Contact</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                </div>
+                    <!--Error messages. Default Hidden-->
+                    <div id="WarningErrorMessagePopUp1" class="alert alert-warning" style="display:none;">
+                        <h4 class="alert-heading">Warning!</h4>
+                        <p class="mb-0" id="txtErrorMsg1"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnAddContact" type="button" class="btn btn-success">Add Contact</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
             </div>
-
         </div>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="../assets/js/jquery-3.7.1.min.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/2.0.1/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.bootstrap5.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.dataTables.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.print.min.js"></script>
+    <script>
+        const apiCall = sessionStorage.getItem('apiCall');
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
-            integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
-            crossorigin="anonymous"></script>
-        <script>
-            const apiCall = sessionStorage.getItem('apiCall');
-
-            var VendorName = "";
-            $(document).ready(function () {
-                VendorName = new URL(window.location.href).searchParams.get("VendorName");
-                $('#vendorTitle').text(VendorName);
-                $.ajax({
-                    type: 'POST',
-                    url: `${apiCall}/getVendorInfo`,
-                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
-                    contentType: 'application/json',
-                    success: function (results) {
-                        console.log(results);
-                        if (results.VendorInfo[0].Website != '') {
-                            $('#pWebsite').html('<a href="http://' + results.VendorInfo[0].Website + '" target="_blank">' + results.VendorInfo[0].Website + '<a>');
-                        } else {
-                            $('#pWebsite').text('N/A');
-                        }
-                        $('#pStatus').text((results.VendorInfo[0].Status == "1") ? "Active" : "Inactive");
+        var VendorName = "";
+        $(document).ready(function () {
+            VendorName = new URL(window.location.href).searchParams.get("VendorName");
+            $('#vendorTitle').text(VendorName);
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/getVendorInfo`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results);
+                    if (results.VendorInfo[0].Website != '') {
+                        $('#pWebsite').html('<a href="http://' + results.VendorInfo[0].Website + '" target="_blank">' + results.VendorInfo[0].Website + '<a>');
+                    } else {
+                        $('#pWebsite').text('N/A');
                     }
-                });
-                $.ajax({
-                    type: 'POST',
-                    url: `${apiCall}/fillVendorContactTable`,
-                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
-                    contentType: 'application/json',
-                    success: function (results) {
-                        console.log(results);
-                        if (Array.isArray(results.VendorContactTable)) {
-                            $('#tblVendorContacts').DataTable({
-                                data: results.VendorContactTable,
-                                columns: [
-                                    { data: "Name", title: "Contact Name" },
-                                    { data: "Address", title: "Address" },
-                                    { data: "OfficePhone", title: "Office Phone" },
-                                    { data: "MobilePhone", title: "Mobile Phone" },
-                                    { data: "Email", title: "Email" }
-                                ],
-                                autowidth: false,
-                                responsive: true,
-                                pageLength: 5
-                            });
-                        } else {
-                            console.error('Unexpected response format or status:', results);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('AJAX Error:', status, error);
+                    $('#pStatus').text((results.VendorInfo[0].Status == "1") ? "Active" : "Inactive");
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/fillVendorContactTable`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results);
+                    if (Array.isArray(results.VendorContactTable)) {
+                        results.VendorContactTable.forEach(element => {
+                            element.Name = (element.Primary == 1) ? element.Name + " (Primary)" : element.Name;
+                        });
+                        $('#tblVendorContacts').DataTable({
+                            data: results.VendorContactTable,
+                            columns: [
+                                { data: "Name", title: "Contact Name" },
+                                { data: "Address", title: "Address" },
+                                { data: "OfficePhone", title: "Office Phone" },
+                                { data: "MobilePhone", title: "Mobile Phone" },
+                                { data: "Email", title: "Email" }
+                            ],
+                            autowidth: false,
+                            responsive: true
+                        });
+                    } else {
+                        console.error('Unexpected response format or status:', results);
                     }
-                });
-                $.ajax({
-                    type: 'POST',
-                    url: `${apiCall}/fillVendorPOTable`,
-                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
-                    contentType: 'application/json',
-                    success: function (results) {
-                        console.log(results);
-                        if (Array.isArray(results.VendorPOTable)) {
-                            $('#tblVendorPOs').DataTable({
-                                data: results.VendorPOTable,
-                                columns: [
-                                    { data: "PurchaseOrderID", title: "Purchase Order ID" },
-                                    { data: "CreatedDate", title: "Date" },
-                                    { data: "DisplayName", title: "Created By" },
-                                    { data: "FiscalYear", title: "Fiscal Year" }
-                                ],
-                                autowidth: false,
-                                responsive: true,
-                                pageLength: 5,
-                                order: [[3, 'desc']]
-                            });
-                        } else {
-                            console.error('Unexpected response format or status:', results);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('AJAX Error:', status, error);
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/fillVendorPOTable`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results);
+                    if (Array.isArray(results.VendorPOTable)) {
+                        $('#tblVendorPOs').DataTable({
+                            data: results.VendorPOTable,
+                            columns: [
+                                { data: "PurchaseOrderID", title: "Purchase Order ID" },
+                                { data: "CreatedDate", title: "Date" },
+                                { data: "DisplayName", title: "Created By" },
+                                { data: "FiscalYear", title: "Fiscal Year" }
+                            ],
+                            autowidth: false,
+                            responsive: true,
+                            order: [[3, 'desc']]
+                        });
+                    } else {
+                        console.error('Unexpected response format or status:', results);
                     }
-                });
-
-                getUserSettings();
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                }
             });
 
-            $('#btnDelete').on('click', function () {
+            getUserSettings();
+        });
+
+        // Fills state select in form (no it's not necessary, yes I wanted to do it)
+        $('#btnFillState').on('click', function () {
+            let statesUSA = ['ALAlabama', 'AKAlaska', 'AZArizona', 'ARArkansas', 'CACalifornia', 'COColorado', 'CTConnecticut', 'DCWashington D.C.', 'DEDelaware', 'FLFlorida', 'GAGeorgia', 'HIHawaii', 'IDIdaho', 'ILIllinois', 'INIndiana', 'IAIowa', 'KSKansas', 'KYKentucky', 'LALouisiana', 'MEMaine', 'MDMaryland', 'MAMassachusetts', 'MIMichigan', 'MNMinnesota', 'MSMississippi', 'MOMissouri', 'MTMontana', 'NENebraska', 'NVNevada', 'NHNew Hampshire', 'NJNew Jersey', 'NMNew Mexico', 'NYNew York', 'NCNorth Carolina', 'NDNorth Dakota', 'OHOhio', 'OKOklahoma', 'OROregon', 'PAPennsylvania', 'RIRhode Island', 'SCSouth Carolina', 'SDSouth Dakota', 'TNTennessee', 'TXTexas', 'UTUtah', 'VTVermont', 'VAVirginia', 'WAWashington', 'WVWest Virginia', 'WIWisconsin', 'WYWyoming'];
+            statesUSA.forEach(element => {
+                $('#txtState').append('<option value="' + element.slice(0, 2) + '">' + element.slice(2, element.length) + '</option>');
+            });
+        });
+
+        $('#btnEditVendor').on('click', function () {
+            let strEditName = $('#txtEditVendorName').val();
+            let strEditLink = $('#txtEditVendorLink').val();
+            let strErrorMessage = '';
+
+            // Error checking
+            if (strEditName.length > 50) {
+                strErrorMessage += "<p>vendor name is too long</p>";
+            } if (strEditLink.length > 100) {
+                strErrorMessage += "<p>link is too long</p>";
+            } if (strErrorMessage.length > 0) { // Error message
+                console.log(strErrorMessage);
+                $('#txtErrorMsg').html(strErrorMessage);
+                $('#WarningErrorMessagePopUp').show();
+            } else {
                 $.ajax({
-                    type: 'DELETE',
-                    url: `${apiCall}/deleteVendor`,
-                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
+                    type: 'PUT',
+                    url: `${apiCall}/updateVendor`,
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strEditName: strEditName, strEditLink: strEditLink, strVendorName: VendorName }),
                     contentType: 'application/json',
                     success: function (results) {
                         Swal.fire({
@@ -243,16 +290,111 @@
                             showConfirmButton: false,
                             width: '500px',
                             icon: 'success',
-                            text: 'Vendor successfully deleted'
+                            text: 'Vendor successfully edited'
                         });
                         setTimeout(() => {
                             returnHome('vendors', true);
                         }, 1000*2);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
                     }
                 });
-            });
+            }
+        });
 
-        </script>
+        $('#btnAddContact').on('click', function () {
+            let strContactName = $('#txtContactName').val();
+            let strStreetAddress1 = $('#txtStreetAddress1').val();
+            let strStreetAddress2 = $('#txtStreetAddress2').val();
+            let strCity = $('#txtCity').val();
+            let strState = $('#txtState').val();
+            let strZip = $('#txtZip').val();
+            let strOfficePhone = $('#txtOfficePhone').val();
+            let strMobilePhone = $('#txtMobilePhone').val();
+            let strEmail = $('#txtVendorEmail').val();
+            let strFax = $('#txtFax').val();
+            let chkPrimary = $('#chkPrimaryContact').is(':checked');
+            let intCreatedBy = parseInt(sessionStorage.getItem('userId'));
+            let strErrorMessage = '';
+
+            // Input at least some form of contact info
+            if (strOfficePhone == '' && strMobilePhone == '' && strEmail == '' && strFax == '') {
+                strErrorMessage +=  "<p>Please enter at least one of the following: Office Phone, Mobile Phone, Email, Fax Number</p>";
+            } if (strContactName.length > 46) {
+                strErrorMessage += "<p>Contact Name is too long</p>";
+            } if (strCity.length > 50) {
+                strErrorMessage += "<p>City is too long</p>";
+            } if (strStreetAddress1.length > 50) {
+                strErrorMessage += "<p>Street Address 1 is too long</p>";
+            } if (strStreetAddress2.length > 50) {
+                strErrorMessage += "<p>Street Address 2 is too long</p>";
+            } if (strZip.length > 10) {
+                strErrorMessage += "<p>ZIP Code is too long</p>";
+            } if (strOfficePhone.length > 12) {
+                strErrorMessage += "<p>Office Phone is too long</p>";
+            } if (strMobilePhone.length > 12) {
+                strErrorMessage += "<p>Mobile Phone is too long</p>";
+            } if (strFax.length > 12) {
+                strErrorMessage += "<p>Fax number is too long</p>";
+            } if (strState == null) { // If state is not specified
+                strState = '';
+            } if (strErrorMessage.length > 0) { // Error message
+                console.log(strErrorMessage);
+                $('#txtErrorMsg1').html(strErrorMessage);
+                $('#WarningErrorMessagePopUp1').show();
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    url: `${apiCall}/addVendorContact`,
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName, strContactName: strContactName, strStreetAddress1: strStreetAddress1, strStreetAddress2: strStreetAddress2, strCity: strCity, strState: strState, strZip: strZip, strOfficePhone: strOfficePhone, strMobilePhone: strMobilePhone, strEmail: strEmail, strFax:strFax, chkPrimary: chkPrimary, intCreatedBy: intCreatedBy }),
+                    contentType: 'application/json',
+                    success: function (results) {
+                        Swal.fire({
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            width: '500px',
+                            icon: 'success',
+                            text: 'Contact successfully added'
+                        });
+                        setTimeout(() => {
+                            Swal.close();
+                            $('#addContact').modal('hide');
+                            window.location.reload();
+                        }, 1000*2);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
+                    }
+                });
+            }
+        });
+
+        $('#btnDelete').on('click', function () {
+            $.ajax({
+                type: 'DELETE',
+                url: `${apiCall}/deleteVendor`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
+                contentType: 'application/json',
+                success: function (results) {
+                    Swal.fire({
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        width: '500px',
+                        icon: 'success',
+                        text: 'Vendor successfully deleted'
+                    });
+                    setTimeout(() => {
+                        returnHome('vendors', true);
+                    }, 1000*2);
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                }
+            });
+        });
+
+    </script>
 </body>
 
 </html>
