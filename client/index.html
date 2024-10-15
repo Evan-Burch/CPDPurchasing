@@ -10,6 +10,7 @@
   <link href="./assets/css/main.css" rel="stylesheet">
   <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
 </head>
 
 <body>
@@ -22,7 +23,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <ul id="poNav" class="navbar-nav me-auto mb-2 mb-lg-0">
             <!-- Add margin-bottom for better spacing on smaller screens -->
             <li class="nav-item">
               <a class="nav-link" href="javascript:switchPage('home')">Home</a>
@@ -149,7 +150,7 @@
     const fullUrl = window.location.protocol + "//" + window.location.hostname;
     if (fullUrl == "https://cpd-purchasing.cookeville-tn.org") // Set Prod URL
       sessionStorage.setItem('apiCall', "https://api.cpd-purchasing.cookeville-tn.org");
-    else if (fullUrl == "http://hubbleportal.me" || fullUrl == "http://127.0.0.1") // Set Dev URL
+    else if (fullUrl == "http://hubbleportal.me" || fullUrl == "http://127.0.0.1" || fullUrl == "http://localhost") // Set Dev URL
       sessionStorage.setItem('apiCall', "http://34.224.145.158:8000");
     else
       sessionStorage.setItem('apiCall', "error");
@@ -169,6 +170,11 @@
         success: function (results) {
           $('#username').text(results.UserName);
           sessionStorage.setItem('userId', results.UserID);
+
+          if(results.IsAdmin === true){
+            console.log('Admin user detected');
+            $('#poNav').append('<li class="nav-item"><a class="nav-link" href="javascript:switchPage(\'admin\')">Admin Portal</a></li>');
+          }
         }
       });
 

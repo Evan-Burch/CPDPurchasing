@@ -29,6 +29,8 @@ app.use("/", require("./methods/user.js"));
 app.use("/", require("./methods/misc.js"));
 app.use("/", require("./methods/settings.js"));
 app.use("/", require("./methods/home-page.js"));
+app.use("/", require("./methods/calendar.js"));
+app.use("/", require("./methods/admin.js"));
 
 var server = app.listen(8000, function() {
 	var currentBranch = "missingno";
