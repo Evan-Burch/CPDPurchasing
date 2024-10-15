@@ -19,7 +19,7 @@ router.post("/getUserList", async (req, res) => {
 			res.status(400).json({"message": "This user is not an admin."});
 		}
 		
-		var users = await dbConnection.query("select EmployeeID, DisplayName from tblUser;"); // just the stuff needed to ID them
+		var users = await dbConnection.query("select EmployeeID, DisplayName from tblUser where UserName<>'';"); // just the stuff needed to ID them
 		
 		res.status(200).json({"message": "Success.", "Users": users});
 	} finally {
