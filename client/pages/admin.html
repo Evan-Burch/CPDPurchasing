@@ -1,5 +1,64 @@
 <html lang="en">
-    <body>
-        <h1>Admin Test</h1>
-    </body>
+
+<body>
+    <div class="container-fluid">
+        <div class="row p-3">
+            <!-- User List -->
+            <div class="col-md-4">
+                <div class="btn btn-primary mb-2">+ Add User</div>
+                <!-- <ul class="list-group" id="userList">
+                    <!-- <li class="list-group-item" onclick="selectUser(0)">John Doe</li>
+                    <li class="list-group-item" onclick="selectUser(1)">Jane Smith</li>
+                    <li class="list-group-item" onclick="selectUser(2)">Michael Brown</li>
+                    <li class="list-group-item" onclick="selectUser(3)">Emily White</li>
+                </ul> -->
+                <select multiple="" class="form-select" id="userSelect"></select>
+            </div>
+
+            <!-- User Info Card -->
+            <div class="col-md-8">
+                <div class="card mt-3" id="userCard">
+                    <div class="card-body">
+                        <h5 class="card-title" id="userName">Select a user</h5>
+                        <p class="card-text" id="userDetails">User details will appear here when you select a user from
+                            the list.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+
+    $(document).ready(function(){
+        $.ajax({
+            type: 'POST',
+            url: `${apiCall}/getUserList`,
+            data: JSON.stringify({ uuidSessionToken : sessionStorage.getItem('SimpleSession')}),
+            contentType: 'application/json',
+            success: function(results){
+                console.log(results.Users)
+                let userRow = '';
+                results.Users.forEach(user => {
+                    userRow = '<option onClick="selectUser(' + user.EmployeeID + ')">' + user.DisplayName + '</option>';
+                    $('#userSelect').append(userRow);
+                });
+            }
+        })
+    })
+
+    function selectUser(userID) {
+        $.ajax({
+            type: 'POST',
+            url: `${apiCall}/getUserInfo`,
+            data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intUserID: userID}),
+            contentType: 'application/json',
+            success: function(results){
+                console.log(results.User);
+                $('#userName').html(results.User.DisplayName)
+            }
+        })
+    }
+</script>
+
 </html>
