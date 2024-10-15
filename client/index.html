@@ -150,7 +150,7 @@
     const fullUrl = window.location.protocol + "//" + window.location.hostname;
     if (fullUrl == "https://cpd-purchasing.cookeville-tn.org") // Set Prod URL
       sessionStorage.setItem('apiCall', "https://api.cpd-purchasing.cookeville-tn.org");
-    else if (fullUrl == "http://hubbleportal.me" || fullUrl == "http://127.0.0.1") // Set Dev URL
+    else if (fullUrl == "http://hubbleportal.me" || fullUrl == "http://127.0.0.1" || fullUrl == "http://localhost") // Set Dev URL
       sessionStorage.setItem('apiCall', "http://34.224.145.158:8000");
     else
       sessionStorage.setItem('apiCall', "error");
