@@ -141,13 +141,15 @@
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
     <script>
+        const apiCall = sessionStorage.getItem('apiCall');
+
         var AccountID = "";
         $(document).ready(function () {
             AccountID = new URL(window.location.href).searchParams.get("AccountID");
             $('#accountTitle').text('Account ' + AccountID);
             $.ajax({
                 type: 'POST',
-                url: 'http://34.224.145.158:8000/getAccountInfo',
+                url: `${apiCall}/getAccountInfo`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountID: AccountID }),
                 contentType: 'application/json',
                 success: function (results) {
@@ -160,7 +162,7 @@
             });
             $.ajax({
                 type: 'POST',
-                url: 'http://34.224.145.158:8000/getReport',
+                url: `${apiCall}/getReport`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountID: AccountID }),
                 contentType: 'application/json',
                 success: function (results) {
@@ -197,7 +199,7 @@
             });
             $.ajax({
                 type: 'POST',
-                url: 'http://34.224.145.158:8000/fillAccountBudgetTable',
+                url: `${apiCall}/fillAccountBudgetTable`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountID: AccountID }),
                 contentType: 'application/json',
                 success: function (results) {
@@ -222,7 +224,7 @@
             });
             $.ajax({
                 type: 'POST',
-                url: 'http://34.224.145.158:8000/fillAccountPOTable',
+                url: `${apiCall}/fillAccountPOTable`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountID: AccountID }),
                 contentType: 'application/json',
                 success: function (results) {
@@ -248,13 +250,13 @@
                 }
             });
 
-            //getUserSettings();
+            getUserSettings();
         });
 
         $('#btnDelete').on('click', function () {
             $.ajax({
                 type: 'DELETE',
-                url: 'http://34.224.145.158:8000/deleteAccount',
+                url: `${apiCall}/deleteAccount`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountID: AccountID }),
                 contentType: 'application/json',
                 success: function (results) {

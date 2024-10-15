@@ -39,11 +39,15 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
+        integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
+        crossorigin="anonymous"></script>
+    <script src="./assets/js/utils.js"></script>
     <script>
         function doReportCall(intYear) {
             $.ajax({
                 type: 'POST',
-                url: 'http://34.224.145.158:8000/fillReportsTable',
+                url: `${apiCall}/fillReportsTable`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intYear:intYear}),
                 contentType: 'application/json',
                 success:

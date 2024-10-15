@@ -984,34 +984,6 @@ CREATE TABLE `tblActivityLog` (
 
 LOCK TABLES `tblActivityLog` WRITE;
 /*!40000 ALTER TABLE `tblActivityLog` DISABLE KEYS */;
-INSERT INTO `tblActivityLog` VALUES
-(1,'Deleted account 9999.','9999','2024-10-04',154),
-(2,'Deleted PO 42-241004001.','42-241004001','2024-10-04',154),
-(3,'Added PO 3.','3','2024-10-04',154),
-(4,'Deleted PO 42-241004001.','42-241004001','2024-10-04',154),
-(5,'Added PO 42-241004001.','42-241004001','2024-10-04',154),
-(6,'Deleted PO 42-241004001.','42-241004001','2024-10-04',154),
-(7,'Added attachment 28 to PO 42-240219002.','42-240219002','2024-10-04',154),
-(8,'Deleted PO Attachment 28.','28','2024-10-04',154),
-(9,'Added Vendor test.','test','2024-10-04',154),
-(10,'Added Vendor Contact me.','me','2024-10-04',154),
-(11,'Deleted Vendor test.','test','2024-10-04',154),
-(12,'Added attachment 29 to PO 42-240219002.','42-240219002','2024-10-04',302),
-(13,'Added attachment test.txt to PO 42-240219002.','42-240219002','2024-10-04',154),
-(14,'Deleted attachment test.txt from PO 42-240219002.','42-240219002','2024-10-04',154),
-(15,'Deleted attachment GarrettHayesResume.pdf from PO 42-240219002.','42-240219002','2024-10-05',154),
-(16,'Added attachment GarrettHayesResume.pdf to PO 42-240219002.','42-240219002','2024-10-06',154),
-(17,'Deleted attachment GarrettHayesResume.pdf from PO 42-240219002.','42-240219002','2024-10-06',154),
-(18,'Added attachment GarrettHayesResume.pdf to PO 42-240219002.','42-240219002','2024-10-08',154),
-(19,'Deleted attachment GarrettHayesResume.pdf from PO 42-240219002.','42-240219002','2024-10-08',154),
-(20,'Added PO 42-241009001.','42-241009001','2024-10-09',154),
-(21,'Deleted PO 42-241009001.','42-241009001','2024-10-09',154),
-(22,'Added reminder for 2024-10-20.','2024-10-20','2024-10-10',154),
-(23,'Updated reminder for Sun Oct 20 2024 00:00:00 GMT+0000 (Coordinated Universal Time).','2024-10-20 0:0:0','2024-10-10',154),
-(24,'Updated reminder for Sun Oct 20 2024 00:00:00 GMT+0000 (Coordinated Universal Time).','2024-10-20 0:0:0','2024-10-10',154),
-(25,'Added reminder for 2024-10-15.','2024-10-15','2024-10-10',154),
-(26,'Updated reminder for Sun Oct 20 2024 00:00:00 GMT+0000 (Coordinated Universal Time).','2024-10-20 0:0:0','2024-10-10',154),
-(27,'Updated reminder for Sun Oct 20 2024 00:00:00 GMT+0000 (Coordinated Universal Time).','2024-10-20 0:0:0','2024-10-10',154);
 /*!40000 ALTER TABLE `tblActivityLog` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1026,7 +998,7 @@ CREATE TABLE `tblAttachmentData` (
   `AttachmentID` int(9) NOT NULL AUTO_INCREMENT,
   `AttachmentData` longtext NOT NULL,
   PRIMARY KEY (`AttachmentID`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6622,7 +6594,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`admin`@`%`*/ /*!50003 TRIGGER before_insert_tblPurchaseOrder
+/*!50003 CREATE*/ /*!50003 TRIGGER before_insert_tblPurchaseOrder
 BEFORE INSERT ON tblPurchaseOrder
 FOR EACH ROW
 BEGIN
@@ -18954,7 +18926,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`admin`@`%`*/ /*!50003 TRIGGER after_insert_tblPurchaseOrderItem
+/*!50003 CREATE*/ /*!50003 TRIGGER after_insert_tblPurchaseOrderItem
 AFTER INSERT ON tblPurchaseOrderItem
 FOR EACH ROW
 BEGIN
@@ -18980,7 +18952,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`admin`@`%`*/ /*!50003 TRIGGER after_update_tblPurchaseOrderItem
+/*!50003 CREATE*/ /*!50003 TRIGGER after_update_tblPurchaseOrderItem
 AFTER UPDATE ON tblPurchaseOrderItem
 FOR EACH ROW
 BEGIN
@@ -19006,7 +18978,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`admin`@`%`*/ /*!50003 TRIGGER after_delete_tblPurchaseOrderItem
+/*!50003 CREATE*/ /*!50003 TRIGGER after_delete_tblPurchaseOrderItem
 AFTER DELETE ON tblPurchaseOrderItem
 FOR EACH ROW
 BEGIN
@@ -19076,32 +19048,9 @@ CREATE TABLE `tblSessions` (
 LOCK TABLES `tblSessions` WRITE;
 /*!40000 ALTER TABLE `tblSessions` DISABLE KEYS */;
 INSERT INTO `tblSessions` VALUES
-('03f8acfc-4724-4c7d-b0ee-5a2521c48897',154,'2024-10-09 06:44:22'),
-('0fee2251-c85d-4b92-87f7-5f89b48ff61b',154,'2024-10-09 13:08:37'),
-('11f4525b-648b-4aee-998d-6b899f01f6a1',0,'2024-10-10 18:52:10'),
-('196cc542-087e-4ad7-aea6-c8a0dce3f4c0',0,'2024-10-10 18:41:50'),
-('261ed90e-330c-4332-a2de-dd9549fe4a3c',154,'2024-10-09 04:45:34'),
-('310e5d96-852a-47b3-bd3b-edbe49eb4d38',154,'2024-10-10 14:38:40'),
-('40520e22-ce84-48e1-95cd-c442eca75864',154,'2024-10-09 19:55:30'),
-('4c3ed3f4-5e12-44cf-ae53-baa18968de60',154,'2024-10-09 05:11:34'),
-('55ee2d8f-8bbe-4429-affd-b461b0481e71',154,'2024-10-09 06:44:54'),
-('5c8df8d6-1d83-48c1-a7ef-abf9cef9ca69',154,'2024-10-10 15:28:54'),
-('5d36d943-2f97-4d9a-bc9c-d2bdc17c948e',0,'2024-10-10 16:39:05'),
-('6b6adbce-4ecf-46cf-a6cc-7bf9ae40d5b5',154,'2024-10-09 19:13:34'),
-('6de757d6-6af8-447a-8b99-e54497dfa323',154,'2024-10-09 20:09:45'),
-('7ca47266-ea4c-409b-8a39-63a289e6f621',154,'2024-10-09 13:56:36'),
-('893ff6a8-e210-4afd-addc-babd081bb00f',154,'2024-10-09 20:51:06'),
-('8987519e-47e0-4033-a650-0de4212941e2',154,'2024-10-10 18:34:44'),
-('a0c3f308-a938-4dec-bbbb-e9a2ce75a2ca',0,'2024-10-10 16:44:16'),
-('b4f88978-923a-4853-85a5-8896bbd36c3d',154,'2024-10-10 14:55:46'),
-('c7e58a37-140a-49c8-b759-c878238775c4',154,'2024-10-10 16:24:12'),
-('cd715a52-c187-4403-ae2f-f1f6dd164dda',154,'2024-10-10 15:03:11'),
-('da34ae1f-2522-4fdb-b4da-31c82ec0969c',154,'2024-10-10 14:56:30'),
-('e04dcc32-da87-4132-84b7-3446ded97b39',154,'2024-10-10 03:38:22'),
-('e588e941-e62e-424b-bb7a-f2ff5f613216',154,'2024-10-10 03:25:10'),
-('ea49e6bc-47fe-4369-83ef-29922b8544ed',154,'2024-10-09 04:18:59'),
-('eb629180-279b-4a78-a502-c554b9a0e5ad',0,'2024-10-10 18:43:16'),
-('f0b553aa-bece-46cc-aa5b-9dfe50e98c9d',154,'2024-10-09 15:57:28');
+('203ee16c-7b3d-4c94-ba41-64174b9f4b2b',154,'2024-10-04 17:19:39'),
+('a5882654-5ac2-4c57-b33a-f8b6ce6369f2',154,'2024-10-04 13:38:58'),
+('c511c6ec-5283-4ef1-9222-3dfeb46dae0d',302,'2024-10-04 02:08:09');
 /*!40000 ALTER TABLE `tblSessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -21134,4 +21083,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-10 18:59:55
+-- Dump completed on 2024-10-04 17:25:26

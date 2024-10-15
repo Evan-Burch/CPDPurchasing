@@ -55,14 +55,14 @@
                     <div class="modal-body">
                         <label for="txtVendor" class="form-label">Vendor Name</label>
                         <input type="text" class="form-control req" id="txtVendor" placeholder="Vendor Name" required>
-                      
+
                         <label for="txtLink" class="form-label">Link</label>
                         <input type="text" class="form-control" id="txtLink" placeholder="Link">
-                      
+
                         <label for="txtVendorContactName" class="form-label">Vendor Contact</label>
                         <input type="text" class="form-control" id="txtVendorContactName" placeholder="Vendor Contact">
                     </div>
-                  
+
                     <!--Error messages. Default Hidden-->
                     <div id="WarningErrorMessagePopUp" class="alert alert-warning" style="display:none;">
                         <h4 class="alert-heading">Warning!</h4>
@@ -76,6 +76,7 @@
             </div>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
         integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
         crossorigin="anonymous"></script>
@@ -85,58 +86,64 @@
             window.location.href = pageName + "?VendorName=" + vendorName;
             $('#divMain').load(pageName);
         }
-        
+
         $(document).ready(function () {
             $.ajax({
-            type: 'POST',
-            url: 'http://34.224.145.158:8000/fillVendorTable',
-            data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
-            contentType: 'application/json',
-            success: function (results) {
-                console.log('Response:', results);
-                if (Array.isArray(results.VendorTable)) {
-                    // Initialize DataTable after data is appended
-                    $('#tblVendors').DataTable({
-                        layout: {
-                            topStart: {
-                                buttons: [
-                                    { extend: 'copy', className: 'copyButton' },
-                                    { extend: 'excel', className: 'excelButton' },
-                                    { extend: 'print', className: 'printButton' }
-                                ]
-                            }
-                        },
-                        "autowidth": false,
-                        data: results.VendorTable,
-                        columns: [
-                            {data: "VendorName", title: "Vendor Name", render: function(data, type) {
-                                if (type == "display") {
-                                    return '<a href="#" onclick="viewPage(\'pages/viewVendor.html\', \'' + data + '\')">' + data + "</a>";
+                type: 'POST',
+                url: `${apiCall}/fillVendorTable`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log('Response:', results);
+                    if (Array.isArray(results.VendorTable)) {
+                        // Initialize DataTable after data is appended
+                        $('#tblVendors').DataTable({
+                            layout: {
+                                topStart: {
+                                    buttons: [
+                                        { extend: 'copy', className: 'copyButton' },
+                                        { extend: 'excel', className: 'excelButton' },
+                                        { extend: 'print', className: 'printButton' }
+                                    ]
                                 }
-                                return data;
-                            }},
-                            {data: "Website", title: "Link", render: function(data, type) {
-                                if (type == "display") {
-                                    return '<a href="http://' + data + '" target="_blank">' + data + "</a>";
+                            },
+                            "autowidth": false,
+                            data: results.VendorTable,
+                            columns: [
+                                {
+                                    data: "VendorName", title: "Vendor Name", render: function (data, type) {
+                                        if (type == "display") {
+                                            return '<a href="#" onclick="viewPage(\'pages/viewVendor.html\', \'' + data + '\')">' + data + "</a>";
+                                        }
+                                        return data;
+                                    }
+                                },
+                                {
+                                    data: "Website", title: "Link", render: function (data, type) {
+                                        if (type == "display") {
+                                            return '<a href="http://' + data + '" target="_blank">' + data + "</a>";
+                                        }
+                                        return data;
+                                    }
+                                },
+                                {
+                                    data: "Status", title: "Status", render: function (data, type) {
+                                        if (type == "display") {
+                                            return (data == "1") ? "Active" : "Inactive";
+                                        }
+                                        return data;
+                                    }
                                 }
-                                return data;
-                            }},
-                            {data: "Status", title: "Status", render: function(data, type) {
-                                if (type == "display") {
-                                    return (data == "1") ? "Active" : "Inactive";
-                                }
-                                return data;
-                            }}
-                        ],
-                    });
-                } else {
-                    console.error('Unexpected response format or status:', results);
+                            ],
+                        });
+                    } else {
+                        console.error('Unexpected response format or status:', results);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
                 }
-            },
-            error: function (xhr, status, error) {
-                console.error('AJAX Error:', status, error);
-            }
-        });
+            });
         });
 
         //create new vendor
@@ -145,34 +152,34 @@
             let strVendorLink = $('#txtLink').val();
             let strVendorContactName = $('#txtVendorContactName').val();
             let intCreatedBy = parseInt(sessionStorage.getItem('userId'));
-          
+
             console.log('Create Vendor clicked: ', strVendorName, ",", strVendorLink, ",", strVendorContactName);
-          
+
             // ***** Client side error handling *****
             let strErrorMessage = '';
 
-          	if(strVendorName == '') {
-              strErrorMessage = strErrorMessage + "<p>Please specify a vendor name.</p>";
+            if (strVendorName == '') {
+                strErrorMessage = strErrorMessage + "<p>Please specify a vendor name.</p>";
             }
 
-            if(strVendorName.length > 50) {
-              strErrorMessage = strErrorMessage + "<p>vendor name is too long</p>";
+            if (strVendorName.length > 50) {
+                strErrorMessage = strErrorMessage + "<p>vendor name is too long</p>";
             }
 
-            if(strVendorLink.length > 100) {
-              strErrorMessage = strErrorMessage + "<p>link is too long</p>";
+            if (strVendorLink.length > 100) {
+                strErrorMessage = strErrorMessage + "<p>link is too long</p>";
             }
 
-            if(strVendorContactName == '') {
-              strErrorMessage = strErrorMessage + "<p>Please specify a Vendor Contact.</p>";
+            if (strVendorContactName == '') {
+                strErrorMessage = strErrorMessage + "<p>Please specify a Vendor Contact.</p>";
             }
 
-            if(strVendorContactName.length > 100) {
-              strErrorMessage = strErrorMessage + "<p>Vendor Contact is too long</p>";
+            if (strVendorContactName.length > 100) {
+                strErrorMessage = strErrorMessage + "<p>Vendor Contact is too long</p>";
             }
-         
+
             // if the error message exists, show it and let the user fix their problems
-            if(strErrorMessage.length>0) {
+            if (strErrorMessage.length > 0) {
                 console.log(strErrorMessage);
                 $('#txtErrorMsg').html(strErrorMessage);
                 $('#WarningErrorMessagePopUp').show();
@@ -181,11 +188,11 @@
             else {
                 $.ajax({
                     type: 'POST',
-                    url: 'http://34.224.145.158:8000/addVendor',
-                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName:strVendorName, strVendorLink:strVendorLink, strVendorContactName:strVendorContactName, intCreatedBy:intCreatedBy}),
+                    url: `${apiCall}/addVendor`,
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: strVendorName, strVendorLink: strVendorLink, strVendorContactName: strVendorContactName, intCreatedBy: intCreatedBy }),
                     contentType: 'application/json',
                     success:
-                        function(results) {
+                        function (results) {
                             console.log('Response:', results);
                             $('#newVendor').modal('hide');
                             returnHome("vendors", false);
@@ -196,7 +203,7 @@
                             //pop up the error message from server side validation
                             $('#txtErrorMsg').html(xhr.responseJSON.message);
                             $('#WarningErrorMessagePopUp').show();
-                    }
+                        }
                 });
             }
         });
