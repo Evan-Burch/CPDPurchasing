@@ -118,7 +118,7 @@ router.post("/addUser", async (req, res) => {
 
 		var strHashedPassword = crypto.createHash("sha256").update(strPassword).digest("hex");
 		
-		var newUser = await dbConnection.query("insert into tblUser (FirstName, MiddleName, LastName, DisplayName, UserName, password, IsAdmin) values (?, ?, ?, ?, ?, ?, ?);", [strFirstName, strMiddleName, strLastName, strDisplayName, strUserName, strPassword, intIsAdmin]);
+		var newUser = await dbConnection.query("insert into tblUser (FirstName, MiddleName, LastName, DisplayName, UserName, password, IsAdmin) values (?, ?, ?, ?, ?, ?, ?);", [strFirstName, strMiddleName, strLastName, strDisplayName, strUserName, strHashedPassword, intIsAdmin]);
 		
 		res.status(200).json({"message": "Success."});
 	} finally {

@@ -147,7 +147,6 @@
   <script>
     function switchPage(pageName) {
       $('#divMain').load("./pages/" + pageName + ".html");
-      window.location.href = "index.html?table=" + pageName;
       var bsCollapse = new bootstrap.Collapse($('#navbarNav'), {
         toggle: false
       });

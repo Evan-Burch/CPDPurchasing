@@ -184,7 +184,7 @@
             $.ajax({
                 type: 'POST',
                 url: `${apiCall}/getActivity`,
-                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intLimit: 15 }),
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intLimit: 25 }),
                 contentType: 'application/json',
                 success: function (results) {
                     console.log(results);

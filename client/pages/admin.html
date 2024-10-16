@@ -44,10 +44,40 @@
             $('#userCard').html(
                 `<div class="card-body d-flex flex-column">
                     <h1 class="card-title">Add User</h1>
-                    <p>Name <input type="text" id="txtName"></p>
+                    <p>First Name <input type="text" id="txtFirstName"></p>
+                    <p>Middle Name <input type="text" id="txtMiddleName"></p>
+                    <p>Last Name <input type="text" id="txtLastName"></p>
                     <p>Username <input type="text" id="txtUsername"></p>
-                    <p>Password <input type="text" id="txtPassword"></p>`
+                    <p>Password <input type="text" id="txtPassword"></p>
+                    <p>Admin <input type="checkbox" id="isAdmin"></p>
+                    <div class='btn btn-primary col-2' id="btnCreateNewUser">Create New User</div>
+                </div>`
             );
+        })
+
+        $('#btnCreateNewUser').on('click', function(){
+            let firstname = $('#txtFirstName').value();
+            let middlename = $('#txtMiddleName').value();
+            let lastname = $('#txtLastName').value();
+            let username = $('#txtUsername').value();
+            let password = $('#txtPassword').value();
+            let isAdmin = 0;
+            if($('#isAdmin')){
+                console.log("Is Admin");
+                isAdmin = 1;
+            }
+            else{
+                isAdmin = 0;
+            }
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/addUser`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strFirstName: firstname, strMiddleName: middlename, strLastName: lastname, strUserName: username, strPassword: password, intIsAdmin: isAdmin}),
+                contentType: 'application/json',
+                success: function(results){
+                    console.log(results);
+                }
+            })
         })
 
         function selectUser(userID) {
