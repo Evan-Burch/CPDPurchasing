@@ -1,0 +1,19 @@
+<h1>Page to print a pdf</h1>
+<!-- <script>
+    // async function to create a pdf
+    async function createPDF() {
+        const pdfDoc = await PDFLib.PDFDocument.create();
+        const timesRomanFont = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesRoman)
+        const page = pdfDoc.addPage();
+        const { width, height } = page.getSize();
+        const fontSize = 30;
+        page.drawText('Purchase Order ' + PurchaseOrderID, {
+            x: 50,
+            y: height - 4 * fontSize,
+            size: fontSize,
+            font: timesRomanFont,
+            color: PDFLib.rgb(0, 0, 0),
+        });
+        const pdfBytes = await pdfDoc.save();
+    };
+</script> -->
