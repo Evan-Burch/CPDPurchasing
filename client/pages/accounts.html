@@ -42,7 +42,6 @@
         </div>
     </div>
 
-
     <!-- Modal -->
     <div class="modal fade" id="newAccount" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -85,9 +84,7 @@
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
-        integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej" crossorigin="anonymous"></script>
     <script src="./assets/js/utils.js"></script>
     <script>
         function viewPage(pageName, accountID) {
@@ -117,21 +114,21 @@
                             },
                             data: results.AccountTable,
                             columns: [
-                                {data: "AccountID", title: "Account Number", render: function(data, type) {
-                                    if (type == "display") {
-                                        return '<a href="#" onclick="viewPage(\'pages/viewAccount.html\', \'' + data + '\')">' + data + "</a>";
-                                    }
-                                    return data;
-                                }},
-                                {data: "Description", title: "Description"},
-                                {data: "DivisionID", title: "Division"},
-                                {data: "FiscalAuthority", title: "Fiscal Authority"},
-                                {data: "Status", title: "Status", render: function(data, type) {
-                                    if (type == "display") {
-                                        return (data == "1") ? "Active" : "Inactive";
-                                    }
-                                    return data;
-                                }}
+                                { data: "AccountID", title: "Account Number", render: function (data, type) {
+                                        if (type == "display") {
+                                            return '<a href="#" onclick="viewPage(\'pages/viewAccount.html\', \'' + data + '\')">' + data + "</a>";
+                                        }
+                                        return data;
+                                    }},
+                                { data: "Description", title: "Description" },
+                                { data: "DivisionID", title: "Division" },
+                                { data: "FiscalAuthority", title: "Fiscal Authority" },
+                                { data: "Status", title: "Status", render: function (data, type) {
+                                        if (type == "display") {
+                                            return (data == "1") ? "Active" : "Inactive";
+                                        }
+                                        return data;
+                                    }}
                             ],
                             "autowidth": false
                         });
@@ -145,7 +142,7 @@
             });
         });
 
-        //populate the drop-down boxes for the modal (Fiscal Authority)
+        // Populate modal dropdown boxes
         $('#btnNewAccount').on('click', function () {
             console.log("accounts.html new account clicked");
             $.ajax({
@@ -165,7 +162,6 @@
             });
         });
 
-        // send the create request to the server
         $('#btnCreateNewAccount').on('click', function () {
             console.log("accounts.html create new account clicked")
             let strAccountNumber = $('#txtAccountNum').val();
@@ -173,68 +169,43 @@
             // evan: Fiscal authority is hardcoded here becauce It isnt being sent correctly and I needed to test the rest of the functionality
             let strFiscalAuthority = $('#txtFiscal').val();
             let strDivision = $('#txtDivision').val();
-
-            console.log("Sending Data:", strAccountNumber, ",",
-                strDescription, ",", strFiscalAuthority, ",", strDivision);
-            
-            // ***** Client side error handling *****
             let strErrorMessage = '';
 
-            if(strAccountNumber == '') {
-                strErrorMessage = strErrorMessage + "<p>Please specify an account number</p>";
-            }
+            console.log("Sending Data:", strAccountNumber, ",", strDescription, ",", strFiscalAuthority, ",", strDivision);
 
-            if(strAccountNumber.length > 10) {
-                strErrorMessage = strErrorMessage + "<p>Account number is too long</p>";
+            if (strAccountNumber == '') {
+                strErrorMessage += "<p>Please specify an account number</p>";
+            } if (strAccountNumber.length > 10) {
+                strErrorMessage += "<p>Account number is too long</p>";
             }
-
             intAccountNumber = 0;
-            //try to parse the account number to an int
-            try {
+            try { // Try to parse the account number to an int
                 intAccountNumber = parseInt(strAccountNumber);
             } catch (error) {
                 strErrorMessage = strErrorMessage + "<p>Account number is not a number</p>";
-            }
-
-            if(strDescription == '') {
-                strErrorMessage = strErrorMessage + "<p>Please specify a description</p>";
-            }
-
-            if(strDescription.length > 100) {
-                strErrorMessage = strErrorMessage + "<p>Description is too long</p>";
-            }
-
-            if(strFiscalAuthority == 'Fiscal Authority' || strFiscalAuthority == '') {
-                strErrorMessage = strErrorMessage + "<p>Please specify a fiscal authority</p>";
-            }
-
-            if(strFiscalAuthority.length > 100) {
-                strErrorMessage = strErrorMessage + "<p>Fiscal authority is too long</p>";
-            }
-
-            if(strDivision == null) {
-                strErrorMessage = strErrorMessage + "<p>Please specify a division</p>";
-            }
-
-            if(strDivision.length > 100) {
-                strErrorMessage = strErrorMessage + "<p>Division is too long</p>";
-            }
-
-            // if the error message exists, show it and let the user fix their problems
-            if(strErrorMessage.length > 0) {
+            } if (strDescription == '') {
+                strErrorMessage += "<p>Please specify a description</p>";
+            } if (strDescription.length > 100) {
+                strErrorMessage += "<p>Description is too long</p>";
+            } if (strFiscalAuthority == 'Fiscal Authority' || strFiscalAuthority == '') {
+                strErrorMessage += "<p>Please specify a fiscal authority</p>";
+            } if (strFiscalAuthority.length > 100) {
+                strErrorMessage += "<p>Fiscal authority is too long</p>";
+            } if (strDivision == null) {
+                strErrorMessage += "<p>Please specify a division</p>";
+            } if (strDivision.length > 100) {
+                strErrorMessage += "<p>Division is too long</p>";
+            } if (strErrorMessage.length > 0) { // Error message
                 console.log(strErrorMessage);
                 $('#txtErrorMsg').html(strErrorMessage);
                 $('#WarningErrorMessagePopUp').show();
-            }
-            //otherwise send the post request
-            else {
-                console.log("Sending Data:", intAccountNumber, ",",
-                strDescription, ",", strFiscalAuthority, ",", strDivision);
-                
+            } else {
+                console.log("Sending Data:", intAccountNumber, ",", strDescription, ",", strFiscalAuthority, ",", strDivision);
+
                 $.ajax({
                     type: 'POST',
                     url: `${apiCall}/addAccount`,
-                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountNumber:intAccountNumber, strDescription:strDescription, strFiscalAuthority:strFiscalAuthority, strDivision:strDivision }),
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountNumber: intAccountNumber, strDescription: strDescription, strFiscalAuthority: strFiscalAuthority, strDivision: strDivision }),
                     contentType: 'application/json',
                     success:
                         function (results) {
@@ -244,14 +215,14 @@
                         },
                     error: function (xhr, status, error) {
                         console.error('AJAX Error:', status, error);
-                        //pop up the error message from server side validation
+                        // Pop up the error message from server side validation
                         $('#txtErrorMsg').html(xhr.responseJSON.message);
                         $('#WarningErrorMessagePopUp').show();
-
-                    }                    
+                    }
                 });
             }
         });
+        
     </script>
 </body>
 

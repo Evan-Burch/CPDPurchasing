@@ -269,7 +269,6 @@
             let strEditLink = $('#txtEditVendorLink').val();
             let strErrorMessage = '';
 
-            // Error checking
             if (strEditName.length > 50) {
                 strErrorMessage += "<p>vendor name is too long</p>";
             } if (strEditLink.length > 100) {
@@ -320,7 +319,7 @@
 
             // Input at least some form of contact info
             if (strOfficePhone == '' && strMobilePhone == '' && strEmail == '' && strFax == '') {
-                strErrorMessage +=  "<p>Please enter at least one of the following: Office Phone, Mobile Phone, Email, Fax Number</p>";
+                strErrorMessage += "<p>Please enter at least one of the following: Office Phone, Mobile Phone, Email, Fax Number</p>";
             } if (strContactName.length > 46) {
                 strErrorMessage += "<p>Contact Name is too long</p>";
             } if (strCity.length > 50) {
@@ -347,7 +346,7 @@
                 $.ajax({
                     type: 'POST',
                     url: `${apiCall}/addVendorContact`,
-                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName, strContactName: strContactName, strStreetAddress1: strStreetAddress1, strStreetAddress2: strStreetAddress2, strCity: strCity, strState: strState, strZip: strZip, strOfficePhone: strOfficePhone, strMobilePhone: strMobilePhone, strEmail: strEmail, strFax:strFax, chkPrimary: chkPrimary, intCreatedBy: intCreatedBy }),
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName, strContactName: strContactName, strStreetAddress1: strStreetAddress1, strStreetAddress2: strStreetAddress2, strCity: strCity, strState: strState, strZip: strZip, strOfficePhone: strOfficePhone, strMobilePhone: strMobilePhone, strEmail: strEmail, strFax: strFax, chkPrimary: chkPrimary, intCreatedBy: intCreatedBy }),
                     contentType: 'application/json',
                     success: function (results) {
                         Swal.fire({

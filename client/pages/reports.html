@@ -5,10 +5,12 @@
         background-color: #2c3e50;
         border-color: #2c3e50;
     }
+
     .excelButton {
         background-color: #2c3e50;
         border-color: #2c3e50;
     }
+
     .printButton {
         background-color: #2c3e50;
         border-color: #2c3e50;
@@ -48,7 +50,7 @@
             $.ajax({
                 type: 'POST',
                 url: `${apiCall}/fillReportsTable`,
-                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intYear:intYear}),
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intYear: intYear }),
                 contentType: 'application/json',
                 success:
                     function (results) {
@@ -65,14 +67,14 @@
                             },
                             data: results.Reports,
                             columns: [
-                                {data: "AccountID", title: "Account ID"},
-                                {data: "AccountDescription", title: "Description"},
-                                {data: "DivisionDescription", title: "Division"},
-                                {data: "Budget", title: "Budget Amount"},
-                                {data: "Expenses", title: "Spent Amount"},
-                                {data: "Available", title: "Available Balance"}
+                                { data: "AccountID", title: "Account ID" },
+                                { data: "AccountDescription", title: "Description" },
+                                { data: "DivisionDescription", title: "Division" },
+                                { data: "Budget", title: "Budget Amount" },
+                                { data: "Expenses", title: "Spent Amount" },
+                                { data: "Available", title: "Available Balance" }
                             ],
-                            rowCallback: function(row, data, dataIndex) {
+                            rowCallback: function (row, data, dataIndex) {
                                 var floatAvailable = parseFloat(data.Available);
                                 var floatBudget = parseFloat(data.Budget);
 
@@ -93,20 +95,21 @@
                     //pop up the error message from server side validation
                     $('#txtErrorMsg').html(xhr.responseJSON.message);
                     $('#WarningErrorMessagePopUp').show();
-                }                    
+                }
             });
         }
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             var intYear = parseInt($("#selFiscalYear").val());
 
             doReportCall(intYear);
         });
 
-        $("#selFiscalYear").on("change", function() {
+        $("#selFiscalYear").on("change", function () {
             $("#tblReports").DataTable().destroy();
             doReportCall(this.value);
         });
+        
     </script>
 </body>
 

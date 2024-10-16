@@ -137,9 +137,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
-        integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej" crossorigin="anonymous"></script>
     <script>
         const apiCall = sessionStorage.getItem('apiCall');
 
@@ -214,8 +212,7 @@
                                 { data: "DateCreated", title: "Date" }
                             ],
                             autowidth: false,
-                            responsive: true,
-                            pageLength: 5
+                            responsive: true
                         });
                     } else {
                         console.error('Unexpected response format or status:', results);
@@ -241,7 +238,6 @@
                             ],
                             autowidth: false,
                             responsive: true,
-                            pageLength: 5,
                             order: [[5, 'desc']]
                         });
                     } else {
@@ -269,7 +265,7 @@
                     });
                     setTimeout(() => {
                         returnHome('accounts', true);
-                    }, 1000 * 2);
+                    }, 1000*2);
                 }
             });
         });

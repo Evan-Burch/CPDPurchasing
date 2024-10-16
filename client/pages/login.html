@@ -43,14 +43,14 @@
         const apiCall = sessionStorage.getItem('apiCall');
 
         $(document).ready(function () {
-            handleBrowserNav(); // stop the user from going back/forwards/whatever
+            handleBrowserNav(); // Stop the user from going back/forwards/whatever
         });
 
         $('#btnWarningClose').on('click', function () {
             $('#warningError').hide();
         });
 
-        $("input").on("keydown", function(e) {
+        $("input").on("keydown", function (e) {
             if (e.key == "Enter") {
                 $("#btnLogin").trigger("click");
             }
@@ -88,8 +88,8 @@
                 });
             }
         });
+        
     </script>
-
 </body>
 
 </html>
