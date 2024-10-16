@@ -1,25 +1,19 @@
 <html lang="en">
 
 <body>
-    <div class="container-fluid">
-        <div class="row p-3">
+    <div class="container-fluid h-100">
+        <div class="row h-100">
             <!-- User List -->
-            <div class="col-md-4">
-                <div class="btn btn-primary mb-2">+ Add User</div>
-                <!-- <ul class="list-group" id="userList">
-                    <!-- <li class="list-group-item" onclick="selectUser(0)">John Doe</li>
-                    <li class="list-group-item" onclick="selectUser(1)">Jane Smith</li>
-                    <li class="list-group-item" onclick="selectUser(2)">Michael Brown</li>
-                    <li class="list-group-item" onclick="selectUser(3)">Emily White</li>
-                </ul> -->
-                <select multiple="" class="form-select" id="userSelect"></select>
+            <div class="col-md-4 d-flex flex-column p-3" style="height: 100vh;">
+                <button class="btn btn-primary mb-2" id="addUser">+ Add User</button>
+                <select multiple class="form-select flex-grow-1" id="userSelect" style="min-height: 0;"></select>
             </div>
 
             <!-- User Info Card -->
-            <div class="col-md-8">
-                <div class="card mt-3" id="userCard">
-                    <div class="card-body">
-                        <h5 class="card-title" id="userName">Select a user</h5>
+            <div class="col-md-8 d-flex align-items-center justify-content-center p-3" style="height: 100vh;">
+                <div class="card w-100 h-100" id="userCard">
+                    <div class="card-body d-flex flex-column">
+                        <h1 class="card-title" id="userName">Select a user</h1>
                         <p class="card-text" id="userDetails">User details will appear here when you select a user from
                             the list.</p>
                     </div>
@@ -27,38 +21,54 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/getUserList`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results.Users)
+                    let userRow = '';
+                    results.Users.forEach(user => {
+                        userRow = '<option onClick="selectUser(' + user.EmployeeID + ')">' + user.DisplayName + '</option>';
+                        $('#userSelect').append(userRow);
+                    });
+                }
+            })
+        })
+
+        $('#addUser').on('click', function () {
+            $('#userCard').html(
+                `<div class="card-body d-flex flex-column">
+                    <h1 class="card-title">Add User</h1>
+                    <p>Name <input type="text" id="txtName"></p>
+                    <p>Username <input type="text" id="txtUsername"></p>
+                    <p>Password <input type="text" id="txtPassword"></p>`
+            );
+        })
+
+        function selectUser(userID) {
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/getUserInfo`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intUserID: userID }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results.User);
+                    $('#userCard').html(
+                        `
+                        <div class="card-body d-flex flex-column">
+                            <h1 class="card-title">${results.User.DisplayName}</h1>
+                            <p class="card-text">Employee ID: ${results.User.EmployeeID}</p>
+                            <p class="card-text">Username: ${results.User.UserName}</p>
+                        </div>`);
+                }
+            })
+        }
+    </script>
 </body>
-<script>
-
-    $(document).ready(function(){
-        $.ajax({
-            type: 'POST',
-            url: `${apiCall}/getUserList`,
-            data: JSON.stringify({ uuidSessionToken : sessionStorage.getItem('SimpleSession')}),
-            contentType: 'application/json',
-            success: function(results){
-                console.log(results.Users)
-                let userRow = '';
-                results.Users.forEach(user => {
-                    userRow = '<option onClick="selectUser(' + user.EmployeeID + ')">' + user.DisplayName + '</option>';
-                    $('#userSelect').append(userRow);
-                });
-            }
-        })
-    })
-
-    function selectUser(userID) {
-        $.ajax({
-            type: 'POST',
-            url: `${apiCall}/getUserInfo`,
-            data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intUserID: userID}),
-            contentType: 'application/json',
-            success: function(results){
-                console.log(results.User);
-                $('#userName').html(results.User.DisplayName)
-            }
-        })
-    }
-</script>
 
 </html>

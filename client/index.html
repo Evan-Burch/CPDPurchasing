@@ -19,7 +19,8 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary w-100">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">POModule</a>
-        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
+          aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -48,7 +49,8 @@
                 Dropdown
               </button>
               <ul id="dropdownMenu" style="z-index: 99; right: 0px" class="dropdown-menu dropdown-menu-end">
-                <li><a id="btnSettings" class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settings">Settings</a></li>
+                <li><a id="btnSettings" class="dropdown-item" href="#" data-bs-toggle="modal"
+                    data-bs-target="#settings">Settings</a></li>
                 <li><a id="btnLogout" class="dropdown-item" href="#">Logout</a></li>
               </ul>
             </li>
@@ -75,12 +77,14 @@
           <div class="modal-body">
             Switch Theme <br>
             <input type="checkbox" id="btnSwitch">
-                <label for="btnSwitch" class="toggleSwitch">
-                </label> <br> <br>
-            <button id="btnChangePassword" type="button" class="btn btn-primary col-4" data-bs-toggle="modal" data-bs-target="#ChangePassword">Change Password</button>
+            <label for="btnSwitch" class="toggleSwitch">
+            </label> <br> <br>
+            <button id="btnChangePassword" type="button" class="btn btn-primary col-4" data-bs-toggle="modal"
+              data-bs-target="#ChangePassword">Change Password</button>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close Settings modal">Close</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+              aria-label="Close Settings modal">Close</button>
           </div>
         </form>
       </div>
@@ -105,7 +109,8 @@
             <input type="text" class="form-control req" id="txtNewPassword" placeholder="New Password" required>
 
             <label for="txtConfirmPassword" class="form-label">Confirm New Password</label>
-            <input type="text" class="form-control req" id="txtConfirmPassword" placeholder="Confirm New Password" required>
+            <input type="text" class="form-control req" id="txtConfirmPassword" placeholder="Confirm New Password"
+              required>
 
           </div>
           <!--Error messages. Default Hidden-->
@@ -114,8 +119,10 @@
             <p class="mb-0" id="txtErrorMsg"></p>
           </div>
           <div class="modal-footer">
-            <button id="btnSendChangedPassword" type="button" class="btn btn-success" aria-label="Change password">Change</button>
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close change password modal">Close</button>
+            <button id="btnSendChangedPassword" type="button" class="btn btn-success"
+              aria-label="Change password">Change</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+              aria-label="Close change password modal">Close</button>
           </div>
         </form>
       </div>
@@ -171,7 +178,7 @@
           $('#username').text(results.UserName);
           sessionStorage.setItem('userId', results.UserID);
 
-          if(results.IsAdmin === true){
+          if (results.IsAdmin === true) {
             console.log('Admin user detected');
             $('#poNav').append('<li class="nav-item"><a class="nav-link" href="javascript:switchPage(\'admin\')">Admin Portal</a></li>');
           }
@@ -181,7 +188,7 @@
       getUserSettings();
 
       // Automatic logout functionality within webpage
-      var idleInterval = setInterval(timerInc, 1000*60);
+      var idleInterval = setInterval(timerInc, 1000 * 60);
       $(this).on('mousemove', function () {
         swalTimeout.close();
         clearTimeout(warningTimer);
