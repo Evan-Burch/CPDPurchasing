@@ -40,6 +40,7 @@
             })
         })
 
+
         $('#addUser').on('click', function () {
             $('#userCard').html(
                 `<div class="card-body d-flex flex-column">
@@ -54,8 +55,9 @@
                 </div>`
             );
         })
-
+        
         $('#btnCreateNewUser').on('click', function(){
+            console.log("create new pressed");
             let firstname = $('#txtFirstName').value();
             let middlename = $('#txtMiddleName').value();
             let lastname = $('#txtLastName').value();
@@ -101,4 +103,4 @@
     </script>
 </body>
 
-</html>
+</html>      
