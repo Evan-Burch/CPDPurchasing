@@ -60,8 +60,7 @@
 
                     <!-- Buttons for Account Actions -->
                     <div class="col-12 col-md-3 d-flex flex-column justify-content-start">
-                        <button type="button" class="btn btn-info mb-2" data-bs-toggle="modal"
-                            data-bs-target="#editAccount">Edit Account</button>
+                        <button id="btnEditFill" type="button" class="btn btn-info mb-2" data-bs-toggle="modal" data-bs-target="#editAccount">Edit Account</button>
                         <button id="btnDelete" type="button" class="btn btn-danger mb-2">Delete Account</button>
                     </div>
                 </div>
@@ -110,26 +109,28 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <label for="txtEditVendor" class="form-label">Vendor</label>
-                        <select class="form-select" id="txtEditVendor">
-                            <option selected>Select Vendor</option>
-                        </select>
+                        <form>
+                            <label for="txtEditDescription" class="form-label">Description</label>
+                            <input type="text" class="form-control" id="txtEditDescription" placeholder="Description">
 
-                        <label for="txtEditVendorContact" class="form-label">Vendor Contact</label>
-                        <select class="form-select" id="txtEditVendorContact">
-                            <option selected>Select Vendor Contact</option>
-                        </select>
+                            <label for="txtEditFiscal" class="form-label">Fiscal Authority</label>
+                            <select class="form-select" id="txtEditFiscal">
+                                <option selected disabled>Fiscal Authority</option>
+                            </select>
 
-                        <label for="txtEditSelectedFor" class="form-label">Requested For</label>
-                        <select class="form-select" id="txtEditSelectedFor">
-                            <option selected>Select Requested For</option>
-                        </select>
-
-                        <label for="txtEditNotes" class="form-label">Notes</label>
-                        <input type="text" class="form-control" id="txtEditNotes" placeholder="Notes">
+                            <label for="txtEditDivision" class="form-label">Division</label>
+                            <select class="form-select" id="txtEditDivision">
+                                <option selected disabled>Division</option>
+                            </select>
+                        </form>
+                    </div>
+                    <!--Error messages. Default Hidden-->
+                    <div id="WarningErrorMessagePopUp" class="alert alert-warning" style="display:none;">
+                        <h4 class="alert-heading">Warning!</h4>
+                        <p class="mb-0" id="txtErrorMsg"></p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success">Edit</button>
+                        <button id="btnEditAccount" type="button" class="btn btn-success">Edit</button>
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -137,9 +138,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
-        integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
         const apiCall = sessionStorage.getItem('apiCall');
 
@@ -214,8 +213,7 @@
                                 { data: "DateCreated", title: "Date" }
                             ],
                             autowidth: false,
-                            responsive: true,
-                            pageLength: 5
+                            responsive: true
                         });
                     } else {
                         console.error('Unexpected response format or status:', results);
@@ -241,7 +239,6 @@
                             ],
                             autowidth: false,
                             responsive: true,
-                            pageLength: 5,
                             order: [[5, 'desc']]
                         });
                     } else {
@@ -251,6 +248,70 @@
             });
 
             getUserSettings();
+        });
+
+        // Fills Fiscal Authority and Division selection boxes
+        $('#btnEditFill').on('click', function () {
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/fillNewAccountModal`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+                contentType: 'application/json',
+                success: function (results) {
+                    results.FiscalAuthorities.forEach(element => {
+                        $('#txtEditFiscal').append('<option value="' + element.FiscalAuthorityID + '">' + element.FiscalAuthority + '</option>');
+                    });
+                    results.Divisions.forEach(element => {
+                        $('#txtEditDivision').append('<option value="' + (element.ID) + '">' + element.Description + '</opton>');
+                    });
+                },
+                error: function (xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
+                }
+            });
+        });
+
+        $('#btnEditAccount').on('click', function () {
+            let strDescription = $('#txtEditDescription').val();
+            let strFiscal = $('#txtEditFiscal').val();
+            let strDivision = $('#txtEditDivision').val();
+            let strErrorMessage = '';
+
+            if (strDescription.length > 49) {
+                strErrorMessage += "<p>Description is too long</p>";
+            } if (strFiscal == null) {
+                strFiscal = 0;
+            } if (strDivision == null) {
+                strDivision = 'NA';
+            } if (strErrorMessage.length > 0) { // Error message
+                console.log(strErrorMessage);
+                $('#txtErrorMsg').html(strErrorMessage);
+                $('#WarningErrorMessagePopUp').show();
+            } else {
+                $.ajax({
+                    type: 'PUT',
+                    url: `${apiCall}/updateAccount`,
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strDescription: strDescription, strFiscal: strFiscal, strDivision: strDivision, intAccountID: AccountID }),
+                    contentType: 'application/json',
+                    success: function (results) {
+                        Swal.fire({
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            width: '500px',
+                            icon: 'success',
+                            text: 'Account successfully edited'
+                        });
+                        setTimeout(() => {
+                            Swal.close();
+                            $('#editAccount').modal('hide');
+                            window.location.reload();
+                        }, 1000*2);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
+                    }
+                });
+            }
         });
 
         $('#btnDelete').on('click', function () {
@@ -269,7 +330,7 @@
                     });
                     setTimeout(() => {
                         returnHome('accounts', true);
-                    }, 1000 * 2);
+                    }, 1000*2);
                 }
             });
         });
