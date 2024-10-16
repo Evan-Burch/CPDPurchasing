@@ -126,6 +126,90 @@ router.post("/addUser", async (req, res) => {
 	}
 });
 
-// Endpoint to delete new users
-// Endpoint to edit users password and/or username
+router.delete("/deleteUser", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const intUserID = clean(req.body.intUserID);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+		
+		var isAdmin = await isUserAdmin(uuidSessionToken);
+		if (!isAdmin) {
+			res.status(400).json({"message": "This user is not an admin."});
+		}
+		
+		await dbConnection.query("delete from tblUser where EmployeeID=?;", [intUserID]);
+		
+		res.status(200).json({"message": "Success."});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+router.put("/editUser", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const intUserID = clean(req.body.intUserID);
+	const strUserName = clean(req.body.strUserName);
+	const strPassword = clean(req.body.strPassword);
+	const intIsAdmin = clean(req.body.intIsAdmin);
+
+	//server side error checking
+	let strErrorMessage = '';
+
+	if (strUserName == '') {
+		strErrorMessage = strErrorMessage + "<p>Please specify a username.</p>";
+	}
+
+	if (strUserName.length > 50) {
+		strErrorMessage = strErrorMessage + "<p>Username is too long.</p>";
+	}
+
+	if(strPassword == '') {
+		strErrorMessage = strErrorMessage + "<p>Please specify a password.</p>";
+	}
+
+	if (intIsAdmin != 0 && intIsAdmin != 1) {
+		strErrorMessage = strErrorMessage + "<p>isAdmin must be 0 or 1.</p>";
+	}
+
+	if (strErrorMessage.length > 0) {
+		return res.status(400).json({"message": strErrorMessage});
+	}
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+		
+		var isAdmin = await isUserAdmin(uuidSessionToken);
+		if (!isAdmin) {
+			res.status(400).json({"message": "This user is not an admin."});
+		}
+
+		if (strPassword != undefined)
+			var strHashedPassword = crypto.createHash("sha256").update(strPassword).digest("hex");
+		
+		await dbConnection.query(
+			`UPDATE tblUser 
+			 SET UserName = CASE WHEN ? IS NOT NULL THEN ? ELSE UserName END,
+			     Password = CASE WHEN ? IS NOT NULL THEN ? ELSE Password END,
+				 IsAdmin = CASE WHEN ? IS NOT NULL THEN ? ELSE IsAdmin END
+			 WHERE EmployeeID = ?;`,
+			[strUserName, strUserName, strHashedPassword, strHashedPassword, intIsAdmin, intIsAdmin, intUserID]
+		);
+		
+		res.status(200).json({"message": "Success."});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
 module.exports = router;
