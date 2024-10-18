@@ -9,10 +9,11 @@ var {clean, getUserIDBySessionToken, getUserNameBySessionToken} = require("./hel
 router.post("/getUserName", async (req, res) => {
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 	
-	const UserName = await getUserNameBySessionToken(uuidSessionToken);
+	const UserResult = await getUserNameBySessionToken(uuidSessionToken);
+	const UserIsAdmin = (UserResult.IsAdmin == 1) ? true : false;
 	var userID = await getUserIDBySessionToken(uuidSessionToken);
 	
-	res.status(200).json({"message": "Success.", "UserName": UserName, "UserID": userID});
+	res.status(200).json({"message": "Success.", "UserName": UserResult.UserName, "UserID": userID, "IsAdmin": UserIsAdmin});
 });
 
 router.post("/login", async (req, res) => {

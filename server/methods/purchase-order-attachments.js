@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 var db_pool = require("./db.js");
-var {clean, getUserIDBySessionToken, getUserNameBySessionToken, updateActivityLog} = require("./helper.js");
+var {clean, clean_base64, getUserIDBySessionToken, getUserNameBySessionToken, updateActivityLog} = require("./helper.js");
 
 router.post("/addPOAttachment", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
@@ -10,7 +10,7 @@ router.post("/addPOAttachment", async (req, res) => {
 	
 	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
 	const strFilename = clean(req.body.strFilename);
-	const strFileBody = clean(req.body.strFileBody);
+	const strFileBody = clean_base64(req.body.strFileBody);
 
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);

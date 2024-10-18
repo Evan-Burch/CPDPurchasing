@@ -33,21 +33,21 @@
                     <!-- First Slide -->
                     <div class="carousel-item active" style="color:white">
                         <div class="d-flex justify-content-center align-items-center p-3">
-                            <canvas id="chart1" height=200 width=400></canvas>
+                            <canvas id="chart1" class="" height=200 width=400></canvas>
                         </div>
                     </div>
                     <!-- Second Slide -->
-                    <!-- <div class="carousel-item">
+                    <div class="carousel-item">
                         <div class="d-flex justify-content-center align-items-center">
-                            <canvas id="chart2"></canvas>
+                            <canvas id="chart2" height=400 width=800></canvas>
                         </div>
-                    </div> -->
+                    </div>
                     <!-- Third Slide -->
-                    <!-- <div class="carousel-item">
+                    <div class="carousel-item">
                         <div class="d-flex justify-content-center align-items-center">
                             <canvas id="chart3"></canvas>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -68,7 +68,7 @@
                     <div class="card-header">
                         <h4>Recent Activity</h4>
                     </div>
-                    <div class="card-body flex-grow-1 scrollbar1" style="overflow-y: auto; max-height: 450px;">
+                    <div class="card-body flex-grow-1 scrollbar1" style="overflow-y: auto;">
                         <ul id="recentActivityList" class="list-group">
                             <!-- List items will be dynamically added here -->
                         </ul>
@@ -82,10 +82,8 @@
                     <div class="card-header">
                         <h4>Upcoming Billing</h4>
                     </div>
-                    <div class="card-body flex-grow-1 scrollbar1" style="overflow-y: auto; max-height: 350px;">
-                        <ul id="upcomingBillingList" class="list-group"></ul>
-                        <!-- List items will be dynamically added here -->
-                        </ul>
+                    <div class="card-body flex-grow-1 scrollbar1" style="overflow-y: auto;">
+                        <div id='calendar'></div>
                     </div>
                 </div>
             </div>
@@ -97,11 +95,90 @@
 
     <!-- JavaScript to initialize Chart.js charts -->
     <script>
+        // ChartJS Defaults (any settings that should be applied to all charts)
         Chart.defaults.color = 'white';
 
-        var upcomingBilling = [];
-
         $(document).ready(function () {
+
+
+            var calendarEvents = [];
+
+            // Fetch reminders via AJAX
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/getReminders`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+                contentType: 'application/json',
+                success: function (results) {
+                    calendarEvents = results.Reminders;
+                    console.log(calendarEvents)
+
+                    let formattedReminders = calendarEvents.map(reminder => {
+                        let formattedDate = reminder.DueDate.split('T')[0];  // Split by 'T' to get the date part
+                        return { id: reminder.ReminderID, title: reminder.Name, start: formattedDate };
+                    });
+
+                    console.log(formattedReminders);
+
+                    // Initialize FullCalendar after fetching events
+                    var calendarEl = document.getElementById('calendar');
+                    var calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'dayGridMonth',
+                        themeSystem: 'bootstrap',
+                        selectable: true,
+                        dateClick: function (info) {
+                            var title = prompt('Enter Event Title:');
+                            if (title) {
+                                calendar.addEvent({
+                                    title: title,
+                                    start: info.dateStr,  // Use `start` instead of `dateStr`
+                                    allDay: true
+                                });
+
+                                // Add event to the server
+                                $.ajax({
+                                    type: 'POST',
+                                    url: `${apiCall}/addReminder`,
+                                    data: JSON.stringify({
+                                        uuidSessionToken: sessionStorage.getItem('SimpleSession'),
+                                        strName: title,
+                                        strDueDate: info.dateStr
+                                    }),
+                                    contentType: 'application/json'
+                                });
+                            }
+                        },
+                        events: formattedReminders,  // Use the events fetched from the server
+                        eventClick: function (info) {
+                            if (confirm(`Do you really want to delete the event '${info.event.title}'?`)) {
+                                // Remove event from FullCalendar
+                                info.event.remove();
+
+                                // Send delete request to the server
+                                $.ajax({
+                                    type: 'DELETE',
+                                    url: `${apiCall}/deleteReminder`,  // Assuming you have a delete endpoint
+                                    data: JSON.stringify({
+                                        uuidSessionToken: sessionStorage.getItem('SimpleSession'),
+                                        intReminderID: info.event.id  // Send the event ID for deletion
+                                    }),
+                                    contentType: 'application/json',
+                                    success: function () {
+                                        alert('Event deleted successfully!');
+                                    },
+                                    error: function () {
+                                        alert('Failed to delete the event.');
+                                    }
+                                });
+                            }
+                        }
+                    });
+
+                    calendar.render();  // Render calendar after initializing it
+                }
+            });
+
+
             //the hex code for the icons is #3A6EA1
             const recentActivityList = document.getElementById("recentActivityList");
             $.ajax({
@@ -120,14 +197,14 @@
                                 ${activity.ResponsibleUser} ${activity.ActivityDescription}
                             </li>`;
                         }
-                        else if(activity.ActivityDescription.includes('Added')){
+                        else if (activity.ActivityDescription.includes('Added')) {
                             listItem = `
                             <li class="list-group-item">
                                 <img src="assets/icons/plus-solid.svg" alt="Trash Icon" style="width: 16px; height: 16px; margin-right: 8px;">
                                 ${activity.ResponsibleUser} ${activity.ActivityDescription}
                             </li>`;
                         }
-                        else{
+                        else {
                             listItem = `
                             <li class="list-group-item">
                                 <img src="assets/icons/user-pin-solid.svg" alt="Trash Icon" style="width: 16px; height: 16px; margin-right: 8px;">
@@ -138,15 +215,6 @@
                     });
                 }
             })
-
-            const upcomingBillingList = document.getElementById("upcomingBillingList");
-            upcomingBilling.forEach(activity => {
-                let listItem = document.createElement("li");
-                listItem.classList.add("list-group-item");
-                listItem.textContent = activity;
-                upcomingBillingList.appendChild(listItem);
-            });
-
             // Chart 1: Doughnut chart
             //use asynchronous function to fill the donut chart (avoids error if the data is not ready as soon as the page loads)
             async function fillDonutChart() {
@@ -177,7 +245,8 @@
                                 'Uniform Patrol' + '(' + AccountTotals.accountTotals[1].account_category + ')',
                                 'Investigative' + '(' + AccountTotals.accountTotals[2].account_category + ')',
                                 'Traffic' + '(' + AccountTotals.accountTotals[3].account_category + ')',
-                                AccountTotals.accountTotals[4].account_category],
+                                AccountTotals.accountTotals[4].account_category
+                                ],
                                 datasets: [{
                                     label: 'category total $',
                                     data: [AccountTotals.accountTotals[0].total,
@@ -199,6 +268,13 @@
                             options: {
                                 responsive: false,
                                 plugins: {
+                                    title: {
+                                        display: true,
+                                        text: 'Budget Categories',
+                                        font: {
+                                            size: 20,
+                                        },
+                                    },
                                     legend: {
                                         position: 'right',
                                     },
@@ -215,31 +291,139 @@
             //call the async function
             fillDonutChart();
 
-
             // Chart 2: Bar chart
-            let ctx2 = document.getElementById('chart2').getContext('2d');
-            new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-                    datasets: [{
-                        label: 'Sales',
-                        data: [150, 200, 180, 220, 240, 250],
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    },
-                    responsive: false,
-                    maintainAspectRatio: false
+            async function fillBarChart() {
+                try {
+                    const response = await fetch(`${apiCall}/fillBarChart`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'uuidSessionToken': sessionStorage.getItem('SimpleSession'),
+                        },
+                        body: JSON.stringify({})
+                    });
+
+                    const AccountTotals = await response.json();
+
+                    console.log('Account Totals: ', AccountTotals);
+
+                    //check if the response is valid
+                    if(!response.ok) {
+                        console.error("Error Filling Bar Chart: ", jsonResponse);
+                    } else {
+
+                        //once the data is ready, make the bar chart
+                        let ctx2 = document.getElementById('chart2').getContext('2d');
+                        new Chart(ctx2, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Budget Categories'],
+                                datasets: [
+                                    {
+                                        label: 'admin current total $',
+                                        data: [AccountTotals.accountTotals[0].current_total],
+                                        backgroundColor: ['rgba(255, 99, 132, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'admin budget total $',
+                                        data: [AccountTotals.accountTotals[0].budget_total],
+                                        backgroundColor: ['rgba(255, 99, 132, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'uniform current total $',
+                                        data: [AccountTotals.accountTotals[1].current_total],
+                                        backgroundColor: ['rgba(54, 162, 235, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'uniform budget total $',
+                                        data: [AccountTotals.accountTotals[1].budget_total],
+                                        backgroundColor: ['rgba(54, 162, 235, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'investigative current total $',
+                                        data: [AccountTotals.accountTotals[2].current_total],
+                                        backgroundColor: ['rgba(255, 206, 86, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'investigative budget total $',
+                                        data: [AccountTotals.accountTotals[2].budget_total],
+                                        backgroundColor: ['rgba(255, 206, 86, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'traffic current total $',
+                                        data: [AccountTotals.accountTotals[3].current_total],
+                                        backgroundColor: ['rgba(75, 192, 192, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'traffic budget total $',
+                                        data: [AccountTotals.accountTotals[3].budget_total],
+                                        backgroundColor: ['rgba(75, 192, 192, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'other current total $',
+                                        data: [AccountTotals.accountTotals[4].current_total],
+                                        backgroundColor: ['rgba(153, 102, 255, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'other budget total $',
+                                        data: [AccountTotals.accountTotals[4].budget_total],
+                                        backgroundColor: ['rgba(153, 102, 255, 0.6)'],
+                                        borderColor: 'white',
+                                        borderWidth: 2,
+                                        hidden: true,
+                                    },
+                                ],
+                            },
+                            options: {
+                                responsive: false,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    title: {
+                                        display: true,
+                                        text: 'Current totals and budget totals',
+                                        font: {
+                                            size: 20,
+                                        },
+                                    },
+                                    legend: {
+                                        position: 'right',
+                                    },
+                                },
+                                scales: {
+                                    x: {
+                                        stacked: false,
+                                    },
+                                    y: {
+                                        stacked: false,
+                                    }
+                                }
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error Filling Bar Chart: ", error);
                 }
-            });
+            };
+
+            fillBarChart();
 
             // Chart 3: Line chart
             let ctx3 = document.getElementById('chart3').getContext('2d');
