@@ -193,6 +193,37 @@ router.post("/getAccountInfo", async (req, res) => {
 	}
 });
 
+router.put("/updateAccount", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const intAccountID = clean(req.body.intAccountID);
+	const strDescription = clean(req.body.strDescription);
+	const strFiscal = clean(req.body.strFiscal);
+	const strDivision = clean(req.body.strDivision);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+
+		console.log("Editing Account " + intAccountID);
+
+		if (strDescription != '') {
+			await dbConnection.query("UPDATE tblAccount SET Description=? WHERE AccountID=?", [strDescription, intAccountID]);
+		} if (strFiscal != 0) {
+			await dbConnection.query("UPDATE tblAccount SET FiscalAuthority=? WHERE AccountID=?", [strFiscal, intAccountID]);
+		} if (strDivision != 'NA') {
+			await dbConnection.query("UPDATE tblAccount SET DivisionID=? WHERE AccountID=?", [strDivision, intAccountID]);
+		}
+
+		await updateActivityLog(uuidSessionToken, "Edited account " + intAccountID + ".", intAccountID);
+
+		res.status(200).json({"message": "Success."});
+	} finally {
+		await dbConnection.close();
+	}
+});
 
 router.delete("/deleteAccount", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();

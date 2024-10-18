@@ -14,14 +14,13 @@ echo -e "${GREEN}Pull complete${NC}"
 
 # Frontend
 cd ~/Hubble/client
-# echo -e "${YELLOW}Building Frontend...${NC}"
-
-# { # try
-#     npm install && npm run build &&
-#     echo -e "${GREEN}Build complete${NC}"
-# } || { # catch
-#     echo -e "${RED}ERROR while installing dependencies or running build command!${NC}" 
-# }
+echo -e "${YELLOW}Installing Frontend Dependencies...${NC}"
+{ # try
+    npm install &&
+    echo -e "${GREEN}Dependencies complete${NC}"
+} || { # catch
+    echo -e "${RED}ERROR while installing dependencies!${NC}" 
+}
 
 echo -e "${YELLOW}Deploying Frontend...${NC}"
 sudo rm -r /var/www/html/*
@@ -35,17 +34,11 @@ sudo rm -r /var/www/html/*
 # Backend
 cd ~/Hubble/server
 echo -e "${YELLOW}Deploying Backend...${NC}"
-echo -e "${YELLOW}Backend output will be stored in /home/admin/logs/${logFileName}${NC}"
+echo -e "${YELLOW}Backend output can be seen by using pm2 log or pm2 monit${NC}"
 
-kill -INT $pid
 { # try
-    npm install && node index.js > /home/admin/logs/${logFileName} &&
+    npm install && pm2 restart all &&
     echo -e "${GREEN}Backend is live${NC}"
 } || { # catch
     echo -e "${RED}ERROR while installing dependencies or launching node!${NC}" 
 }
-
-# For the love of god why doesnt this command work. It should work to start node inside a new screen
-# screen -md bash -c 'node index.js > /home/admin/logs/$logFileName'
-
-# appending & to the node command to start node as a child process also did not solve the problem of the script not running any commands after node index.js
