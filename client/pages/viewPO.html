@@ -8,44 +8,65 @@
     <link href="https://cdn.datatables.net/2.0.1/css/dataTables.dataTables.min.css" rel="stylesheet">
     <link href="../assets/css/main.css" rel="stylesheet">
     <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CSS for controlling visibility in print -->
+    <style>
+        /* Hide this element on the screen */
+        .print-only {
+            display: none;
+        }
+
+        /* Hide this element in print */
+        .screen-only {
+            display: block;
+        }
+
+        /* When printing, override styles */
+        @media print {
+            body {
+                line-height: 1; /* Single line spacing for print */
+                margin: 1cm; /* Optional: Adjust margins to fit the page */
+            }
+            .print-only {
+                display: block;
+            }
+            .screen-only {
+                display: none;
+            }
+        }
+
+    </style>
 </head>
 
 <body>
-
-    <script src="../assets/js/jquery-3.7.1.min.js"></script>
-    <script src="../assets/js/utils.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.datatables.net/2.0.1/js/dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.0/js/dataTables.buttons.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.bootstrap5.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.dataTables.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.print.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
-        integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFfF7eSY6KjX83lXvyPcLa5VOWMR4Em10Ej"
-        crossorigin="anonymous"></script>
     <div class="container-fluid d-flex justify-content-center mt-2">
         <div class="card col-12 col-md-10 col-lg-9">
             <div class="card-header">
                 <div class="row">
-                    <h3 class="col-12 col-md-8" id="poTitle"></h3>
-                    <button type="button" class="btn btn-primary col-12 col-md-4 col-lg-2 offset-lg-2 mt-2 mt-md-0"
-                        onclick="javascript:returnHome('purchaseOrders', true)">Return</button>
+                    <h3 class="col-12 col-md-8 screen-only" id="poTitle"></h3>
+                    <button type="button" id="btnReturnHome"
+                        class="btn btn-primary col-12 col-md-4 col-lg-2 offset-lg-2 mt-2 mt-md-0 screen-only">Return</button>
                 </div>
             </div>
             <div class="card-body">
+                <p class="print-only" style="text-align:center; border-bottom:2px solid #888;">
+                    Cookeville Police Department<br>
+                    1019 Neal Street<br>
+                    Cookeville, TN 38501<br>
+                    Phone: (931) 520-5266<br>
+                    Fax: (931) 520-5263<br>
+                    <br>
+                </p>
+                <p id="txtPoliceSubHeader" class="print-only"></p>
+                <p id="txtPOAddress" class="print-only">ADDRESS</p>
                 <div class="row">
                     <!-- Purchase Order Information Card -->
-                    <div class="col-12 col-md-9">
+                    <div class="col-12 col-md-9 screen-only">
                         <div class="card mb-3">
                             <div class="row g-3 p-3">
                                 <div class="col-6 col-md-3">
-                                    <p><b>Vendor:</b></p>
-                                    <p><b>Created By:</b></p>
-                                    <p><b>Requested For:</b></p>
+                                    <p class="screen-only"><b>Vendor:</b></p>
+                                    <p class="screen-only"><b>Created By:</b></p>
+                                    <p class="screen-only"><b>Requested For:</b></p>
                                 </div>
                                 <div class="col-6 col-md-3">
                                     <p id="pVendor"> placeholder </p>
@@ -58,39 +79,44 @@
                                     <p><b>Route:</b></p>
                                 </div>
                                 <div class="col-6 col-md-3">
-                                    <p id="pDate"> placeholder </p>
-                                    <p id="pStatus"> placeholder </p>
-                                    <p id="pRoute"> placeholder </p>
+                                    <p id="pDate" class="screen-only"> placeholder </p>
+                                    <p id="pStatus" class="screen-only"> placeholder </p>
+                                    <p id="pRoute" class="screen-only"> placeholder </p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="col-12 col-md-3 d-flex flex-column">
-                        <button type="button" class="btn btn-primary mb-2">Print</button>
-                        <button type="button" class="btn btn-info mb-2" data-bs-toggle="modal"
+                    <div class="col-12 col-md-3 d-flex flex-column screen-only">
+                        <button type="button" class="btn btn-primary mb-2 screen-only" data-bs-toggle="modal"
+                            data-bs-target="#printPOSettings">Print Settings</button>
+                        <button id="btnPrint" type="button" class="btn btn-primary mb-2 screen-only">Print</button>
+                        <button type="button" class="btn btn-info mb-2 screen-only" data-bs-toggle="modal"
                             data-bs-target="#editPO">Edit PO</button>
-                        <button type="button" class="btn btn-success mb-2" data-bs-toggle="modal"
+                        <button type="button" class="btn btn-success mb-2 screen-only" data-bs-toggle="modal"
                             data-bs-target="#addPOItem">Add Item</button>
-                        <button id="btnDelete" type="button" class="btn btn-danger mb-2">Delete PO</button>
+                        <button id="btnDelete" type="button" class="btn btn-danger mb-2 screen-only">Delete PO</button>
                     </div>
                 </div>
 
                 <!-- Notes Section -->
-                <label for="txtNotes" class="form-label mt-3"><b>Notes</b></label>
-                <textarea id="txtNotes" class="form-control mb-2">Notes</textarea>
+                <label for="txtNotes" class="form-label mt-3 screen-only"><b>Notes</b></label>
+                <textarea id="txtNotes" class="form-control mb-2 screen-only" placeholder="Notes" readonly></textarea>
 
-                <!-- PO Items Table -->
-                <div class="table-responsive">
-                    <table class="table table-striped" id="tblPOItems"></table>
+                <!-- PO Items Table for the screen-->
+                <div class="table-responsive screen-only">
+                    <table class="table table-striped" id="tblViewPOItems"></table>
                 </div>
 
-                <hr>
+                <!--PO Items Table for printing-->
+                <div id="tblPrintPOItems" class="print-only"></div>
+
+                <div id="txtPOTotal" class="print-only" style="text-align:right; padding:8px; font-weight:bold;"></div>
 
                 <!-- Attachments Section -->
                 <div class="row">
-                    <div class="col-12 col-md-8 mb-3">
+                    <div class="col-12 col-md-8 mb-3 screen-only">
                         <label for="formFile" class="form-label mt-2"><b>Attachments</b></label>
                         <input class="form-control mb-3" type="file" id="formFile">
                         <div class="card" style="min-height: 150px;">
@@ -99,7 +125,27 @@
                             </ul>
                         </div>
                     </div>
-                </div>                
+                </div>
+                <!-- Signature Block (defaults to just Fiscal Authority and Chief without City Manager)-->
+                <p id="txtSignatureBlock" class="print-only" style="text-align:right; padding:8px;"><br>Fiscal Authority:________________________<br><br> Chief of Police:________________________</p>
+            </div>
+        </div>
+
+        <!-- File Preview Modal -->
+        <div class="modal fade" id="filePreview" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">File Preview</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <iframe id="fileToPreview" src="" height="600" width="465"></iframe>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="fileDownload" type="button" class="btn btn-primary">Download</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -115,25 +161,56 @@
                     <div class="modal-body">
                         <label for="txtEditVendor" class="form-label">Vendor</label>
                         <select class="form-select" id="txtEditVendor" aria-label="Vendor">
-                            <option selected>Select Vendor</option>
+                            <option selected disabled>Select Vendor</option>
                         </select>
 
                         <label for="txtEditVendorContact" class="form-label">Vendor Contact</label>
                         <select class="form-select" id="txtEditVendorContact" aria-label="Vendor Contact">
-                            <option selected>Select Vendor Contact</option>
+                            <option selected disabled>Select Vendor Contact</option>
                         </select>
 
                         <label for="txtEditSelectedFor" class="form-label">Requested For</label>
-                        <select class="form-select" id="txtEditSelectedFor" aria-label="Requested For">
-                            <option selected>Select Requested For</option>
+                        <select class="form-select" id="txtEditRequestedFor" aria-label="Requested For">
+                            <option selected disabled>Select Requested For</option>
                         </select>
 
                         <label for="txtEditNotes" class="form-label">Notes</label>
                         <input type="text" class="form-control" id="txtEditNotes" placeholder="Notes">
+
+                        <label class="form-label" for="btnSwitch">Active</label>
+                            <input type="checkbox" id="btnSwitch">
+                            <label for="btnSwitch" class="toggleSwitch">
+                            </label>
+
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success">Edit</button>
+                        <button type="button" class="btn btn-success" id="btnEdit">Edit</button>
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchase Order Print Settings Modal -->
+        <div class="modal fade" id="printPOSettings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Print PO Settings</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h5>Address</h5>
+                        <label for="txtAddress">(Address for the PO header)</label>
+                        <textarea id="txtAddress" class="form-control mb-2 screen-only" default="ADDRESS"></textarea>
+                        <br>
+                        <h5>Signature Lines</h5>
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">City Manager</label>                        
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnSavePrintSettings" type="button" class="btn btn-success">Save</button>
                     </div>
                 </div>
             </div>
@@ -151,7 +228,7 @@
                     <div class="modal-body">
                         <label for="txtEditVendor" class="form-label">Account</label>
                         <select class="form-select" id="txtEditVendor" aria-label="Vendor">
-                            <option selected>Select Account</option>
+                            <option selected disabled>Select Account</option>
                         </select>
 
                         <label for="txtItemDescription" class="form-label">Item Description</label>
@@ -159,7 +236,7 @@
 
                         <label for="txtEditSelectedFor" class="form-label">Requested For</label>
                         <select class="form-select" id="txtEditSelectedFor" aria-label="Requested For">
-                            <option selected>Select Requested For</option>
+                            <option selected disabled>Select Requested For</option>
                         </select>
 
                         <label for="txtEditNotes" class="form-label">Notes</label>
@@ -174,15 +251,31 @@
         </div>
     </div>
 
+    <!-- JS Libraries -->
+    <script src="../assets/js/jquery-3.7.1.min.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/2.0.1/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.bootstrap5.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.dataTables.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.print.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
     <script>
         const apiCall = sessionStorage.getItem('apiCall');
 
         var PurchaseOrderID = -1;
         $(document).ready(function () {
             PurchaseOrderID = new URL(window.location.href).searchParams.get("POID");
+            var downloadID = 0;
+            var downloadFileName = '';
 
             $('#poTitle').text('Purchase Order ' + PurchaseOrderID);
-            $.ajax({
+            $.ajax({ // Gets PO info to display on page
                 type: 'POST',
                 url: `${apiCall}/getPOInfo`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
@@ -198,15 +291,16 @@
                     $('#txtNotes').val(results.POInfo[0].Notes);
                 }
             });
-            $.ajax({
+            $.ajax({ // Fill PO Item table
                 type: 'POST',
                 url: `${apiCall}/fillPOItemTable`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
                 success: function (results) {
                     console.log(results);
+                    sessionStorage.setItem('POItems', JSON.stringify(results.POItemTable));
                     if (Array.isArray(results.POItemTable)) {
-                        $('#tblPOItems').DataTable({
+                        $('#tblViewPOItems').DataTable({
                             data: results.POItemTable,
                             columns: [
                                 { data: "AccountID", title: "Account ID" },
@@ -231,7 +325,8 @@
                                 var grandTotal = api.column(4).data().reduce((a, b) => parseFloat(a) + parseFloat(b), 0).toFixed(2);
                                 var pageTotal = api.column(4, { page: "current" }).data().reduce((a, b) => parseFloat(a) + parseFloat(b), 0).toFixed(2);
 
-                                api.column(4).footer().innerHTML = '$' + pageTotal + ' ($' + grandTotal + ' total)';
+                                api.column(4).footer().innerHTML = 'Page Total: $' + pageTotal + '<br>Grand Total: $' + grandTotal;
+                                txtPOTotal.innerHTML = 'Total: $' + grandTotal;
                             },
                             autowidth: false,
                             responsive: true,
@@ -245,14 +340,10 @@
                     console.error('AJAX Error:', status, error);
                 }
             });
-
-            $.ajax({
+            $.ajax({ // Get attachments for PO
                 type: 'POST',
                 url: `${apiCall}/getPOAttachments`,
-                data: JSON.stringify({
-                    uuidSessionToken: sessionStorage.getItem('SimpleSession'),
-                    strPurchaseOrderID: PurchaseOrderID
-                }),
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                 contentType: 'application/json',
                 success: function (results) {
                     console.log(results);
@@ -270,22 +361,40 @@
                 </li>`;
                         $('#attachmentList').append(listItem);
                     });
-                    //this should be working
+                    // this should be working
                     // Open file event
                     $('.open-btn').on('click', function () {
                         const attachmentID = $(this).data('id');
                         const filename = $(this).data('filename');
+                        downloadID = attachmentID;
+                        downloadFileName = filename;
 
-                        console.log("Downloading attachment ID " + attachmentID);
-
-                        // AJAX call to get file data
-                        $.ajax({
+                        $.ajax({ // Get file data for document preview
                             type: 'POST',
                             url: `${apiCall}/getAttachment`,
-                            data: JSON.stringify({
-                                uuidSessionToken: sessionStorage.getItem('SimpleSession'),
-                                intAttachmentID: attachmentID
-                            }),
+                            data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAttachmentID: attachmentID }),
+                            contentType: 'application/json',
+                            success: function (result) {
+                                const base64Data = result.AttachmentData;
+                                const fileType = result.AttachmentType;
+                                
+                                $('#fileToPreview').attr('src', fileType + ';base64,' + base64Data);
+                                $('#filePreview').modal('show');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error previewing attachment:', status, error);
+                            }
+                        });
+                    });
+
+                    // Download attachment
+                    $('#fileDownload').on('click', function () {
+                        console.log("Downloading attachment ID " + downloadID);
+
+                        $.ajax({ // Get file data
+                            type: 'POST',
+                            url: `${apiCall}/getAttachment`,
+                            data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAttachmentID: downloadID }),
                             contentType: 'application/json',
                             success: function (result) {
                                 const base64Data = result.AttachmentData;
@@ -293,7 +402,7 @@
                                 // Create a downloadable link and trigger download
                                 const link = document.createElement('a');
                                 link.href = 'data:application/octet-stream;base64,' + base64Data;
-                                link.download = filename;
+                                link.download = downloadFileName;
                                 link.click();
                             },
                             error: function (xhr, status, error) {
@@ -309,14 +418,10 @@
 
                         console.log(attachmentID);
 
-                        // AJAX call to delete the attachment
-                        $.ajax({
+                        $.ajax({ // Delete the attachment
                             type: 'DELETE',
                             url: `${apiCall}/deleteAttachment`, // Replace with correct backend route
-                            data: JSON.stringify({
-                                uuidSessionToken: sessionStorage.getItem('SimpleSession'),
-                                intAttachmentID: attachmentID
-                            }),
+                            data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAttachmentID: attachmentID }),
                             contentType: 'application/json',
                             success: function (response) {
                                 console.log("successfully deleted file file");
@@ -334,11 +439,10 @@
             });
 
             getUserSettings();
-        })
+        });
 
         $('#btnDelete').on('click', function () {
-            // Add functionality to delete PO
-            $.ajax({
+            $.ajax({ // Delete PO
                 type: 'DELETE',
                 url: `${apiCall}/deletePO`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
@@ -363,27 +467,213 @@
             var reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = function () {
-                // console.log(reader.result);
+                var fileType = (reader.result.split(";")[0]);
                 var base64String = (reader.result.split("base64,")[1]);
-                $.ajax({
+                $.ajax({ // Adding PO attachment
                     type: 'POST',
                     url: `${apiCall}/addPOAttachment`,
                     data: JSON.stringify({
                         uuidSessionToken: sessionStorage.getItem('SimpleSession'),
                         strPurchaseOrderID: PurchaseOrderID, // Ensure PurchaseOrderID is set correctly
                         strFilename: file.name,              // Use file.name to get the filename
-                        strFileBody: base64String            // Send the Base64 encoded string
+                        strFileBody: base64String,            // Send the Base64 encoded string
+                        strFileType: fileType
                     }),
                     contentType: 'application/json',
                     success: function (result) {
                         console.log("successfully added file");
                         location.reload();
                     }
-                })
+                });
             };
             reader.onerror = function (error) {
                 console.log('Error: ', error);
             };
+        });
+
+        //return home button
+        $('#btnReturnHome').on('click', function(){
+            //clean up session storage from purchase orders
+            console.log('removing PO Info from session storage');
+            returnHome('purchaseOrders', true);
+        });
+
+        $('#btnSavePrintSettings').on('click', function () {
+            console.log('Saving Print Settings');
+            
+            //get the address
+            $('#txtPOAddress').html($('#txtAddress').val());
+
+            // update the signatures
+            if ($('#flexCheckDefault').is(':checked')) {
+                $('#txtSignatureBlock').html('<br>Fiscal Authority:________________________<br><br> Chief of Police:________________________<br><br>    City Manager:________________________');
+            } else {
+                $('#txtSignatureBlock').html('<br>Fiscal Authority:________________________<br><br> Chief of Police:________________________');
+            }
+
+            // close the modal
+            $('#printPOSettings').modal('hide');
+        });
+        // Print a Purchase Order
+        $('#btnPrint').on('click', function () {
+            console.log('Printing Purchase Order ' + PurchaseOrderID);
+
+            //close the print options modal
+            //document.getElementById("printPOSettings").classList.remove("show");
+            //document.getElementById("printPOSettings").style.display = "none";
+            
+            //set the sub-header 
+            $('#txtPoliceSubHeader').html('Purchase Order Number: '+ PurchaseOrderID + '<br>'
+                + 'Date: ' + $('#pDate').text() + '<br>'
+                + 'Created By: ' + $('#pCreatedBy').text() + '<br><br>'
+                + $('#pVendorName').text()
+            );
+            
+            // add the PO table for printing
+            $('#tblPrintPOItems').html($('#tblViewPOItems').html());
+
+            //style the table header
+            $('#tblPrintPOItems thead').css({
+                'font-size':'18px',
+                'font-weight':'bold'});
+            
+            //style the table body
+            $('#tblPrintPOItems tbody tr').children().css({'font-size':'14px',
+                'padding':'8px',
+                //'border-top':'2px solid black',
+                'border-bottom':'2px solid black'});
+
+            //style the table footer
+            $('#tblPrintPOItems tfoot').html('');
+
+            print({
+                printable: 'tblPrintPOItems',
+                type: 'html',
+                //header: 'Purchase Order ' + PurchaseOrderID,
+                style: '.table { border-collapse: collapse; width: 100%; } .table, th, td { border: 1px solid black; } th, td { padding: 8px; text-align: left; }'
+            });
+        });
+        $("#txtEditVendor").change(function () {
+            var newVendorName = $("#txtEditVendor").children('option[value="' + this.value + '"]').text();
+            $("#txtEditVendorContact").find('option').not(':first').remove();
+            
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/fillVendorContactTable`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: newVendorName }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results);
+                    if (Array.isArray(results.VendorContactTable)) {
+                        if (results.VendorContactTable.length > 0) {
+                            results.VendorContactTable.forEach(element => {
+                                // need to return the vendor contact id, remember to change that
+                                //$('#txtEditVendorContact').append('<option value="' + element.ID + '">' + element.Name + '</option>');
+                                $('#txtEditVendorContact').append('<option value="' + '1' + '">' + element.Name + '</option>');
+                            })
+                        }
+                    } else {
+                        console.error('Unexpected response format or status:', results);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                }
+            });
+        });
+
+        $('#btnPOEdit').on('click', function () {
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/fillNewPOModal`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+                contentType: 'application/json',
+                success:
+                    function (results) {
+                        results.Vendors.forEach(element => {
+                            $('#txtEditVendor').append('<option value="' + element.VendorID + '">' + element.VendorName + '</option>');
+                            if (element.VendorName == $('#pVendor').text()) {
+                                // change the selections to what we're currently set to
+                                $("#txtEditVendor").val(element.VendorID).change();
+                            }
+                        });
+                        results.Users.forEach(element => {
+                            $('#txtEditRequestedFor').append('<option value="' + element.EmployeeID + '">' + element.DisplayName + '</option>');
+                            if (element.DisplayName == $('#pRequestedFor').text()) {
+                                // change the selections to what we're currently set to
+                                $("#txtEditRequestedFor").val(element.EmployeeID).change();
+                            }
+                        })
+                    }
+            });
+
+            $('#txtEditNotes').val($("#txtNotes").text());
+            $('#btnSwitch').prop("checked", ($("#pStatus").text() == "Active"));
+        });
+
+        $('#btnEdit').on('click', function () {
+            var editObject = { uuidSessionToken: sessionStorage.getItem('SimpleSession'), PurchaseOrderID: PurchaseOrderID };
+
+            let intVendorID = $('#txtEditVendor').val();
+            let intVendorContactID = $('#txtEditVendorContact').val();
+            let intRequestedFor = $('#txtEditRequestedFor').val();
+            let strNotes = $('#txtEditNotes').val();
+            let boolStatus = $('#btnSwitch').prop('checked');
+
+            let strVendorName = $('#txtEditVendor option:selected').text();
+            let strVendorContactName = $('#txtEditVendorContact option:selected').text();
+            let strRequestedFor = $('#txtEditRequestedFor option:selected').text();
+
+            // check if we've even changed from the current values
+            if (strVendorName != $("#pVendor").text()) {
+                editObject.intVendorID = intVendorID;
+            }
+            // if (strVendorContactName == ) TODO: we're not even showing the vendor contact anywhere, are we?
+            if (strRequestedFor != $("#pRequestedFor").text()) {
+                editObject.intRequestedFor = intRequestedFor;
+            }
+
+            if (strNotes != $("#txtNotes").text()) {
+                editObject.strNotes = strNotes;
+            }
+
+            if (boolStatus != ($("#pStatus").text() == "Active")) {
+                editObject.boolStatus = boolStatus ? 1 : 0;
+            }
+
+            let strErrorMessage = '';
+
+            if (strNotes.length > 228) {
+                strErrorMessage += "<p>Notes are too long</p>";
+            } if (strErrorMessage.length > 0) { // Error message
+                console.log(strErrorMessage);
+                $('#txtErrorMsg').html(strErrorMessage);
+                $('#WarningErrorMessagePopUp').show();
+            } else {
+                $.ajax({
+                    type: 'PUT',
+                    url: `${apiCall}/updatePO`,
+                    data: JSON.stringify(editObject),
+                    contentType: 'application/json',
+                    success: function (results) {
+                        Swal.fire({
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            width: '500px',
+                            icon: 'success',
+                            text: 'PO successfully edited'
+                        });
+                        setTimeout(() => {
+                            Swal.close();
+                            $('#editPO').modal('hide');
+                            window.location.reload();
+                        }, 1000*2);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
+                    }
+                });
+            }
         });
     </script>
 </body>

@@ -5,10 +5,12 @@
         background-color: #2c3e50;
         border-color: #2c3e50;
     }
+
     .excelButton {
         background-color: #2c3e50;
         border-color: #2c3e50;
     }
+
     .printButton {
         background-color: #2c3e50;
         border-color: #2c3e50;
@@ -45,10 +47,10 @@
     <script src="./assets/js/utils.js"></script>
     <script>
         function doReportCall(intYear) {
-            $.ajax({
+            $.ajax({ // Fill Reports table
                 type: 'POST',
                 url: `${apiCall}/fillReportsTable`,
-                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intYear:intYear}),
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intYear: intYear }),
                 contentType: 'application/json',
                 success:
                     function (results) {
@@ -65,22 +67,22 @@
                             },
                             data: results.Reports,
                             columns: [
-                                {data: "AccountID", title: "Account ID"},
-                                {data: "AccountDescription", title: "Description"},
-                                {data: "DivisionDescription", title: "Division"},
-                                {data: "Budget", title: "Budget Amount"},
-                                {data: "Expenses", title: "Spent Amount"},
-                                {data: "Available", title: "Available Balance"}
+                                { data: "AccountID", title: "Account ID" },
+                                { data: "AccountDescription", title: "Description" },
+                                { data: "DivisionDescription", title: "Division" },
+                                { data: "Budget", title: "Budget Amount" },
+                                { data: "Expenses", title: "Spent Amount" },
+                                { data: "Available", title: "Available Balance" }
                             ],
-                            rowCallback: function(row, data, dataIndex) {
+                            rowCallback: function (row, data, dataIndex) {
                                 var floatAvailable = parseFloat(data.Available);
                                 var floatBudget = parseFloat(data.Budget);
 
-                                // are we in the red, literally?
+                                // Are we in the red, literally?
                                 if (floatAvailable <= 0.0) {
                                     $('td', row).addClass("bg-danger");
                                 }
-                                // is there nothing to spend to begin with?
+                                // Is there nothing to spend to begin with?
                                 if (floatBudget == 0.0) {
                                     $('td', row).addClass("bg-warning");
                                 }
@@ -90,23 +92,24 @@
                     },
                 error: function (xhr, status, error) {
                     console.error('AJAX Error:', status, error);
-                    //pop up the error message from server side validation
+                    // Pop up the error message from server side validation
                     $('#txtErrorMsg').html(xhr.responseJSON.message);
                     $('#WarningErrorMessagePopUp').show();
-                }                    
+                }
             });
         }
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             var intYear = parseInt($("#selFiscalYear").val());
 
             doReportCall(intYear);
         });
 
-        $("#selFiscalYear").on("change", function() {
+        $("#selFiscalYear").on("change", function () {
             $("#tblReports").DataTable().destroy();
             doReportCall(this.value);
         });
+        
     </script>
 </body>
 

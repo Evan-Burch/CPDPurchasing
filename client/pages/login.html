@@ -43,19 +43,21 @@
         const apiCall = sessionStorage.getItem('apiCall');
 
         $(document).ready(function () {
-            handleBrowserNav(); // stop the user from going back/forwards/whatever
+            handleBrowserNav(); // Stop the user from going back/forwards/whatever
         });
 
         $('#btnWarningClose').on('click', function () {
             $('#warningError').hide();
         });
 
-        $("input").on("keydown", function(e) {
+        // Login when user presses 'Enter'
+        $("input").on("keydown", function (e) {
             if (e.key == "Enter") {
                 $("#btnLogin").trigger("click");
             }
         });
 
+        // Cleans/sends login input to backend
         $('#btnLogin').on('click', function () {
             let strUserName = $('#txtUsername').val();
             let strPassword = $('#txtPassword').val();
@@ -64,7 +66,7 @@
                 validateInput();
                 console.log("invalid username/password");
             } else {
-                $.ajax({
+                $.ajax({ // Sends login info to backend
                     type: "POST",
                     url: `${apiCall}/login`,
                     data: JSON.stringify({ strUserName: strUserName, strPassword: strPassword }),
@@ -77,7 +79,7 @@
                             sessionStorage.setItem('SimpleSession', results.uuidSessionToken);
                             window.location.href = "../index.html";
                         },
-                    error:
+                    error: // Login info error
                         function (results) {
                             if (results.status == 400) {
                                 console.log(results);
@@ -88,8 +90,8 @@
                 });
             }
         });
+        
     </script>
-
 </body>
 
 </html>

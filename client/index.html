@@ -19,7 +19,8 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary w-100">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">POModule</a>
-        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
+          aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -48,7 +49,8 @@
                 Dropdown
               </button>
               <ul id="dropdownMenu" style="z-index: 99; right: 0px" class="dropdown-menu dropdown-menu-end">
-                <li><a id="btnSettings" class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settings">Settings</a></li>
+                <li><a id="btnSettings" class="dropdown-item" href="#" data-bs-toggle="modal"
+                    data-bs-target="#settings">Settings</a></li>
                 <li><a id="btnLogout" class="dropdown-item" href="#">Logout</a></li>
               </ul>
             </li>
@@ -75,12 +77,15 @@
           <div class="modal-body">
             Switch Theme <br>
             <input type="checkbox" id="btnSwitch">
-                <label for="btnSwitch" class="toggleSwitch">
-                </label> <br> <br>
+            <label for="btnSwitch" class="toggleSwitch">
+            </label> <br> <br>
+
             <button id="btnChangePassword" type="button" class="btn btn-primary col-4" data-bs-toggle="modal" data-bs-target="#ChangePassword">Change Password</button>
+
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close Settings modal">Close</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+              aria-label="Close Settings modal">Close</button>
           </div>
         </form>
       </div>
@@ -105,7 +110,8 @@
             <input type="text" class="form-control req" id="txtNewPassword" placeholder="New Password" required>
 
             <label for="txtConfirmPassword" class="form-label">Confirm New Password</label>
-            <input type="text" class="form-control req" id="txtConfirmPassword" placeholder="Confirm New Password" required>
+            <input type="text" class="form-control req" id="txtConfirmPassword" placeholder="Confirm New Password"
+              required>
 
           </div>
           <!--Error messages. Default Hidden-->
@@ -114,8 +120,10 @@
             <p class="mb-0" id="txtErrorMsg"></p>
           </div>
           <div class="modal-footer">
-            <button id="btnSendChangedPassword" type="button" class="btn btn-success" aria-label="Change password">Change</button>
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close change password modal">Close</button>
+            <button id="btnSendChangedPassword" type="button" class="btn btn-success"
+              aria-label="Change password">Change</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+              aria-label="Close change password modal">Close</button>
           </div>
         </form>
       </div>
@@ -140,7 +148,6 @@
   <script>
     function switchPage(pageName) {
       $('#divMain').load("./pages/" + pageName + ".html");
-      window.location.href = "index.html?table=" + pageName;
       var bsCollapse = new bootstrap.Collapse($('#navbarNav'), {
         toggle: false
       });
@@ -162,7 +169,7 @@
         window.location.href = "./pages/login.html";
       }
 
-      $.ajax({
+      $.ajax({ // Gets username for page info
         type: 'POST',
         url: `${apiCall}/getUserName`,
         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
@@ -171,7 +178,7 @@
           $('#username').text(results.UserName);
           sessionStorage.setItem('userId', results.UserID);
 
-          if(results.IsAdmin === true){
+          if (results.IsAdmin === true) {
             console.log('Admin user detected');
             $('#poNav').append('<li class="nav-item"><a class="nav-link" href="javascript:switchPage(\'admin\')">Admin Portal</a></li>');
           }
@@ -181,7 +188,7 @@
       getUserSettings();
 
       // Automatic logout functionality within webpage
-      var idleInterval = setInterval(timerInc, 1000*60);
+      var idleInterval = setInterval(timerInc, 1000 * 60);
       $(this).on('mousemove', function () {
         swalTimeout.close();
         clearTimeout(warningTimer);
@@ -198,6 +205,7 @@
       }
     });
 
+    // Switch theme
     $('#btnSwitch').click(function () {
       $('html').attr('data-bs-theme', $('html').attr('data-bs-theme') === 'dark' ? 'light' : 'dark');
       $.ajax({
@@ -215,35 +223,27 @@
       $('#dropdownMenu').toggleClass('show');
     });
 
+    // Change password info
     $('#btnSendChangedPassword').on('click', function () {
       let strCurrentPassword = $('#txtCurrentPassword').val();
       let strNewPassword = $('#txtNewPassword').val();
       let strConfirmPassword = $('#txtConfirmPassword').val();
-
-      // ***** Client side error handling *****
       let strErrorMessage = '';
 
-      if (strCurrentPassword == '')
-        strErrorMessage = strErrorMessage + "<p>Please specify your current password</p>";
-
-      if (strNewPassword == '')
-        strErrorMessage = strErrorMessage + "<p>Please specify your new password</p>";
-
-      if (strConfirmPassword == '')
-        strErrorMessage = strErrorMessage + "<p>Please confirm your new password</p>";
-
-      if (strNewPassword != strConfirmPassword)
-        strErrorMessage = strErrorMessage + "<p>Your new password and confirm password do not match</p>";
-
-      // if the error message exists, show it and let the user fix their problems
-      if (strErrorMessage.length > 0) {
+      if (strCurrentPassword == '') {
+        strErrorMessage += "<p>Please specify your current password</p>";
+      } if (strNewPassword == '') {
+        strErrorMessage += "<p>Please specify your new password</p>";
+      } if (strConfirmPassword == '') {
+        strErrorMessage += "<p>Please confirm your new password</p>";
+      } if (strNewPassword != strConfirmPassword) {
+        strErrorMessage += "<p>Your new password and confirm password do not match</p>";
+      } if (strErrorMessage.length > 0) { // Error message
         console.log(strErrorMessage);
         $('#txtErrorMsg').html(strErrorMessage);
         $('#WarningErrorMessagePopUp').show();
-      }
-      //otherwise send the post request
-      else {
-        $.ajax({
+      } else {
+        $.ajax({ // Send password info to backend
           type: 'PUT',
           url: `${apiCall}/changeUserPassword`,
           data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strCurrentPassword: strCurrentPassword, strNewPassword: strNewPassword }),
@@ -263,7 +263,7 @@
     });
 
     $('#btnLogout').click(function () {
-      $.ajax({
+      $.ajax({ // User logout
         type: 'DELETE',
         url: `${apiCall}/logout`,
         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
@@ -275,6 +275,7 @@
         }
       });
     });
+    
   </script>
 </body>
 

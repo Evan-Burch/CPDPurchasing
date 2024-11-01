@@ -1,12 +1,112 @@
 var express = require("express");
 var router = express.Router();
 
-var db_pool = require("./db.js");
-var {clean, getUserIDBySessionToken, getUserNameBySessionToken, isUserAdmin, updateActivityLog} = require("./helper.js");
+const crypto = require("crypto");
 
+var db_pool = require("./db.js");
+var { clean, getUserIDBySessionToken, getUserNameBySessionToken, isUserAdmin, updateActivityLog } = require("./helper.js");
+
+// Call for getting user list for admin page
 router.post("/getUserList", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	try {  // Checks to see if user is logged in correctly
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({ "message": "You must be logged in to do that" });
+		}
+
+		var isAdmin = await isUserAdmin(uuidSessionToken);
+		if (!isAdmin) {
+			return res.status(400).json({"message": "This user is not an admin."});
+		}
+		
+		var users = await dbConnection.query("select EmployeeID, DisplayName from tblUser where UserName<>'';"); // just the stuff needed to ID them
+		
+		res.status(200).json({"message": "Success.", "Users": users});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+// Call for getting user info 
+router.post("/getUserInfo", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const intUserID = clean(req.body.intUserID);
+
+	try {  // Checks to see if user is logged in correctly
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({ "message": "You must be logged in to do that" });
+		}
+
+		var isAdmin = await isUserAdmin(uuidSessionToken);
+		if (!isAdmin) {
+			return res.status(400).json({"message": "This user is not an admin."});
+		}
+
+		var users = await dbConnection.query("select * from tblUser where EmployeeID=?;", [intUserID]);
+
+		res.status(200).json({ "message": "Success.", "User": users[0] });
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+router.post("/addUser", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const strFirstName = clean(req.body.strFirstName);
+	const strMiddleName = clean(req.body.strMiddleName);
+	const strLastName = clean(req.body.strLastName);
+	//strMiddleName is optional and needs to be null NOT BLANK if not used so this ternary operator is false
+	const strDisplayName = strFirstName + (strMiddleName ? " " + strMiddleName : "") + " " + strLastName;
+	const strUserName = clean(req.body.strUserName);
+	const strPassword = clean(req.body.strPassword);
+	const intIsAdmin = clean(req.body.intIsAdmin);
+
+	//server side error checking
+	let strErrorMessage = '';
+
+	if(strFirstName == '') {
+		strErrorMessage = strErrorMessage + "<p>Please specify a first name.</p>";
+	}
+
+	if(strFirstName.length > 9) {
+		strErrorMessage = strErrorMessage + "<p>first name is too long</p>";
+	}
+
+	if(strMiddleName.length > 3) {
+		strErrorMessage = strErrorMessage + "<p>middle name is too long</p>";
+	}
+
+	if(strLastName == '') {
+		strErrorMessage = strErrorMessage + "<p>Please specify a last name.</p>";
+	}
+
+	if(strLastName.length > 12) {
+		strErrorMessage = strErrorMessage + "<p>last name is too long</p>";
+	}
+
+	if(strUserName == '') {
+		strErrorMessage = strErrorMessage + "<p>Please specify a username.</p>";
+	}
+
+	if(strUserName.length > 50) {
+		strErrorMessage = strErrorMessage + "<p>username is too long</p>";
+	}
+
+	if(strPassword == '') {
+		strErrorMessage = strErrorMessage + "<p>Please specify a password.</p>";
+	}
+
+	if(strErrorMessage.length>0) {
+		return res.status(400).json({"message":strErrorMessage});
+	}
 
 	try {
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
@@ -16,18 +116,20 @@ router.post("/getUserList", async (req, res) => {
 		
 		var isAdmin = await isUserAdmin(uuidSessionToken);
 		if (!isAdmin) {
-			res.status(400).json({"message": "This user is not an admin."});
+			return res.status(400).json({"message": "This user is not an admin."});
 		}
+
+		var strHashedPassword = crypto.createHash("sha256").update(strPassword).digest("hex");
 		
-		var users = await dbConnection.query("select EmployeeID, DisplayName from tblUser;"); // just the stuff needed to ID them
+		var newUser = await dbConnection.query("insert into tblUser (FirstName, MiddleName, LastName, DisplayName, UserName, password, IsAdmin) values (?, ?, ?, ?, ?, ?, ?);", [strFirstName, strMiddleName, strLastName, strDisplayName, strUserName, strHashedPassword, intIsAdmin]);
 		
-		res.status(200).json({"message": "Success.", "Users": users});
+		res.status(200).json({"message": "Success."});
 	} finally {
 		await dbConnection.close();
 	}
 });
 
-router.post("/getUserInfo", async (req, res) => {
+router.delete("/deleteUser", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
 
@@ -41,12 +143,69 @@ router.post("/getUserInfo", async (req, res) => {
 		
 		var isAdmin = await isUserAdmin(uuidSessionToken);
 		if (!isAdmin) {
-			res.status(400).json({"message": "This user is not an admin."});
+			return res.status(400).json({"message": "This user is not an admin."});
 		}
 		
-		var users = await dbConnection.query("select * from tblUser where EmployeeID=?;", [intUserID]);
+		await dbConnection.query("delete from tblUser where EmployeeID=?;", [intUserID]);
 		
-		res.status(200).json({"message": "Success.", "User": users[0]});
+		res.status(200).json({"message": "Success."});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+router.put("/editUser", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const intUserID = clean(req.body.intUserID);
+	const strUserName = (req.body.strUserName == undefined) ? "" : clean(req.body.strUserName);
+	const strPassword = (req.body.strPassword == undefined) ? "" : clean(req.body.strPassword);
+	const intIsAdmin = (req.body.intIsAdmin == undefined) ? -1 : clean(req.body.intIsAdmin);
+
+	//server side error checking
+	let strErrorMessage = '';
+
+	if (strUserName == '') {
+		strErrorMessage = strErrorMessage + "<p>Please specify a username.</p>";
+	}
+
+	if (strUserName.length > 50) {
+		strErrorMessage = strErrorMessage + "<p>Username is too long.</p>";
+	}
+
+	if (intIsAdmin != -1 && (intIsAdmin != 0 && intIsAdmin != 1)) {
+		strErrorMessage = strErrorMessage + "<p>isAdmin must be 0 or 1.</p>";
+	}
+
+	if (strErrorMessage.length > 0) {
+		return res.status(400).json({"message": strErrorMessage});
+	}
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+		
+		var isAdmin = await isUserAdmin(uuidSessionToken);
+		if (!isAdmin) {
+			return res.status(400).json({"message": "This user is not an admin."});
+		}
+
+		if (strPassword != undefined)
+			var strHashedPassword = crypto.createHash("sha256").update(strPassword).digest("hex");
+		
+		await dbConnection.query(
+			`UPDATE tblUser 
+			 SET UserName = CASE WHEN ? IS NOT NULL THEN ? ELSE UserName END,
+			     Password = CASE WHEN ? IS NOT NULL THEN ? ELSE Password END,
+				 IsAdmin = CASE WHEN ? IS NOT NULL THEN ? ELSE IsAdmin END
+			 WHERE EmployeeID = ?;`,
+			[strUserName, strUserName, strHashedPassword, strHashedPassword, intIsAdmin, intIsAdmin, intUserID]
+		);
+		
+		res.status(200).json({"message": "Success."});
 	} finally {
 		await dbConnection.close();
 	}

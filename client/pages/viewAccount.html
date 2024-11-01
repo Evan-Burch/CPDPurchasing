@@ -65,34 +65,42 @@
                     </div>
                 </div>
 
+                <!-- Account Budget Progress Bar -->
                 <div class="row">
                     <div class="progress-container col-12 position-relative mt-1">
-                        <div class="progress mb-3" style="height: 30px;">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="mb-0">Budget Progress</h5>
+                            <p class="mb-0">Budget: $<span id="totalBudget"></span></p>
+                        </div>
+                        <div class="progress mb-2 mt-2" style="height: 30px;">
                             <div class="progress-bar bg-danger" id="progressBar" role="progressbar" style="width: 0%;"
                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <div class="tooltip-expenses bg-primary text-white p-2 rounded position-absolute"
+                        <div class="tooltip-expenses d-flex justify-content-between mb-2">
+                            <span>Expenses: $<span id="totalExpenses"></span></span>
+                            <span>Available: $<span id="totalAvailable"></span></span>
+                        </div>
+                        <!-- <div class="tooltip-expenses bg-primary text-white p-2 rounded position-absolute"
                             style="display: none; top: -35px; left: 0;">
                             <p class="mb-1">Budget: $<span id="totalBudget"></span></p>
                             <p class="mb-1">Expenses: $<span id="totalExpenses"></span></p>
                             <p class="mb-1">Available: $<span id="totalAvailable"></span></p>
-                        </div>
+                        </div> -->
+                        
                     </div>
                 </div>
 
-
-                <!-- Tables -->
+                <!-- Account Yearly Budget Table -->
                 <div class="table-responsive mb-3">
                     <table class="table table-striped" id="tblAccountYearlyBudgets" style="width: 100%;">
-                        <!-- Table content here -->
                     </table>
                 </div>
 
                 <hr>
 
+                <!-- Account PO Table -->
                 <div class="table-responsive">
                     <table class="table table-striped" id="tblAccountPOs" style="width: 100%;">
-                        <!-- Table content here -->
                     </table>
                 </div>
             </div>
@@ -146,7 +154,7 @@
         $(document).ready(function () {
             AccountID = new URL(window.location.href).searchParams.get("AccountID");
             $('#accountTitle').text('Account ' + AccountID);
-            $.ajax({
+            $.ajax({ // Gets account info to display on page
                 type: 'POST',
                 url: `${apiCall}/getAccountInfo`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountID: AccountID }),
@@ -169,34 +177,44 @@
 
                     const expenses = results.Report.Expenses;
                     const budget = results.Report.Budget;
-                    const available = results.Report.Available
+                    const available = results.Report.Available;
 
                     const percentageSpent = (expenses / budget) * 100;
 
                     // Set progress bar width and aria attributes
                     $('#progressBar').css('width', percentageSpent + '%').attr('aria-valuenow', percentageSpent);
 
+                    // Change progress bar color based on percentage
+                    $('#progressBar').removeClass('bg-success bg-warning bg-danger'); // Remove any existing color class
+
+                    if (percentageSpent <= 50) {
+                        $('#progressBar').addClass('bg-success'); // Green for up to 1/3
+                    } else if (percentageSpent <= 75) {
+                        $('#progressBar').addClass('bg-warning'); // Yellow for up to 2/3
+                    } else {
+                        $('#progressBar').addClass('bg-danger'); // Red above 2/3
+                    }
+
                     // Set the budget and expenses text
                     $('#totalBudget').text(budget);
                     $('#totalExpenses').text(expenses);
                     $('#totalAvailable').text(available);
 
-                    // Show tooltip on hover
-                    $('#progressBar').hover(
-                        function () {
-                            // Position the tooltip and show it
-                            const tooltip = $('.tooltip-expenses');
-                            const progressBarWidth = $(this).width();
-                            tooltip.css('left', progressBarWidth - tooltip.outerWidth() / 2).fadeIn();
-                        },
-                        function () {
-                            // Hide tooltip when not hovering
-                            $('.tooltip-expenses').fadeOut();
-                        }
-                    );
+                    // // Show tooltip on hover.. commented out to create new implementation using static tooltip below and above the progress bar
+                    // $('#progressBar').hover(
+                    //     function () {
+                    //         const tooltip = $('.tooltip-expenses');
+                    //         const progressBarWidth = $(this).width();
+                    //         tooltip.css('left', progressBarWidth - tooltip.outerWidth() / 2).fadeIn();
+                    //     },
+                    //     function () {
+                    //         $('.tooltip-expenses').fadeOut();
+                    //     }
+                    // );
                 }
             });
-            $.ajax({
+
+            $.ajax({ // Fill Account Budget table
                 type: 'POST',
                 url: `${apiCall}/fillAccountBudgetTable`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountID: AccountID }),
@@ -220,7 +238,7 @@
                     }
                 }
             });
-            $.ajax({
+            $.ajax({ // Fill Account PO table
                 type: 'POST',
                 url: `${apiCall}/fillAccountPOTable`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strAccountID: AccountID }),
@@ -250,7 +268,7 @@
             getUserSettings();
         });
 
-        // Fills Fiscal Authority and Division selection boxes
+        // Populate modal dropdown boxes
         $('#btnEditFill').on('click', function () {
             $.ajax({
                 type: 'POST',
@@ -260,10 +278,20 @@
                 success: function (results) {
                     results.FiscalAuthorities.forEach(element => {
                         $('#txtEditFiscal').append('<option value="' + element.FiscalAuthorityID + '">' + element.FiscalAuthority + '</option>');
+
+                        if (element.FiscalAuthority == $('#pFiscalAuthority').text()) {
+                            // you can only set by the option's value, not it's label
+                            $('#txtEditFiscal').val(element.FiscalAuthorityID).change();
+                        }
                     });
                     results.Divisions.forEach(element => {
-                        $('#txtEditDivision').append('<option value="' + (element.ID) + '">' + element.Description + '</opton>');
+                        $('#txtEditDivision').append('<option value="' + (element.ID) + '">' + element.Description + '</option>');
                     });
+
+                    // weird race condition means it has to be here
+                    // basically if it changes the value of one of the dropdowns being populated it has to be changed here
+                    $('#txtEditDescription').val($('#pDescription').text());
+                    $('#txtEditDivision').val($('#pDivision').text()).change();
                 },
                 error: function (xhr, status, error) {
                         console.error('AJAX Error:', status, error);
@@ -271,12 +299,14 @@
             });
         });
 
+        // Cleans/sends edit info to backend
         $('#btnEditAccount').on('click', function () {
             let strDescription = $('#txtEditDescription').val();
             let strFiscal = $('#txtEditFiscal').val();
             let strDivision = $('#txtEditDivision').val();
             let strErrorMessage = '';
 
+            // Error checking
             if (strDescription.length > 49) {
                 strErrorMessage += "<p>Description is too long</p>";
             } if (strFiscal == null) {
@@ -288,7 +318,7 @@
                 $('#txtErrorMsg').html(strErrorMessage);
                 $('#WarningErrorMessagePopUp').show();
             } else {
-                $.ajax({
+                $.ajax({ // Send input info to backend
                     type: 'PUT',
                     url: `${apiCall}/updateAccount`,
                     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strDescription: strDescription, strFiscal: strFiscal, strDivision: strDivision, intAccountID: AccountID }),
@@ -315,7 +345,7 @@
         });
 
         $('#btnDelete').on('click', function () {
-            $.ajax({
+            $.ajax({ // Delete account
                 type: 'DELETE',
                 url: `${apiCall}/deleteAccount`,
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountID: AccountID }),

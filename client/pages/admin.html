@@ -1,5 +1,178 @@
 <html lang="en">
-    <body>
-        <h1>Admin Test</h1>
-    </body>
+
+<body>
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            <!-- User List -->
+            <div class="col-md-4 d-flex flex-column p-3" style="height: 100vh;">
+                <button class="btn btn-primary mb-2" id="addUser">+ Add User</button>
+                <select multiple class="form-select flex-grow-1" id="userSelect" style="min-height: 0;"></select>
+            </div>
+
+            <!-- User Info Card -->
+            <div class="col-md-8 d-flex align-items-center justify-content-center p-3" style="height: 100vh;">
+                <div class="card w-100 h-100" id="userCard">
+                    <div class="card-body d-flex flex-column">
+                        <h1 class="card-title" id="userName">Select a user</h1>
+                        <p class="card-text" id="userDetails">User details will appear here when you select a user from
+                            the list.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/getUserList`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results.Users)
+                    let userRow = '';
+                    results.Users.forEach(user => {
+                        userRow = '<option onClick="selectUser(' + user.EmployeeID + ')">' + user.DisplayName + '</option>';
+                        $('#userSelect').append(userRow);
+                    });
+                }
+            })
+        })
+
+
+        $('#addUser').on('click', function () {
+            $('#userCard').html(
+                `<div class="card-body d-flex flex-column col-6">
+                    <h1 class="card-title">Add User</h1>
+                    <label for="txtFirstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="txtFirstName">
+                    <label for="txtMiddleName" class="form-label">Middle Name</label>
+                    <input type="text" class="form-control" id="txtMiddleName">
+                    <label for="txtLastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="txtLastName">
+                    <label for="txtUsername" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="txtUsername">
+                    <label for="txtPassword" class="form-label">Password</label>
+                    <input type="text" class="form-control" id="txtPassword">
+                    <label for="isAdmin" class="form-label">Admin</label>
+                    <input type="checkbox" class="form-check-input" id="isAdmin">
+                    <div class='btn btn-primary mt-3' id="btnCreateNewUser">Create New User</div>
+                </div>`
+            );
+            $('#btnCreateNewUser').on('click', function () {
+                console.log("create new pressed");
+                let firstname = $('#txtFirstName').val();
+                let middlename = $('#txtMiddleName').val();
+                let lastname = $('#txtLastName').val();
+                let username = $('#txtUsername').val();
+                let password = $('#txtPassword').val();
+                let isAdmin = 0;
+                if ($('#isAdmin').is(":checked")) {
+                    isAdmin = 1;
+                }
+                else {
+                    isAdmin = 0;
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: `${apiCall}/addUser`,
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strFirstName: firstname, strMiddleName: middlename, strLastName: lastname, strUserName: username, strPassword: password, intIsAdmin: isAdmin }),
+                    contentType: 'application/json',
+                    success: function (results) {
+                        console.log(results);
+                        returnHome("admin", false);
+                    }
+                })
+            })
+        })
+
+
+        function selectUser(userID) {
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/getUserInfo`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intUserID: userID }),
+                contentType: 'application/json',
+                success: function (results) {
+                    console.log(results.User);
+                    $('#userCard').html(
+                        `
+                        <div class="card-body d-flex flex-column col-6">
+                            <h1 class="card-title">${results.User.DisplayName}</h1>
+                            <label for="txtUsername" class="form-label">Username</label>
+                            <input type="text" class="form-control col-4" id="txtUsername" value="${results.User.UserName}">
+                            <label for="txtPassword" class="form-label">Password</label>
+                            <input type="text" class="form-control col-4" id="txtPassword">
+                            <label for="txtConfirmPassword" type="text" class="form-label">Confirm Password</label>
+                            <input type="text" class="form-control col-4" id="txtConfirmPassword">
+                            <label for="txtFirstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control col-4" id="txtFirstName" value="${results.User.FirstName}">
+                            <label for="txtMiddleName" class="form-label">Middle Name</label>
+                            <input type="text" class="form-control col-4" id="txtMiddleName" value="${(results.User.MiddleName == null) ? "" : results.User.MiddleName}">
+                            <label for="txtLastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control col-4" id="txtLastName" value="${results.User.LastName}">
+                            <label for="isAdmin" class="form-label">Admin</label>
+                            <input type="checkbox" class="form-check-input col-4" id="isAdmin" ${results.User.IsAdmin == 1 ? 'checked' : ''}>
+                            <div class="btn btn-info mt-3" id="btnUpdateUser">Update User</div> 
+                            <div class="btn btn-danger mt-3" id="btnDeleteUser">Delete User</div>
+                        </div>`);
+
+                    $('#btnDeleteUser').on('click', function () {
+                        $.ajax({
+                            type: 'DELETE',
+                            url: `${apiCall}/deleteUser`,
+                            data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intUserID: userID }),
+                            contentType: 'application/json',
+                            success: function (results) {
+                                console.log(results);
+                                returnHome("admin", false);
+                            }
+                        })
+                    });
+
+                    $('#btnUpdateUser').on('click', function () {
+                        var strUserName = $('#txtUsername').val();
+                        var strPassword = $('#txtPassword').val();
+                        let isAdmin = $('#isAdmin').is(':checked') ? 1 : 0; // Check if isAdmin is checked
+
+                        var updateObject = { uuidSessionToken: sessionStorage.getItem('SimpleSession'), intUserID: userID };
+                        if (strUserName != results.User.UserName) {
+                            updateObject.strUserName = strUserName;
+                        }
+                        if (strPassword != "") {
+                            updateObject.strPassword = strPassword;
+                        }
+                        if (isAdmin != results.User.IsAdmin) {
+                            updateObject.intIsAdmin = isAdmin;
+                        }
+                        if (strPassword != $("#txtConfirmPassword").val()) {
+                            Swal.fire({
+                                showConfirmButton: true,
+                                width: '500px',
+                                icon: 'error',
+                                text: "Passwords don't match!"
+                            });
+                        } else {
+                            console.log(updateObject);
+                            if (Object.keys(updateObject).length != 2) { // nothing has changed
+                                $.ajax({
+                                    type: 'PUT',
+                                    url: `${apiCall}/editUser`,
+                                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intUserID: userID, strUserName: $('#txtUsername').val(), strPassword: $('#txtPassword').val(), intIsAdmin: isAdmin }),
+                                    contentType: 'application/json',
+                                    success: function (results) {
+                                        console.log(results);
+                                        returnHome("admin", false);
+                                    }
+                                })
+                            }
+                        }
+                    });
+                }
+            })
+        }
+    </script>
+</body>
+
 </html>
