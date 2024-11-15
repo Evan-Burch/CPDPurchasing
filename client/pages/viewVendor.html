@@ -661,13 +661,6 @@
                             console.error('AJAX Error:', status, error);
                         }
                     });
-
-                    setTimeout(() => {
-                        returnHome('vendors', true);
-                    }, 1000 * 2);
-                },
-                error: function (xhr, status, error) {
-                    console.error('AJAX Error:', status, error);
                 }
             });
 
