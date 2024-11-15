@@ -33,7 +33,16 @@
                 display: none;
             }
         }
+        
+        /* Add a scrollbar if the content overflows */
+        .card-body {
+            overflow-y: auto;
+        }
 
+        /* Gap between card and bottom of the page */
+        .card {
+            margin-bottom: 8px; 
+        }
     </style>
 </head>
 
@@ -67,11 +76,13 @@
                                     <p class="screen-only"><b>Vendor:</b></p>
                                     <p class="screen-only"><b>Created By:</b></p>
                                     <p class="screen-only"><b>Requested For:</b></p>
+                                    <p class="screen-only"><b>Requested Approval From:</b></p>
                                 </div>
                                 <div class="col-6 col-md-3">
                                     <p id="pVendor"> placeholder </p>
                                     <p id="pCreatedBy"> placeholder </p>
                                     <p id="pRequestedFor"> placeholder </p>
+                                    <p id="pRequestedApprovalFrom"> placeholder </p>
                                 </div>
                                 <div class="col-6 col-md-3">
                                     <p><b>Date:</b></p>
@@ -92,9 +103,9 @@
                         <button type="button" class="btn btn-primary mb-2 screen-only" data-bs-toggle="modal"
                             data-bs-target="#printPOSettings">Print Settings</button>
                         <button id="btnPrint" type="button" class="btn btn-primary mb-2 screen-only">Print</button>
-                        <button type="button" class="btn btn-info mb-2 screen-only" data-bs-toggle="modal"
+                        <button id="btnEditPO" type="button" class="btn btn-info mb-2 screen-only" data-bs-toggle="modal"
                             data-bs-target="#editPO">Edit PO</button>
-                        <button type="button" class="btn btn-success mb-2 screen-only" data-bs-toggle="modal"
+                        <button id="btnAddItem" type="button" class="btn btn-success mb-2 screen-only" data-bs-toggle="modal"
                             data-bs-target="#addPOItem">Add Item</button>
                         <button id="btnDelete" type="button" class="btn btn-danger mb-2 screen-only">Delete PO</button>
                     </div>
@@ -116,6 +127,18 @@
 
                 <!-- Attachments Section -->
                 <div class="row">
+                    <div class="col-12 col-md-4 mt-1 screen-only">
+                        <label for="approvalCard" class="form-label"><b>Approval</b></label>
+                        <div id="approvalCard" class="card mt-1" style="min-height: 203px;">
+                            <div id="cardHeader" class="card-header">
+                                <p id="pCardStatus" class="card-title">Status</p>
+                            </div>
+                            <div id="cardStatus" class="card-body d-flex justify-content-center row">
+                                <button id="btnApprovePO" type="button" class="btn btn-success col-10 mb-2">Approve</button>
+                                <button id="btnRejectPO" type="button" class="btn btn-danger col-10">Reject</button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-12 col-md-8 mb-3 screen-only">
                         <label for="formFile" class="form-label mt-2"><b>Attachments</b></label>
                         <input class="form-control mb-3" type="file" id="formFile">
@@ -169,9 +192,14 @@
                             <option selected disabled>Select Vendor Contact</option>
                         </select>
 
-                        <label for="txtEditSelectedFor" class="form-label">Requested For</label>
+                        <label for="txtEditRequestedFor" class="form-label">Requested For</label>
                         <select class="form-select" id="txtEditRequestedFor" aria-label="Requested For">
                             <option selected disabled>Select Requested For</option>
+                        </select>
+
+                        <label for="txtEditFiscalAuthority" class="form-label">Request Approval From</label>
+                        <select class="form-select req" id="txtEditFiscalAuthority" aria-label="Fiscal Authority" required>
+                            <option selected disabled>Select Fiscal Authority</option>
                         </select>
 
                         <label for="txtEditNotes" class="form-label">Notes</label>
@@ -226,24 +254,54 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <label for="txtEditVendor" class="form-label">Account</label>
-                        <select class="form-select" id="txtEditVendor" aria-label="Vendor">
+                        <label for="txtItemAccount" class="form-label">Account</label>
+                        <select class="form-select" id="txtItemAccount" aria-label="Account">
                             <option selected disabled>Select Account</option>
                         </select>
 
                         <label for="txtItemDescription" class="form-label">Item Description</label>
                         <input type="text" class="form-control" id="txtItemDescription" placeholder="Item Description">
 
-                        <label for="txtEditSelectedFor" class="form-label">Requested For</label>
-                        <select class="form-select" id="txtEditSelectedFor" aria-label="Requested For">
-                            <option selected disabled>Select Requested For</option>
-                        </select>
+                        <label for="txtItemQuantity" class="form-label">Quantity</label>
+                        <input type="number" id="txtItemQuantity" class="form-control" min="1" />
 
-                        <label for="txtEditNotes" class="form-label">Notes</label>
-                        <input type="text" class="form-control" id="txtEditNotes" placeholder="Notes">
+                        <label for="txtItemPricePer" class="form-label">Price per Item</label>
+                        <input type="text" class="form-control" id="txtItemPricePer" placeholder="Price">
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success">Add</button>
+                        <button id="btnPOAddItem" type="button" class="btn btn-success">Add</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit PO Item Modal -->
+        <div class="modal fade" id="editPOItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit PO Item</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="txtEditItemAccount" class="form-label">Account</label>
+                        <select class="form-select" id="txtEditItemAccount" aria-label="Account">
+                            <option selected disabled>Select Account</option>
+                        </select>
+
+                        <label for="txtEditItemDescription" class="form-label">Item Description</label>
+                        <input type="text" class="form-control" id="txtEditItemDescription" placeholder="Item Description">
+
+                        <label for="txtEditItemQuantity" class="form-label">Quantity</label>
+                        <input type="number" id="txtEditItemQuantity" class="form-control" min="1" />
+
+                        <label for="txtEditItemPricePer" class="form-label">Price per Item</label>
+                        <input type="text" class="form-control" id="txtEditItemPricePer" placeholder="Price">
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnPOEditItem" type="button" class="btn btn-success">Edit</button>
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -269,10 +327,23 @@
         const apiCall = sessionStorage.getItem('apiCall');
 
         var PurchaseOrderID = -1;
+        var currentUser = '';
+        var POFiscalAuthority = -1;
+        var currentItem = null;
         $(document).ready(function () {
             PurchaseOrderID = new URL(window.location.href).searchParams.get("POID");
             var downloadID = 0;
             var downloadFileName = '';
+
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/getDisplayName`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+                contentType: 'application/json',
+                success: function (results) {
+                    currentUser = results.DisplayName;
+                }
+            });
 
             $('#poTitle').text('Purchase Order ' + PurchaseOrderID);
             $.ajax({ // Gets PO info to display on page
@@ -289,6 +360,27 @@
                     $('#pStatus').text((results.POInfo[0].Status == "1") ? "Active" : "Inactive");
                     $('#pRoute').text(results.POInfo[0].RequestedFor);
                     $('#txtNotes').val(results.POInfo[0].Notes);
+                    $('#pRequestedApprovalFrom').text((results.POInfo[0].FiscalAuthority==null) ? "N/A" : results.POInfo[0].FiscalAuthority);
+
+                    if(results.POInfo[0].IsApproved == 0){
+                        $('#pCardStatus').text("Status: PENDING");
+                        $('#cardHeader').css('background-color', '#ffa500'); // Orange background for pending
+                    } else if(results.POInfo[0].IsApproved == 1) {
+                        $('#pCardStatus').text(`Status: APPROVED`);
+                        $('#cardHeader').css('background-color', '#28a745'); // Green background for approved
+                        $('#cardStatus').remove();
+                    }else{
+                        $('#pCardStatus').html(`Status: REJECTED`);
+                        $('#cardHeader').css('background-color', '#dc3545'); // Red background for rejected
+                        $('#cardStatus').remove();
+                    }
+
+                    POFiscalAuthority = results.POInfo[0].FiscalAuthority;
+
+                    if(POFiscalAuthority != currentUser){
+                        $('#btnApprovePO').addClass('disabled');
+                        $('#btnRejectPO').addClass('disabled');
+                    }
                 }
             });
             $.ajax({ // Fill PO Item table
@@ -307,7 +399,13 @@
                                 { data: "Description", title: "Item Description" },
                                 { data: "Quantity", title: "Quantity" },
                                 { data: "PriceEach", title: "Price Each" },
-                                { data: "Price", title: "Total Price", footer: "Total" }
+                                { data: "Price", title: "Total Price", footer: "Total" },
+                                { data: "ID", title: "Action", render: function (data) {
+                                        return `
+                                                <button type="button" class="btn btn-primary btn-edit text-nowrap" value="${data}">Edit</button>
+                                                <button type="button" class="btn btn-danger btn-delete text-nowrap" value="${data}">Delete</button>
+                                            `;
+                                    }}
                             ],
                             rowCallback: function (row, data, dataIndex) {
                                 var quantity = parseInt(data.Quantity);
@@ -331,6 +429,41 @@
                             autowidth: false,
                             responsive: true,
                             order: [[0, 'desc']]
+                        });
+                        $('.btn-edit').on('click', function () { // When edit button is clicked
+                            //console.log($(this).val());
+                            currentItem = $('#tblViewPOItems').DataTable().row($(this).parents('tr')[0]).data();
+                            console.log(currentItem);
+                            $("#txtEditItemAccount").val(currentItem.AccountID).change();
+                            $("#txtEditItemDescription").val(currentItem.Description);
+                            $("#txtEditItemQuantity").val(currentItem.Quantity);
+                            $("#txtEditItemPricePer").val(currentItem.PriceEach);
+                            $('#editPOItem').modal('show');
+
+                        });
+                        $('.btn-delete').on('click', function () { // When delete button is clicked
+                            var rowData = $('#tblViewPOItems').DataTable().row($(this).parents('tr')[0]).data();
+                            $.ajax({ // Delete vendor contact
+                                type: 'DELETE',
+                                url: `${apiCall}/deletePOItem`,
+                                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intItemID: rowData.ID, strPurchaseOrderID: PurchaseOrderID }),
+                                contentType: 'application/json',
+                                success: function (results) {
+                                    Swal.fire({
+                                        showCancelButton: false,
+                                        showConfirmButton: false,
+                                        width: '500px',
+                                        icon: 'success',
+                                        text: 'PO Item successfully deleted'
+                                    });
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1000 * 2);
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error('AJAX Error:', status, error);
+                                }
+                            });
                         });
                     } else {
                         console.error('Unexpected response format or status:', results);
@@ -438,28 +571,53 @@
                 }
             });
 
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/fillAccountTable`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession') }),
+                contentType: 'application/json',
+                success:
+                    function (results) {
+                        results.AccountTable.forEach(element => {
+                            $('#txtItemAccount').append('<option value="' + element.AccountID + '">' + element.AccountID + ' - ' + element.Description + '</option>');
+                            $('#txtEditItemAccount').append('<option value="' + element.AccountID + '">' + element.AccountID + ' - ' + element.Description + '</option>');
+                        });
+                    }
+            });
+
             getUserSettings();
         });
 
         $('#btnDelete').on('click', function () {
-            $.ajax({ // Delete PO
-                type: 'DELETE',
-                url: `${apiCall}/deletePO`,
-                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
-                contentType: 'application/json',
-                success: function (results) {
-                    Swal.fire({
-                        showCancelButton: false,
-                        showConfirmButton: false,
-                        width: '500px',
-                        icon: 'success',
-                        text: 'Purchase Order successfully deleted'
+            Swal.fire({
+                title: 'Are you sure?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Confirm'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({ // Delete PO
+                        type: 'DELETE',
+                        url: `${apiCall}/deletePO`,
+                        data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
+                        contentType: 'application/json',
+                        success: function (results) {
+                            Swal.fire({
+                                showCancelButton: false,
+                                showConfirmButton: false,
+                                width: '500px',
+                                icon: 'success',
+                                text: 'Purchase Order successfully deleted'
+                            });
+                        setTimeout(() => {
+                            returnHome('purchaseOrders', true);
+                            }, 1000*2);
+                        }
                     });
-                    setTimeout(() => {
-                        returnHome('purchaseOrders', true);
-                    }, 1000*2);
                 }
-            });
+            }); 
         });
 
         document.getElementById('formFile').addEventListener('change', function () {
@@ -582,7 +740,7 @@
             });
         });
 
-        $('#btnPOEdit').on('click', function () {
+        $('#btnEditPO').on('click', function () {
             $.ajax({
                 type: 'POST',
                 url: `${apiCall}/fillNewPOModal`,
@@ -599,16 +757,62 @@
                         });
                         results.Users.forEach(element => {
                             $('#txtEditRequestedFor').append('<option value="' + element.EmployeeID + '">' + element.DisplayName + '</option>');
+                            $('#txtEditFiscalAuthority').append('<option value="' + element.EmployeeID + '">' + element.DisplayName + '</option>');
                             if (element.DisplayName == $('#pRequestedFor').text()) {
                                 // change the selections to what we're currently set to
                                 $("#txtEditRequestedFor").val(element.EmployeeID).change();
                             }
                         })
+                        $("#txtEditFiscalAuthority").val(POFiscalAuthority).change();
                     }
             });
 
             $('#txtEditNotes').val($("#txtNotes").text());
             $('#btnSwitch').prop("checked", ($("#pStatus").text() == "Active"));
+        });
+
+        $('#btnApprovePO').on('click', function(){
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/approvePO`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID}),
+                contentType: 'application/json',
+                success: function(){
+                    Swal.fire({
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            width: '500px',
+                            icon: 'success',
+                            text: 'Purchase Order Approved'
+                        });
+                        setTimeout(() => {
+                            Swal.close();
+                            window.location.reload();
+                        }, 1000*2);
+                }
+            })
+        });
+
+        $('#btnRejectPO').on('click', function(){
+            $.ajax({
+                type: 'POST',
+                url: `${apiCall}/rejectPO`,
+                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID}),
+                contentType: 'application/json',
+                success: function(){
+                    Swal.fire({
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            width: '500px',
+                            icon: 'error',
+                            text: 'Purchase Order Rejected'
+                        });
+                        setTimeout(() => {
+                            Swal.close();
+                            window.location.reload();
+                        }, 1000*2);
+                }
+            })
         });
 
         $('#btnEdit').on('click', function () {
@@ -617,6 +821,7 @@
             let intVendorID = $('#txtEditVendor').val();
             let intVendorContactID = $('#txtEditVendorContact').val();
             let intRequestedFor = $('#txtEditRequestedFor').val();
+            let intFiscalAuthority = $("#txtEditFiscalAuthority").val();
             let strNotes = $('#txtEditNotes').val();
             let boolStatus = $('#btnSwitch').prop('checked');
 
@@ -639,6 +844,10 @@
 
             if (boolStatus != ($("#pStatus").text() == "Active")) {
                 editObject.boolStatus = boolStatus ? 1 : 0;
+            }
+
+            if (intFiscalAuthority != null) {
+                editObject.intFiscalAuthority = intFiscalAuthority;
             }
 
             let strErrorMessage = '';
@@ -666,6 +875,109 @@
                         setTimeout(() => {
                             Swal.close();
                             $('#editPO').modal('hide');
+                            window.location.reload();
+                        }, 1000*2);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
+                    }
+                });
+            }
+        });
+
+        $('#btnPOAddItem').on('click', function () {
+            let intAccountID = $('#txtItemAccount').val();
+            let strDescription = $('#txtItemDescription').val();
+            let intQuantity = parseInt($('#txtItemQuantity').val());
+            let floatPrice = parseFloat($("#txtItemPricePer").val()) * intQuantity;
+
+            var addObject = { uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID, intAccountID: intAccountID, strDescription: strDescription, intQuantity: intQuantity, floatPrice: floatPrice };
+
+            let strErrorMessage = '';
+
+            if (strDescription.length > 157) {
+                strErrorMessage += "<p>Description is too long</p>";
+            } if (strErrorMessage.length > 0) { // Error message
+                console.log(strErrorMessage);
+                $('#txtErrorMsg').html(strErrorMessage);
+                $('#WarningErrorMessagePopUp').show();
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    url: `${apiCall}/addPOItem`,
+                    data: JSON.stringify(addObject),
+                    contentType: 'application/json',
+                    success: function (results) {
+                        Swal.fire({
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            width: '500px',
+                            icon: 'success',
+                            text: 'PO Item successfully added'
+                        });
+                        setTimeout(() => {
+                            Swal.close();
+                            $('#addPOItem').modal('hide');
+                            window.location.reload();
+                        }, 1000*2);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
+                    }
+                });
+            }
+        });
+
+        $('#btnPOEditItem').on('click', function () {
+            var editObject = { uuidSessionToken: sessionStorage.getItem('SimpleSession'), intItemID: currentItem.ID, strPurchaseOrderID: PurchaseOrderID };
+
+            let intAccountID = $('#txtEditItemAccount').val();
+            let strDescription = $('#txtEditItemDescription').val();
+            let intQuantity = parseInt($('#txtEditItemQuantity').val());
+            let floatPrice = parseFloat($("#txtEditItemPricePer").val()) * intQuantity;
+
+            // check if we've even changed from the current values
+            if (intAccountID != currentItem.AccountID) {
+                editObject.intAccountID = intAccountID;
+            }
+
+            if (strDescription != currentItem.Description) {
+                editObject.strDescription = strDescription;
+            }
+
+            if (intQuantity != currentItem.Quantity) {
+                editObject.intQuantity = intQuantity;
+            }
+
+            if (floatPrice != currentItem.Price) {
+                editObject.floatPrice = floatPrice;
+            }
+
+            let strErrorMessage = '';
+
+            if (strDescription.length > 157) {
+                strErrorMessage += "<p>Description is too long</p>";
+            } if (strErrorMessage.length > 0) { // Error message
+                console.log(strErrorMessage);
+                $('#txtErrorMsg').html(strErrorMessage);
+                $('#WarningErrorMessagePopUp').show();
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    url: `${apiCall}/updatePOItem`,
+                    data: JSON.stringify(editObject),
+                    contentType: 'application/json',
+                    success: function (results) {
+                        Swal.fire({
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            width: '500px',
+                            icon: 'success',
+                            text: 'PO Item successfully edited'
+                        });
+                        setTimeout(() => {
+                            Swal.close();
+                            $('#editPOItem').modal('hide');
                             window.location.reload();
                         }, 1000*2);
                     },

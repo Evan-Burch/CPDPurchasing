@@ -67,6 +67,16 @@ var swalTimeout = Swal.mixin({
     showConfirmButton: false,
     width: '300px'
 });
+
+var normalSwal = Swal.mixin({
+    title: 'Are you sure?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Confirm'
+});
+
 var warningTimer;
 var idleMax = 10; // 10 minutes of inactivity
 var idleCur = 0;
@@ -93,6 +103,8 @@ function idleWarning() { // Idle warning - starts countdown of last 5 minutes
         var minutes = Math.floor(remainTime / (1000*60)) + 1;
 
         swalTimeout.update({
+            icon: 'warning',
+            title: 'Uh Oh!',
             text: 'LOGGING USER OUT IN ' + minutes + ' MINUTES'
         });
 
@@ -104,6 +116,18 @@ function idleWarning() { // Idle warning - starts countdown of last 5 minutes
 
     warningTimer = setInterval(updateCountdown, 1000);
 }
+
+let mouseTimer;
+
+function resetInactivityTimer() {
+    swalTimeout.close(); // Close any open warning
+    window.removeEventListener('mousemove', resetInactivityTimer);
+    clearTimeout(mouseTimer); // Clear previous timer
+    mouseTimer = setTimeout(() => {swalTimeout.fire(); window.addEventListener('mousemove', resetInactivityTimer);}, expireTime); // Set new timer
+}
+
+// Add a listener to detect mouse movement and reset the timer
+window.addEventListener('mousemove', resetInactivityTimer);
 
 function idleTimeout() { // Auto logs out users after 2 seconds
     console.log('AUTO LOGGED OUT USER');

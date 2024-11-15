@@ -118,7 +118,7 @@
           <div id="WarningErrorMessagePopUp" class="alert alert-warning" style="display:none;">
             <h4 class="alert-heading">Warning!</h4>
             <p class="mb-0" id="txtErrorMsg"></p>
-          </div>
+          </div>          
           <div class="modal-footer">
             <button id="btnSendChangedPassword" type="button" class="btn btn-success"
               aria-label="Change password">Change</button>
@@ -189,11 +189,6 @@
 
       // Automatic logout functionality within webpage
       var idleInterval = setInterval(timerInc, 1000 * 60);
-      $(this).on('mousemove', function () {
-        swalTimeout.close();
-        clearTimeout(warningTimer);
-        idleCur = 0;
-      });
 
       var referrer = new URL(window.location.href).searchParams.get("table");
 

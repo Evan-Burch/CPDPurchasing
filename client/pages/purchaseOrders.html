@@ -61,6 +61,10 @@
                         <select class="form-select req" id="txtSelectedFor" aria-label="Requested For" required>
                             <option selected disabled>Select Requested For</option>
                         </select>
+                        <label for="txtFiscalAuthority" class="form-label">Fiscal Authority</label>
+                        <select class="form-select req" id="txtFiscalAuthority" aria-label="Fiscal Authority" required>
+                            <option selected disabled>Select Fiscal Authority</option>
+                        </select>
                         <label for="txtNotes" class="form-label">Notes</label>
                         <textarea class="form-control" id="txtNotes" placeholder="Notes"></textarea>
                     </div>
@@ -145,6 +149,7 @@
                         });
                         results.Users.forEach(element => {
                             $('#txtSelectedFor').append('<option value="' + element.EmployeeID + '">' + element.DisplayName + '</option>');
+                            $('#txtFiscalAuthority').append('<option value="' + element.EmployeeID + '">' + element.DisplayName + '</option>');
                         })
                     }
             });
@@ -155,6 +160,7 @@
             let strVendorName = $('#txtVendor').val();
             let intStatus = 1;
             let strRequestedFor = $('#txtSelectedFor').val();
+            let strFiscalAuthority = $("#txtFiscalAuthority").val();
             let intCreatedBy = parseInt(sessionStorage.getItem('userId'));
             let strNotes = $('#txtNotes').val();
             let strErrorMessage = '';
@@ -178,7 +184,7 @@
                 $.ajax({ // Send input info to backend
                     type: 'POST',
                     url: `${apiCall}/addPO`,
-                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: strVendorName, intStatus: intStatus, strRequestedFor: strRequestedFor, intCreatedBy: intCreatedBy, strNotes: strNotes }),
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: strVendorName, intStatus: intStatus, strRequestedFor: strRequestedFor, strFiscalAuthority: strFiscalAuthority, intCreatedBy: intCreatedBy, strNotes: strNotes }),
                     contentType: 'application/json',
                     success:
                         function (results) {

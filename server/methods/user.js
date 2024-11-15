@@ -17,6 +17,21 @@ router.post("/getUserName", async (req, res) => {
 	res.status(200).json({ "message": "Success.", "UserName": UserResult.UserName, "UserID": userID, "IsAdmin": UserIsAdmin });
 });
 
+router.post("/getDisplayName", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const UserResult = await getUserNameBySessionToken(uuidSessionToken);
+	var userID = await getUserIDBySessionToken(uuidSessionToken);
+	try {
+		var displayName = await dbConnection.query("select DisplayName from tblUser where EmployeeID=?;", [userID]);
+
+		res.status(200).json({ "message": "Success.", "DisplayName": displayName[0].DisplayName });
+	} finally {
+		await dbConnection.end();
+	}
+});
+
 // Call for user login
 router.post("/login", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();

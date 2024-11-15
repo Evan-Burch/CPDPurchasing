@@ -8,6 +8,17 @@
     <link href="https://cdn.datatables.net/2.0.1/css/dataTables.dataTables.min.css" rel="stylesheet">
     <link href="../assets/css/main.css" rel="stylesheet">
     <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Add a scrollbar if the content overflows */
+        .card-body {
+            overflow-y: auto;
+        }
+        
+        /* Gap between card and bottom of the page */
+        .card {
+            margin-bottom: 8px; 
+        }
+    </style>
 </head>
 
 <body>
@@ -41,7 +52,7 @@
                     <!-- Vendor Actions Buttons -->
                     <div class="col-12 col-md-3 d-flex flex-column">
                         <button id="btnFillEditModal" type="button" class="btn btn-info mb-2" data-bs-toggle="modal" data-bs-target="#editVendor">Edit Vendor</button>
-                        <button id="btnFillContactModal" type="button" class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#addContact">Add Contact</button>
+                        <button type="button" class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#addContact" onclick="fillState()">Add Contact</button>
                         <button id="btnDelete" type="button" class="btn btn-danger mb-2">Delete Vendor</button>
                     </div>
                 </div>
@@ -172,6 +183,84 @@
         </div>
     </div>
 
+    <!-- Edit Vendor Contact Modal -->
+    <div class="modal fade" id="editContact" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="addContactLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addContactLabel">Edit Contact</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form>
+                    <div class="modal-body">
+                        <label for="txtEditContactName" class="form-label">Contact Name</label>
+                        <input type="text" class="form-control" id="txtEditContactName" placeholder="Contact Name">
+
+                        <label for="txtEditVendorEmail" class="form-label mt-2">Email</label>
+                        <input type="email" class="form-control" id="txtEditVendorEmail" placeholder="example@gmail.com">
+
+                        <div class="row mt-2">
+                            <div class="form-group col-6">
+                                <label for="txtEditStreetAddress1" class="form-label">Street Address 1</label>
+                                <input type="text" class="form-control" id="txtEditStreetAddress1" placeholder="Street Address 1">
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="txtEditStreetAddress2" class="form-label">Street Address 2</label>
+                                <input type="text" class="form-control" id="txtEditStreetAddress2" placeholder="Street Address 2">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-5">
+                                <label for="txtEditCity" class="form-label">City</label>
+                                <input type="text" class="form-control" id="txtEditCity" placeholder="City">
+                            </div>
+                            <div class="form-group col-4">
+                                <label for="txtEditState" class="form-label relative">State</label>
+                                <select type="text" class="form-select" id="txtEditState" aria-label="State Select">
+                                    <option selected disabled>Select State...</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-3">
+                                <label for="txtEditZip" class="form-label">ZIP Code</label>
+                                <input type="text" class="form-control" id="txtEditZip" placeholder="ZIP Code">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-6">
+                                <label for="txtEditOfficePhone" class="form-label mt-2">Office Phone</label>
+                                <input type="tel" class="form-control" id="txtEditOfficePhone" placeholder="123-456-7890">
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="txtEditMobilePhone" class="form-label mt-2">Mobile Phone</label>
+                                <input type="tel" class="form-control" id="txtEditMobilePhone" placeholder="123-456-7890">
+                            </div>
+                        </div>
+
+                        <label for="txtEditFax" class="form-label mt-2">Fax Number</label>
+                        <input type="text" class="form-control" id="txtEditFax" placeholder="123456789">
+
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="chkEditPrimaryContact">
+                            <label class="form-check-label" for="chkEditPrimaryContact">Primary Contact</label>
+                        </div>
+                    </div>
+                    <!--Error messages. Default Hidden-->
+                    <div id="WarningErrorMessagePopUp2" class="alert alert-warning" style="display:none;">
+                        <h4 class="alert-heading">Warning!</h4>
+                        <p class="mb-0" id="txtErrorMsg2"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnEditContact" type="button" class="btn btn-success">Edit Contact</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="../assets/js/jquery-3.7.1.min.js"></script>
     <script src="../assets/js/utils.js"></script>
@@ -189,6 +278,7 @@
         const apiCall = sessionStorage.getItem('apiCall');
 
         var VendorName = "";
+        var editID = -1;
         $(document).ready(function () {
             VendorName = new URL(window.location.href).searchParams.get("VendorName");
             $('#vendorTitle').text(VendorName);
@@ -225,10 +315,72 @@
                                 { data: "Address", title: "Address" },
                                 { data: "OfficePhone", title: "Office Phone" },
                                 { data: "MobilePhone", title: "Mobile Phone" },
-                                { data: "Email", title: "Email" }
+                                { data: "Email", title: "Email" },
+                                { data: "ID", title: "Action", render: function (data) {
+                                        return `<div class="row col-12">
+                                                <button type="button" class="btn btn-primary btn-edit text-nowrap" value="${data}">Edit</button>
+                                                <button type="button" class="btn btn-danger btn-delete text-nowrap" value="${data}">Delete</button>
+                                            </div>`;
+                                    }}
                             ],
                             autowidth: false,
                             responsive: true
+                        });
+                        $('.btn-edit').on('click', function () { // When edit button is clicked
+                            fillState();
+                            var rowData = $('#tblVendorContacts').DataTable().row($(this).parents('tr')[0]).data();
+                            fillContact(rowData);
+                            $('#editContact').modal('show');
+                            editID = parseInt($(this).val()); // Set editID to vendor contact ID
+                        });
+                        $('.btn-delete').on('click', function () { // When delete button is clicked
+                            editID = parseInt($(this).val());
+                            $.ajax({ // Delete vendor contact
+                                type: 'DELETE',
+                                url: `${apiCall}/deleteContact`,
+                                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), editID: editID }),
+                                contentType: 'application/json',
+                                success: function (results) {
+                                    Swal.fire({
+                                        showCancelButton: false,
+                                        showConfirmButton: false,
+                                        width: '500px',
+                                        icon: 'success',
+                                        text: 'Vendor contact successfully deleted'
+                                    });
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1000 * 2);
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error('AJAX Error:', status, error);
+                                }
+                            });
+                            editID = parseInt($(this).val()); // Set editID to vendor contact ID
+                        });
+                        $('.btn-delete').on('click', function () { // When delete button is clicked
+                            editID = parseInt($(this).val());
+                            $.ajax({ // Delete vendor contact
+                                type: 'DELETE',
+                                url: `${apiCall}/deleteContact`,
+                                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), editID: editID }),
+                                contentType: 'application/json',
+                                success: function (results) {
+                                    Swal.fire({
+                                        showCancelButton: false,
+                                        showConfirmButton: false,
+                                        width: '500px',
+                                        icon: 'success',
+                                        text: 'Vendor contact successfully deleted'
+                                    });
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1000 * 2);
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error('AJAX Error:', status, error);
+                                }
+                            });
                         });
                     } else {
                         console.error('Unexpected response format or status:', results);
@@ -270,18 +422,35 @@
             getUserSettings();
         });
 
+
         $('#btnFillEditModal').on('click', function () {
             $('#txtEditVendorName').val($('#vendorTitle').text());
             $('#txtEditVendorLink').val($('#pWebsite').text());
         });
 
         // Fills state select in form (no it's not necessary, yes I wanted to do it)
-        $('#btnFillContactModal').on('click', function () {
+        function fillState() {
             let statesUSA = ['ALAlabama', 'AKAlaska', 'AZArizona', 'ARArkansas', 'CACalifornia', 'COColorado', 'CTConnecticut', 'DCWashington D.C.', 'DEDelaware', 'FLFlorida', 'GAGeorgia', 'HIHawaii', 'IDIdaho', 'ILIllinois', 'INIndiana', 'IAIowa', 'KSKansas', 'KYKentucky', 'LALouisiana', 'MEMaine', 'MDMaryland', 'MAMassachusetts', 'MIMichigan', 'MNMinnesota', 'MSMississippi', 'MOMissouri', 'MTMontana', 'NENebraska', 'NVNevada', 'NHNew Hampshire', 'NJNew Jersey', 'NMNew Mexico', 'NYNew York', 'NCNorth Carolina', 'NDNorth Dakota', 'OHOhio', 'OKOklahoma', 'OROregon', 'PAPennsylvania', 'RIRhode Island', 'SCSouth Carolina', 'SDSouth Dakota', 'TNTennessee', 'TXTexas', 'UTUtah', 'VTVermont', 'VAVirginia', 'WAWashington', 'WVWest Virginia', 'WIWisconsin', 'WYWyoming'];
             statesUSA.forEach(element => {
                 $('#txtState').append('<option value="' + element.slice(0, 2) + '">' + element.slice(2, element.length) + '</option>');
+                $('#txtEditState').append('<option value="' + element.slice(0, 2) + '">' + element.slice(2, element.length) + '</option>');
             });
-        });
+        }
+
+        // Fills edit vendor contact modal with current values
+        // Does not fill address values
+        function fillContact(data) {
+            $('#txtEditContactName').val(data.Name.split("(")[0].trim());
+            $('#txtEditOfficePhone').val(data.OfficePhone);
+            $('#txtEditMobilePhone').val(data.MobilePhone);
+            $('#txtEditVendorEmail').val(data.Email);
+            $('#txtEditVendorEmail').val(data.Email);
+            if (data.Name.includes('(Primary)')) {
+                $('#chkEditPrimaryContact').prop('checked', true);
+            } else {
+                $('#chkEditPrimaryContact').prop('checked', false);
+            }
+        }
 
         // Cleans/sends edit info to backend
         $('#btnEditVendor').on('click', function () {
@@ -314,7 +483,7 @@
                         });
                         setTimeout(() => {
                             returnHome('vendors', true);
-                        }, 1000*2);
+                        }, 1000 * 2);
                     },
                     error: function (xhr, status, error) {
                         console.error('AJAX Error:', status, error);
@@ -335,7 +504,7 @@
             let strMobilePhone = $('#txtMobilePhone').val();
             let strEmail = $('#txtVendorEmail').val();
             let strFax = $('#txtFax').val();
-            let chkPrimary = $('#chkPrimaryContact').is(':checked');
+            let chkPrimary = ($('#chkPrimaryContact').prop('checked')) ? 1 : 0;
             let intCreatedBy = parseInt(sessionStorage.getItem('userId'));
             let strErrorMessage = '';
 
@@ -385,7 +554,73 @@
                             Swal.close();
                             $('#addContact').modal('hide');
                             window.location.reload();
-                        }, 1000*2);
+                        }, 1000 * 2);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
+                    }
+                });
+            }
+        });
+
+        // Edit contact
+        $('#btnEditContact').on('click', function () {
+            let strContactName = $('#txtEditContactName').val();
+            let strStreetAddress1 = $('#txtEditStreetAddress1').val();
+            let strStreetAddress2 = $('#txtEditStreetAddress2').val();
+            let strCity = $('#txtEditCity').val();
+            let strState = $('#txtEditState').val();
+            let strZip = $('#txtEditZip').val();
+            let strOfficePhone = $('#txtEditOfficePhone').val();
+            let strMobilePhone = $('#txtEditMobilePhone').val();
+            let strEmail = $('#txtEditVendorEmail').val();
+            let strFax = $('#txtEditFax').val();
+            let chkPrimary = ($('#chkEditPrimaryContact').prop('checked')) ? 1 : 0;
+            let strErrorMessage = '';
+
+            // Error checking
+            if (strContactName.length > 46) {
+                strErrorMessage += "<p>Contact Name is too long</p>";
+            } if (strStreetAddress1.length > 50) {
+                strErrorMessage += "<p>Street Address 1 is too long</p>";
+            } if (strStreetAddress2.length > 50) {
+                strErrorMessage += "<p>Street Address 2 is too long</p>";
+            } if (strCity.length > 50) {
+                strErrorMessage += "<p>City is too long</p>";
+            } if (strZip.length > 10) {
+                strErrorMessage += "<p>ZIP Code is too long</p>";
+            } if (strOfficePhone.length > 12) {
+                strErrorMessage += "<p>Office Phone is too long</p>";
+            } if (strMobilePhone.length > 12) {
+                strErrorMessage += "<p>Mobile Phone is too long</p>";
+            } if (strEmail.length > 50) {
+                strErrorMessage += "<p>email is too long</p>"
+            } if (strFax.length > 12) {
+                strErrorMessage += "<p>Fax number is too long</p>";
+            } if (strState == null) { // If state is not specified
+                strState = '';
+            } if (strErrorMessage.length > 0) { // Error message
+                console.log(strErrorMessage);
+                $('#txtErrorMsg2').html(strErrorMessage);
+                $('#WarningErrorMessagePopUp2').show();
+            } else {
+                $.ajax({
+                    type: 'PUT',
+                    url: `${apiCall}/updateContact`,
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strContactName: strContactName, strStreetAddress1: strStreetAddress1, strStreetAddress2: strStreetAddress2, strCity: strCity, strState: strState, strZip: strZip, strOfficePhone: strOfficePhone, strMobilePhone: strMobilePhone, strEmail: strEmail, strFax: strFax, chkPrimary: chkPrimary, editID: editID }),
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strContactName: strContactName, strStreetAddress1: strStreetAddress1, strStreetAddress2: strStreetAddress2, strCity: strCity, strState: strState, strZip: strZip, strOfficePhone: strOfficePhone, strMobilePhone: strMobilePhone, strEmail: strEmail, strFax: strFax, chkPrimary: chkPrimary, editID: editID }),
+                    contentType: 'application/json',
+                    success: function (results) {
+                        Swal.fire({
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            width: '500px',
+                            icon: 'success',
+                            text: 'Vendor Contact successfully edited'
+                        });
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000 * 2);
                     },
                     error: function (xhr, status, error) {
                         console.error('AJAX Error:', status, error);
@@ -395,27 +630,47 @@
         });
 
         $('#btnDelete').on('click', function () {
-            $.ajax({ // Delete vendor
-                type: 'DELETE',
-                url: `${apiCall}/deleteVendor`,
-                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
-                contentType: 'application/json',
-                success: function (results) {
-                    Swal.fire({
-                        showCancelButton: false,
-                        showConfirmButton: false,
-                        width: '500px',
-                        icon: 'success',
-                        text: 'Vendor successfully deleted'
+            // Confirm delete
+            Swal.fire({
+                title: 'Are you sure?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Confirm'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({ // Delete vendor
+                        type: 'DELETE',
+                        url: `${apiCall}/deleteVendor`,
+                        data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
+                        contentType: 'application/json',
+                        success: function (results) {
+                            Swal.fire({
+                                showCancelButton: false,
+                                showConfirmButton: false,
+                                width: '500px',
+                                icon: 'success',
+                                text: 'Vendor successfully deleted'
+                            });
+                        setTimeout(() => {
+                            returnHome('vendors', true);
+                            }, 1000*2);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('AJAX Error:', status, error);
+                        }
                     });
+
                     setTimeout(() => {
                         returnHome('vendors', true);
-                    }, 1000*2);
+                    }, 1000 * 2);
                 },
                 error: function (xhr, status, error) {
                     console.error('AJAX Error:', status, error);
                 }
             });
+
         });
 
     </script>

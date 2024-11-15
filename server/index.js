@@ -22,6 +22,7 @@ app.use(bodyParser.json());
 
 app.use("/", require("./methods/purchase-orders.js"));
 app.use("/", require("./methods/purchase-order-attachments.js"));
+app.use("/", require("./methods/purchase-order-items.js"));
 app.use("/", require("./methods/vendor.js"));
 app.use("/", require("./methods/account.js"));
 app.use("/", require("./methods/reports.js"));

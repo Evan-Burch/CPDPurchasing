@@ -8,6 +8,17 @@
     <link href="https://cdn.datatables.net/2.0.1/css/dataTables.dataTables.min.css" rel="stylesheet">
     <link href="../assets/css/main.css" rel="stylesheet">
     <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Add a scrollbar if the content overflows */
+        .card-body {
+            overflow-y: auto;
+        }
+        
+        /* Gap between card and bottom of the page */
+        .card {
+            margin-bottom: 8px; 
+        }
+    </style>
 </head>
 
 <body>
@@ -345,24 +356,39 @@
         });
 
         $('#btnDelete').on('click', function () {
-            $.ajax({ // Delete account
-                type: 'DELETE',
-                url: `${apiCall}/deleteAccount`,
-                data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountID: AccountID }),
-                contentType: 'application/json',
-                success: function (results) {
-                    Swal.fire({
-                        showCancelButton: false,
-                        showConfirmButton: false,
-                        width: '500px',
-                        icon: 'success',
-                        text: 'Account successfully deleted'
-                    });
-                    setTimeout(() => {
-                        returnHome('accounts', true);
-                    }, 1000*2);
+
+            // Confirm delete
+            Swal.fire({
+                title: 'Are you sure?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Confirm'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({ // Delete account
+                        type: 'DELETE',
+                        url: `${apiCall}/deleteAccount`,
+                        data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountID: AccountID }),
+                        contentType: 'application/json',
+                        success: function (results) {
+                            Swal.fire({
+                                showCancelButton: false,
+                                showConfirmButton: false,
+                                width: '500px',
+                                icon: 'success',
+                                text: 'Account successfully deleted'
+                            });
+                        setTimeout(() => {
+                            returnHome('accounts', true);
+                            }, 1000*2);
+                        }
+                 });
                 }
             });
+
+            
         });
     </script>
 </body>

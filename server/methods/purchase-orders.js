@@ -4,6 +4,8 @@ var router = express.Router();
 var db_pool = require("./db.js");
 var { clean, getUserIDBySessionToken, getUserNameBySessionToken, updateActivityLog } = require("./helper.js");
 
+const POInfoQuery = "select tblPurchaseOrder.PurchaseOrderID, tblPurchaseOrder.VendorID, tblPurchaseOrder.Status, rf.DisplayName as RequestedFor, DATE_FORMAT(tblPurchaseOrder.CreatedDateTime, '%m/%d/%Y %h:%i %p') as CreatedDateTime, cb.DisplayName as CreatedBy, tblPurchaseOrder.Notes, tblPurchaseOrder.Amount, tblVendor.VendorName, IFNULL(tblPOApprovals.IsApproved, 0) as IsApproved, fa.DisplayName as FiscalAuthority from tblPurchaseOrder left join tblUser rf on tblPurchaseOrder.RequestedFor = rf.EmployeeID left join tblUser cb on tblPurchaseOrder.CreatedBy = cb.EmployeeID left join tblVendor on tblPurchaseOrder.VendorID = tblVendor.VendorID left join tblPOApprovals on tblPurchaseOrder.PurchaseOrderID = tblPOApprovals.PurchaseOrderID left join tblUser fa on tblPOApprovals.FiscalAuthority = fa.EmployeeID";
+
 // Call for adding a new PO
 router.post("/addPO", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
@@ -12,6 +14,7 @@ router.post("/addPO", async (req, res) => {
 	const strVendorName = clean(req.body.strVendorName);
 	const intStatus = clean(req.body.intStatus);
 	const strRequestedFor = clean(req.body.strRequestedFor);
+	const strFiscalAuthority = clean(req.body.strFiscalAuthority);
 	const intCreatedBy = clean(req.body.intCreatedBy);
 	const strNotes = clean(req.body.strNotes);
 
@@ -46,6 +49,8 @@ router.post("/addPO", async (req, res) => {
 
 		if (poIDQuery.length != 0) {
 			await updateActivityLog(uuidSessionToken, "Added PO " + poIDQuery[0].PurchaseOrderID + ".", poIDQuery[0].PurchaseOrderID);
+			
+			await dbConnection.query("insert into tblPOApprovals (PurchaseOrderID, FiscalAuthority, IsApproved) values (?, ?, 0);", [poIDQuery[0].PurchaseOrderID, strFiscalAuthority]);
 		}
 
 		res.status(200).json({ "message": "Success." });
@@ -67,7 +72,7 @@ router.post("/fillPOTable", async (req, res) => {
 
 		console.log("Filling the PO Table");
 
-		const POTable = await dbConnection.query("select tblPurchaseOrder.PurchaseOrderID, tblPurchaseOrder.VendorID, tblPurchaseOrder.Status, rf.DisplayName as RequestedFor, DATE_FORMAT(tblPurchaseOrder.CreatedDateTime, '%m/%d/%Y %h:%i %p') as CreatedDateTime, cb.DisplayName as CreatedBy, tblPurchaseOrder.Notes, tblPurchaseOrder.Amount, tblVendor.VendorName from tblPurchaseOrder left join tblUser rf on tblPurchaseOrder.RequestedFor = rf.EmployeeID left join tblUser cb on tblPurchaseOrder.CreatedBy = cb.EmployeeID left join tblVendor on tblPurchaseOrder.VendorID = tblVendor.VendorID;");
+		const POTable = await dbConnection.query(POInfoQuery + ";");
 
 		if (POTable.length == 0) {
 			return res.status(500).json({ "message": "There are no purchase orders." });
@@ -117,40 +122,13 @@ router.post("/getPOInfo", async (req, res) => {
 
 		console.log("Getting PO Info for " + strPurchaseOrderID);
 
-		const POInfo = await dbConnection.query("select tblPurchaseOrder.PurchaseOrderID, tblPurchaseOrder.VendorID, tblPurchaseOrder.Status, rf.DisplayName as RequestedFor, DATE_FORMAT(tblPurchaseOrder.CreatedDateTime, '%m/%d/%Y %h:%i %p') as CreatedDateTime, cb.DisplayName as CreatedBy, tblPurchaseOrder.Notes, tblPurchaseOrder.Amount, tblVendor.VendorName from tblPurchaseOrder left join tblUser rf on tblPurchaseOrder.RequestedFor = rf.EmployeeID left join tblUser cb on tblPurchaseOrder.CreatedBy = cb.EmployeeID left join tblVendor on tblPurchaseOrder.VendorID = tblVendor.VendorID where tblPurchaseOrder.PurchaseOrderID=?;", [strPurchaseOrderID]);
+		const POInfo = await dbConnection.query(POInfoQuery + " where tblPurchaseOrder.PurchaseOrderID=?;", [strPurchaseOrderID]);
 
 		if (POInfo.length == 0) {
 			return res.status(500).json({ "message": "There is no purchase order with that ID." });
 		} else { // If there is a PO with that ID, list it
 			res.status(200).json({ "message": "Success.", "POInfo": POInfo });
 		}
-	} finally {
-		await dbConnection.close();
-	}
-});
-
-
-// Call for filling PO Item table on viewPO page
-router.post("/fillPOItemTable", async (req, res) => {
-	const dbConnection = await db_pool.getConnection();
-	const uuidSessionToken = clean(req.body.uuidSessionToken);
-	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
-
-	try { // Checks to see if user is logged in correctly
-		var userID = await getUserIDBySessionToken(uuidSessionToken);
-		if (userID == -1) {
-			return res.status(400).json({ "message": "You must be logged in to do that" });
-		}
-
-		console.log("Filling the PO Item Table");
-
-		const POItemTable = await dbConnection.query("select poi.AccountID, poi.Description, poi.Quantity, case when poi.Quantity = 0 then poi.Price else round(poi.Price / poi.Quantity, 2) end as PriceEach, poi.Price from tblPurchaseOrderItem poi where poi.PurchaseOrderID=?;", [strPurchaseOrderID]);
-		if (POItemTable.length == 0) {
-			return res.status(500).json({ "message": "There are no purchase order items." });
-		} else { // If there are items, list them
-			res.status(200).json({ "message": "Success.", "POItemTable": POItemTable });
-		}
-
 	} finally {
 		await dbConnection.close();
 	}
@@ -163,6 +141,7 @@ router.put("/updatePO", async (req, res) => {
 
 	const intVendorID = clean(req.body.intVendorID);
 	const intRequestedFor = clean(req.body.intRequestedFor);
+	const intFiscalAuthority = clean(req.body.intFiscalAuthority);
 	const strNotes = clean(req.body.strNotes);
 	const boolStatus = clean(req.body.boolStatus);
 
@@ -175,19 +154,93 @@ router.put("/updatePO", async (req, res) => {
 		console.log("Editing Account " + PurchaseOrderID);
 
 		if (req.body.intVendorID != undefined) {
-			await dbConnection.query("UPDATE tblPurchaseOrder SET VendorID=? WHERE PurchaseOrderID=?", [intVendorID, PurchaseOrderID]);
+			await dbConnection.query("UPDATE tblPurchaseOrder SET VendorID=? WHERE PurchaseOrderID=?;", [intVendorID, PurchaseOrderID]);
 		} 
 		if (req.body.intRequestedFor != undefined) {
-			await dbConnection.query("UPDATE tblPurchaseOrder SET RequestedFor=? WHERE PurchaseOrderID=?", [intRequestedFor, PurchaseOrderID]);
+			await dbConnection.query("UPDATE tblPurchaseOrder SET RequestedFor=? WHERE PurchaseOrderID=?;", [intRequestedFor, PurchaseOrderID]);
+		}
+		if (req.body.intFiscalAuthority != undefined) {
+			var existQuery = await dbConnection.query("select * from tblPOApprovals where PurchaseOrderID=?;", [PurchaseOrderID]);
+			if (existQuery.length == 0) {
+				await dbConnection.query("insert into tblPOApprovals (PurchaseOrderID, FiscalAuthority, IsApproved) values (?, ?, 0);", [PurchaseOrderID, intFiscalAuthority]);
+			} else if (existQuery.length == 1) {
+				await dbConnection.query("UPDATE tblPOApprovals SET FiscalAuthority=? WHERE PurchaseOrderID=?;", [intFiscalAuthority, PurchaseOrderID]);
+			}
 		} 
 		if (req.body.strNotes != undefined) {
-			await dbConnection.query("UPDATE tblPurchaseOrder SET Notes=? WHERE PurchaseOrderID=?", [strNotes, PurchaseOrderID]);
+			await dbConnection.query("UPDATE tblPurchaseOrder SET Notes=? WHERE PurchaseOrderID=?;", [strNotes, PurchaseOrderID]);
 		}
 		if (req.body.boolStatus != undefined) {
-			await dbConnection.query("UPDATE tblPurchaseOrder SET Status=? WHERE PurchaseOrderID=?", [(boolStatus ? "1" : "0"), PurchaseOrderID]);
+			await dbConnection.query("UPDATE tblPurchaseOrder SET Status=? WHERE PurchaseOrderID=?;", [(boolStatus ? "1" : "0"), PurchaseOrderID]);
 		}
 
 		await updateActivityLog(uuidSessionToken, "Edited PO " + PurchaseOrderID + ".", PurchaseOrderID);
+
+		res.status(200).json({"message": "Success."});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+router.post("/approvePO", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+		
+		var approvalQuery = await dbConnection.query("select FiscalAuthority from tblPOApprovals where PurchaseOrderID=?;", [strPurchaseOrderID]);
+		
+		if (approvalQuery.length == 1) {
+			if (approvalQuery[0].FiscalAuthority == userID) {
+				console.log("User " + userID + " is approving " + strPurchaseOrderID);
+				await dbConnection.query("UPDATE tblPOApprovals SET IsApproved=1 WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
+
+				await updateActivityLog(uuidSessionToken, "Approved PO " + strPurchaseOrderID + ".", strPurchaseOrderID);
+			} else {
+				console.log("User " + userID + " attempted to approve PO " + strPurchaseOrderID + ", but was not the fiscal authority. User " + approvalQuery[0].FiscalAuthority + " is.");
+				return res.status(400).json({"message": "You are not the fiscal authority for this PO."});
+			}
+		} else {
+			return res.status(400).json({"message": "No such approval exists."});
+		}
+
+		res.status(200).json({"message": "Success."});
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+router.post("/rejectPO", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
+
+	try {
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({"message": "You must be logged in to do that"});
+		}
+		
+		var approvalQuery = await dbConnection.query("select FiscalAuthority from tblPOApprovals where PurchaseOrderID=?;", [strPurchaseOrderID]);
+		
+		if (approvalQuery.length == 1) {
+			if (approvalQuery[0].FiscalAuthority == userID) {
+				console.log("User " + userID + " is rejecting " + strPurchaseOrderID);
+				await dbConnection.query("UPDATE tblPOApprovals SET IsApproved=-1 WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
+
+				await updateActivityLog(uuidSessionToken, "Rejected PO " + strPurchaseOrderID + ".", strPurchaseOrderID);
+			} else {
+				console.log("User " + userID + " attempted to reject PO " + strPurchaseOrderID + ", but was not the fiscal authority. User " + approvalQuery[0].FiscalAuthority + " is.");
+				return res.status(400).json({"message": "You are not the fiscal authority for this PO."});
+			}
+		} else {
+			return res.status(400).json({"message": "No such approval exists."});
+		}
 
 		res.status(200).json({"message": "Success."});
 	} finally {
@@ -207,10 +260,13 @@ router.delete("/deletePO", async (req, res) => {
 			return res.status(400).json({ "message": "You must be logged in to do that" });
 		}
 
-    console.log("Deleting items for PO " + strPurchaseOrderID);
+    		console.log("Deleting items for PO " + strPurchaseOrderID);
 
 		// Delete associated items from tblPurchaseOrderItem first
 		await dbConnection.query("DELETE FROM tblPurchaseOrderItem WHERE PurchaseOrderID = ?;", [strPurchaseOrderID]);
+		
+		// delete approval information
+		await dbConnection.query("delete from tblPOApprovals where PurchaseOrderID=?;", [strPurchaseOrderID]);
     
 		console.log("Deleting PO " + strPurchaseOrderID);
 

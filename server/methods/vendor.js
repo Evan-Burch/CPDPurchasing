@@ -154,7 +154,7 @@ router.post("/fillVendorContactTable", async (req, res) => {
 
 		console.log("Filling the Vendor Contact Table");
 
-		const VendorContactTable = await dbConnection.query("select vct.Name, CONCAT(TRIM(vct.StreetAddress1), ' ', TRIM(vct.StreetAddress2), ' ', TRIM(vct.City), ', ', TRIM(vct.State), ' ', TRIM(vct.ZipCode)) as Address, vct.OfficePhone, vct.MobilePhone, vct.Email, vct.Primary from tblVendorContact vct where vct.VendorID=?;", [strVendorID]);
+		const VendorContactTable = await dbConnection.query("select vct.ID, vct.Name, CONCAT(TRIM(vct.StreetAddress1), ' ', TRIM(vct.StreetAddress2), ' ', TRIM(vct.City), ', ', TRIM(vct.State), ' ', TRIM(vct.ZipCode)) as Address, vct.OfficePhone, vct.MobilePhone, vct.Email, vct.Primary from tblVendorContact vct where vct.VendorID=?;", [strVendorID]);
 
 		if (VendorContactTable.length == 0) {
 			return res.status(500).json({ "message": "There are no vendor contacts." });
@@ -243,6 +243,7 @@ router.put("/updateVendor", async (req, res) => {
 router.post("/addVendorContact", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
 	const strVendorName = clean(req.body.strVendorName);
 	const strContactName = clean(req.body.strContactName);
 	const strStreetAddress1 = clean(req.body.strStreetAddress1);
@@ -264,9 +265,6 @@ router.post("/addVendorContact", async (req, res) => {
 			return res.status(400).json({ "message": "You must be logged in to do that" });
 		}
 
-		// Setting primary check to integer
-		let intChkPrimary = (chkPrimary == 'true') ? 1 : 0;
-
 		// Pull Vendor ID (vendor name is passed to backend, but using ID is easier for queries)
 		strVendorID = await dbConnection.query("SELECT VendorID FROM tblVendor WHERE VendorName=?", [strVendorName]);
 		if (strVendorID.length == 0) {
@@ -278,9 +276,89 @@ router.post("/addVendorContact", async (req, res) => {
 		console.log("Adding contact " + strContactName + " for vendor " + strVendorName);
 
 		// Notes column is inserted as empty string for now
-		await dbConnection.query("INSERT INTO tblVendorContact VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, 1, ?)", [intVendorContactID[0].maxID + 1, strVendorID, strContactName, strStreetAddress1, strStreetAddress2, strCity, strState, strZip, strOfficePhone, strMobilePhone, strEmail, '', intChkPrimary, intCreatedBy, strFax]);
+		await dbConnection.query("INSERT INTO tblVendorContact VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, 1, ?)", [intVendorContactID[0].maxID + 1, strVendorID, strContactName, strStreetAddress1, strStreetAddress2, strCity, strState, strZip, strOfficePhone, strMobilePhone, strEmail, '', chkPrimary, intCreatedBy, strFax]);
 
 		await updateActivityLog(uuidSessionToken, "Adding Contact " + strContactName + ".", strContactName);
+
+		res.status(200).json({ "message": "Success." });
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+// Call for updating vendor contact
+router.put("/updateContact", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+
+	const editID = clean(req.body.editID);
+	const strContactName = clean(req.body.strContactName);
+	const strStreetAddress1 = clean(req.body.strStreetAddress1);
+	const strStreetAddress2 = clean(req.body.strStreetAddress2);
+	const strCity = clean(req.body.strCity);
+	const strState = clean(req.body.strState);
+	const strZip = clean(req.body.strZip);
+	const strOfficePhone = clean(req.body.strOfficePhone);
+	const strMobilePhone = clean(req.body.strMobilePhone);
+	const strEmail = clean(req.body.strEmail);
+	const strFax = clean(req.body.strFax);
+	const chkPrimary = clean(req.body.chkPrimary);
+
+	try { // Checks to see if user is logged in correctly
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({ "message": "You must be logged in to do that" });
+		}
+
+		if (strContactName != '') {
+			await dbConnection.query("UPDATE tblVendorContact SET Name=? WHERE ID=?", [strContactName, editID]);
+		} if (strStreetAddress1 != '') {
+			await dbConnection.query("UPDATE tblVendorContact SET StreetAddress1=? WHERE ID=?", [strStreetAddress1, editID]);
+		} if (strStreetAddress2 != '') {
+			await dbConnection.query("UPDATE tblVendorContact SET StreetAddress2=? WHERE ID=?", [strStreetAddress2, editID]);
+		} if (strCity != '') {
+			await dbConnection.query("UPDATE tblVendorContact SET City=? WHERE ID=?", [strCity, editID]);
+		} if (strState != '') {
+			await dbConnection.query("UPDATE tblVendorContact SET State=? WHERE ID=?", [strState, editID]);
+		} if (strZip != '') {
+			await dbConnection.query("UPDATE tblVendorContact SET ZipCode=? WHERE ID=?", [strZip, editID]);
+		} if (strOfficePhone != '') {
+			await dbConnection.query("UPDATE tblVendorContact SET OfficePhone=? WHERE ID=?", [strOfficePhone, editID]);
+		} if (strMobilePhone != '') {
+			await dbConnection.query("UPDATE tblVendorContact SET MobilePhone=? WHERE ID=?", [strMobilePhone, editID]);
+		} if (strEmail != '') {
+			await dbConnection.query("UPDATE tblVendorContact SET Email=? WHERE ID=?", [strEmail, editID]);
+		} if (strFax != '') {
+			await dbConnection.query("UPDATE tblVendorContact SET Fax=? WHERE ID=?", [strFax, editID]);
+		}
+
+		await dbConnection.query("UPDATE tblVendorContact SET `Primary`=? WHERE ID=?", [chkPrimary, editID]);
+
+		await updateActivityLog(uuidSessionToken, "Updating Contact " + strContactName + ".", strContactName);
+
+		res.status(200).json({ "message": "Success." });
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+// Call for deleting a vendor contact
+router.delete("/deleteContact", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const editID = clean(req.body.editID);
+
+	try { // Checks to see if user is logged in correctly
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({ "message": "You must be logged in to do that" });
+		}
+
+		console.log("Deleting contact: ID - ", editID);
+
+		await dbConnection.query("DELETE FROM tblVendorContact WHERE ID=?", [editID]);
+
+		await updateActivityLog(uuidSessionToken, "Deleted Contact ", + editID + ".", editID);
 
 		res.status(200).json({ "message": "Success." });
 	} finally {
