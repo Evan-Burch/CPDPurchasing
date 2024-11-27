@@ -13,6 +13,7 @@ router.post("/addAccount", async (req, res) => {
 	const strDescription = clean(req.body.strDescription);
 	const strFiscalAuthority = clean(req.body.strFiscalAuthority);
 	const strDivision = clean(req.body.strDivision);
+	const floatBudget = clean(req.body.floatBudget);
 
 	let strErrorMessage = '';
 
@@ -50,6 +51,9 @@ router.post("/addAccount", async (req, res) => {
 		console.log("Creating a new Account: ", intAccountNumber, ", ", strDescription, ", ", strFiscalAuthority, ", ", strDivision);
 
 		await dbConnection.query("INSERT INTO tblAccount (AccountID, Description, FiscalAuthority, DivisionID, Status) VALUES (?, ?, ?, ?, 1);", [intAccountNumber, strDescription, strFiscalAuthority, strDivision]);
+		
+		console.log("Adding budget of " + floatBudget + " for Account: " + intAccountNumber);
+		await dbConnection.query("insert into tblAccountTransaction (AccountID, DateCreated, AccountType, Amount, FiscalYear, CreatedBy) values (?, NOW(), 1, ?, DATE_FORMAT(NOW(), '%Y'), ?);", [intAccountNumber, floatBudget, userID]);
 
 		await updateActivityLog(uuidSessionToken, "Added account " + intAccountNumber + ".", intAccountNumber);
 
@@ -128,7 +132,7 @@ router.post("/fillAccountPOTable", async (req, res) => {
 
 		console.log("Filling the Account POs Table");
 
-		const AccountPOTable = await dbConnection.query("select distinct po.PurchaseOrderID, DATE_FORMAT(po.CreatedDateTime, '%m/%d/%Y %h:%i %p') as DateCreated, ven.VendorName, usr.DisplayName as CreatedBy, po.Amount, actt.FiscalYear from tblPurchaseOrder po left join tblPurchaseOrderItem poi on po.PurchaseOrderID = poi.PurchaseOrderID left join tblAccountTransaction actt on poi.AccountID = actt.AccountID left join tblVendor ven on po.VendorID = ven.VendorID left join tblUser usr on po.CreatedBy = usr.EmployeeID where actt.FiscalYear - YEAR(po.CreatedDateTime) = 1 and actt.AccountID=?;", [strAccountID]);
+		const AccountPOTable = await dbConnection.query("select distinct po.PurchaseOrderID, DATE_FORMAT(po.CreatedDateTime, '%m/%d/%Y %h:%i %p') as DateCreated, ven.VendorName, usr.DisplayName as CreatedBy, po.Amount from tblPurchaseOrder po left join tblPurchaseOrderItem poi on po.PurchaseOrderID = poi.PurchaseOrderID left join tblAccountTransaction actt on poi.AccountID = actt.AccountID left join tblVendor ven on po.VendorID = ven.VendorID left join tblUser usr on po.CreatedBy = usr.EmployeeID where actt.AccountID=?;", [strAccountID]);
 
 		// Check for available info
 		if (AccountPOTable.length == 0) {
@@ -200,6 +204,7 @@ router.put("/updateAccount", async (req, res) => {
 	const strDescription = clean(req.body.strDescription);
 	const strFiscal = clean(req.body.strFiscal);
 	const strDivision = clean(req.body.strDivision);
+	const floatBudget = clean(req.body.floatBudget);
 
 	try {  // Checks to see if user is logged in correctly
 		var userID = await getUserIDBySessionToken(uuidSessionToken);
@@ -216,6 +221,9 @@ router.put("/updateAccount", async (req, res) => {
 			await dbConnection.query("UPDATE tblAccount SET FiscalAuthority=? WHERE AccountID=?", [strFiscal, intAccountID]);
 		} if (strDivision != 'NA') {
 			await dbConnection.query("UPDATE tblAccount SET DivisionID=? WHERE AccountID=?", [strDivision, intAccountID]);
+		}
+		if (req.body.floatBudget != undefined) {
+			await dbConnection.query("UPDATE tblAccountTransaction SET Amount=? WHERE AccountID=? and FiscalYear=DATE_FORMAT(NOW(), '%Y');", [floatBudget, intAccountID]);
 		}
 
 		await updateActivityLog(uuidSessionToken, "Edited account " + intAccountID + ".", intAccountID);
@@ -240,6 +248,8 @@ router.delete("/deleteAccount", async (req, res) => {
 
 		console.log("Deleting Account " + intAccountID);
 
+		await dbConnection.query("DELETE FROM tblAccountTransaction WHERE AccountID=?;", [intAccountID]);
+		await dbConnection.query("DELETE FROM tblPurchaseOrderItem WHERE AccountID=?;", [intAccountID]);
 		await dbConnection.query("DELETE FROM tblAccount WHERE AccountID=?;", [intAccountID]);
 
 		await updateActivityLog(uuidSessionToken, "Deleted account " + intAccountID + ".", intAccountID);

@@ -141,6 +141,9 @@
                             <select class="form-select" id="txtEditDivision">
                                 <option selected disabled>Division</option>
                             </select>
+
+                            <label for="txtEditBudget" class="form-label">Budget</label>
+                            <input type="text" class="form-control req" id="txtEditBudget" placeholder="Budget" required>
                         </form>
                     </div>
                     <!--Error messages. Default Hidden-->
@@ -185,6 +188,8 @@
                 contentType: 'application/json',
                 success: function (results) {
                     console.log(results.Report);
+
+                    $('#txtEditBudget').val(results.Report.Budget);
 
                     const expenses = results.Report.Expenses;
                     const budget = results.Report.Budget;
@@ -264,7 +269,9 @@
                                 { data: "VendorName", title: "Vendor" },
                                 { data: "CreatedBy", title: "Created By" },
                                 { data: "Amount", title: "Amount" },
-                                { data: "FiscalYear", title: "Fiscal Year" }
+                                { data: null, defaultContent: "", title: "Fiscal Year", render: function(data) {
+                                    return getFiscalYear(new Date(data.DateCreated));
+                                }}
                             ],
                             autowidth: false,
                             responsive: true,
@@ -315,6 +322,7 @@
             let strDescription = $('#txtEditDescription').val();
             let strFiscal = $('#txtEditFiscal').val();
             let strDivision = $('#txtEditDivision').val();
+            let floatBudget = $('#txtEditBudget').val();
             let strErrorMessage = '';
 
             // Error checking
@@ -332,10 +340,10 @@
                 $.ajax({ // Send input info to backend
                     type: 'PUT',
                     url: `${apiCall}/updateAccount`,
-                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strDescription: strDescription, strFiscal: strFiscal, strDivision: strDivision, intAccountID: AccountID }),
+                    data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strDescription: strDescription, strFiscal: strFiscal, strDivision: strDivision, intAccountID: AccountID, floatBudget: floatBudget }),
                     contentType: 'application/json',
                     success: function (results) {
-                        Swal.fire({
+                        SweetAlert.fire({
                             showCancelButton: false,
                             showConfirmButton: false,
                             width: '500px',
@@ -343,7 +351,7 @@
                             text: 'Account successfully edited'
                         });
                         setTimeout(() => {
-                            Swal.close();
+                            SweetAlert.close();
                             $('#editAccount').modal('hide');
                             window.location.reload();
                         }, 1000*2);
@@ -358,7 +366,7 @@
         $('#btnDelete').on('click', function () {
 
             // Confirm delete
-            Swal.fire({
+            SweetAlert.fire({
                 title: 'Are you sure?',
                 icon: 'warning',
                 showCancelButton: true,
@@ -373,7 +381,7 @@
                         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intAccountID: AccountID }),
                         contentType: 'application/json',
                         success: function (results) {
-                            Swal.fire({
+                            SweetAlert.fire({
                                 showCancelButton: false,
                                 showConfirmButton: false,
                                 width: '500px',

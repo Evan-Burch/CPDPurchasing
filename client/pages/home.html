@@ -22,6 +22,14 @@
     .carousel-control-prev /*, .carousel-indicators */ {
         filter: invert(100%);
     }
+
+    .activity-item {
+        cursor: pointer;
+    }
+    
+    .activity-item:hover {
+        color: rgb(150, 150, 150); /* Change text color to light blue on hover */
+    }   
 </style>
 
 <body>
@@ -38,7 +46,7 @@
                     <!-- First Slide -->
                     <div class="carousel-item active" style="color:white">
                         <div class="d-flex justify-content-center align-items-center p-3">
-                            <canvas id="chart1" class="" height=200 width=400></canvas>
+                            <canvas id="chart1" height=200 width=400></canvas>
                         </div>
                     </div>
                     <!-- Second Slide -->
@@ -47,12 +55,12 @@
                             <canvas id="chart2" height=400 width=800></canvas>
                         </div>
                     </div>
-                    <!-- Third Slide -->
+                    <!-- Third Slide
                     <div class="carousel-item">
                         <div class="d-flex justify-content-center align-items-center">
-                            <canvas id="chart3"></canvas>
+                            <canvas id="chart3" height=400></canvas>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -93,6 +101,85 @@
                 </div>
             </div>
         </div>
+        <!-- Event Details Popup -->
+        <div class="modal fade" id="eventDetailsPopup" tabindex="-1" aria-labelledby="eventDetailsPopupLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Calendar Event</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- <label for="txtEditVendor" class="form-label">Vendor</label>
+                        <select class="form-select" id="txtEditVendor" aria-label="Vendor">
+                            <option selected disabled>Select Vendor</option>
+                        </select>
+
+                        <label for="txtEditVendorContact" class="form-label">Vendor Contact</label>
+                        <select class="form-select" id="txtEditVendorContact" aria-label="Vendor Contact">
+                            <option selected disabled>Select Vendor Contact</option>
+                        </select>
+
+                        <label for="txtEditRequestedFor" class="form-label">Requested For</label>
+                        <select class="form-select" id="txtEditRequestedFor" aria-label="Requested For">
+                            <option selected disabled>Select Requested For</option>
+                        </select>
+
+                        <label for="txtEditFiscalAuthority" class="form-label">Request Approval From</label>
+                        <select class="form-select req" id="txtEditFiscalAuthority" aria-label="Fiscal Authority" required>
+                            <option selected disabled>Select Fiscal Authority</option>
+                        </select>
+
+                        <label for="txtEditNotes" class="form-label">Notes</label>
+                        <input type="text" class="form-control" id="txtEditNotes" placeholder="Notes">
+
+                        <label class="form-label" for="btnSwitch">Active</label>
+                            <input type="checkbox" id="btnSwitch">
+                            <label for="btnSwitch" class="toggleSwitch">
+                            </label> -->
+                        <label for="txtEditTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="txtEditTitle" placeholder="Title">
+                        
+                        <label for="txtEditDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="txtEditDate">
+
+                        <label for="txtEditNotes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="txtEditNotes" placeholder="Notes"></textarea>
+    
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" id="btnEdit">Edit</button>
+                        <button type="button" class="btn btn-danger" id="btnDelete">Delete</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Details Popup -->
+        <div class="modal fade" id="createEventPopup" tabindex="-1" aria-labelledby="eventDetailsPopupLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Create Calendar Event</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="txtCreateTitle" class="form-label" required>Title</label>
+                        <input type="text" class="form-control" id="txtCreateTitle" placeholder="Title">
+
+                        <label for="txtCreateNotes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="txtCreateNotes" placeholder="Notes"></textarea>    
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" id="btnCreateEvent">Create</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap JavaScript Bundle (for carousel functionality) -->
@@ -106,37 +193,54 @@
         var lineChart;
 
         // change chart colors depending on page theme
-        async function changeChartColors(){
-            if (window.matchMedia && window.matchMedia('(data-bs-theme: dark)').matches) {
-                Chart.defaults.color = 'white';
-                doughnutChart.data.datasets[0].borderColor = 'white';
-                barChart.data.datasets.forEach((element) =>{
-                    element.borderColor = 'white'
-                });
-                lineChart.data.datasets[0].bordercolor = 'white'
-            }else{
-                Chart.defaults.color = 'white';
-                doughnutChart.data.datasets[0].borderColor = 'black';
-                barChart.data.datasets.forEach((element) =>{
-                    element.borderColor = 'black'
-                });
-                lineChart.data.datasets[0].bordercolor = 'black'
-            }
+        // Change chart colors based on the current theme
+        async function changeChartColors() {
+            const currentTheme = $('html').attr('data-bs-theme');
+            const isDarkTheme = currentTheme === 'dark';
+            
+            const textColor = isDarkTheme ? 'white' : 'black';
+
+            Chart.defaults.color = textColor;
+            
+            // Update chart datasets
+            doughnutChart.data.datasets[0].borderColor = textColor;
+            barChart.data.datasets.forEach(dataset => {
+                dataset.borderColor = textColor;
+            });
+            lineChart.data.datasets[0].borderColor = textColor;
+
+            // Update the charts
             doughnutChart.update();
             barChart.update();
             lineChart.update();
+
+            // Update the carousel slide text
+            $('.carousel-item').css('color', textColor);
         }
-        
-        // catch when theme is changed
-        window.matchMedia('(data-bs-theme: dark)').addEventListener('change', event => {
+
+        // Detect theme changes
+        function detectThemeChange() {
+            const observer = new MutationObserver(() => {
+                changeChartColors();
+            });
+
+            observer.observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ['data-bs-theme']
+            });
+        }
+
+        $(document).ready(function () {
+            // Initialize theme detection
+            detectThemeChange();
+
+            // Initial chart color setup
             changeChartColors();
         });
-        
+
 
         $(document).ready(function () {
             var calendarEvents = [];
-
-            changeChartColors();
 
             // Fetch reminders via AJAX
             $.ajax({
@@ -150,7 +254,7 @@
 
                     let formattedReminders = calendarEvents.map(reminder => {
                         let formattedDate = reminder.DueDate.split('T')[0];  // Split by 'T' to get the date part
-                        return { id: reminder.ReminderID, title: reminder.Name, start: formattedDate };
+                        return { id: reminder.ReminderID, title: reminder.Name, start: formattedDate, notes: reminder.Notes };
                     });
 
                     console.log(formattedReminders);
@@ -162,59 +266,124 @@
                         themeSystem: 'bootstrap',
                         selectable: true,
                         dateClick: function (info) {
-                            var title = prompt('Enter Event Title:');
-                            if (title) {
-                                calendar.addEvent({
-                                    title: title,
-                                    start: info.dateStr,  // Use `start` instead of `dateStr`
-                                    allDay: true
-                                });
+                            $('#createEventPopup').modal('show');
+                            $('#btnCreateEvent').on('click', function(){
+                                let eventName = $('#txtCreateTitle').val();
+                                let eventDate = info.dateStr;
+                                let eventNotes = $('#txtCreateNotes').val();
 
-                                // Add event to the server
                                 $.ajax({
-                                    type: 'POST',
                                     url: `${apiCall}/addReminder`,
+                                    type: 'POST',
                                     data: JSON.stringify({
                                         uuidSessionToken: sessionStorage.getItem('SimpleSession'),
-                                        strName: title,
-                                        strDueDate: info.dateStr
+                                        strName: eventName,
+                                        strDueDate: eventDate,
+                                        strNotes: eventNotes
                                     }),
-                                    contentType: 'application/json'
-                                });
-                            }
+                                    contentType: 'application/json',
+                                    success: function (data) {
+                                        $('#createEventPopup').modal('hide');
+                                        $('#txtCreateTitle').val('');
+                                        $('#txtCreateNotes').val('');
+                                        Swal.fire({
+                                            title: 'Event Created',
+                                            text: 'Event has been created successfully',
+                                            icon: 'success',
+                                            confirmButtonText: 'OK',
+                                            timer: 1500
+                                        }).then((result) => {
+                                            location.reload();
+                                        });
+                                    }
+
+                                })
+                            })
                         },
                         events: formattedReminders,  // Use the events fetched from the server
                         eventClick: function (info) {
-                            if (confirm(`Do you really want to delete the event '${info.event.title}'?`)) {
-                                // Remove event from FullCalendar
-                                info.event.remove();
+                            // Store the clicked event
+                            selectedEvent = info.event;
+                            
+                            // Populate the modal fields with the event's details
+                            $('#txtEditTitle').val(selectedEvent.title);
+                            $('#txtEditDate').val(selectedEvent.startStr);
+                            $('#txtEditNotes').val(selectedEvent.extendedProps.notes);
 
-                                $.ajax({ // Send delete request to the server
-                                    type: 'DELETE',
-                                    url: `${apiCall}/deleteReminder`,  // Assuming you have a delete endpoint
-                                    data: JSON.stringify({
-                                        uuidSessionToken: sessionStorage.getItem('SimpleSession'),
-                                        intReminderID: info.event.id  // Send the event ID for deletion
-                                    }),
-                                    contentType: 'application/json',
-                                    success: function () {
-                                        alert('Event deleted successfully!');
-                                    },
-                                    error: function () {
-                                        alert('Failed to delete the event.');
-                                    }
-                                });
-                            }
-                        }
+                            // Show the modal
+                            $('#eventDetailsPopup').modal('show');
+
+                          $('#btnDelete').off('click').on('click', function () {
+                              // Show SweetAlert confirmation dialog
+                              SweetAlert.fire({
+                                  title: `Do you really want to delete the event '${info.event.title}'?`,
+                                  icon: 'warning',
+                                  showCancelButton: true,
+                                  confirmButtonColor: '#d33',
+                                  cancelButtonColor: '#3085d6',
+                                  confirmButtonText: 'Yes, delete it!',
+                                  cancelButtonText: 'Cancel',
+                                  width: '500px'
+                              }).then((result) => {
+                                  if (result.isConfirmed) {
+                                      // Remove event from FullCalendar
+                                      info.event.remove();
+
+                                      // Make AJAX request to delete event from the server
+                                      $.ajax({
+                                          type: 'DELETE',
+                                          url: `${apiCall}/deleteReminder`, // Assuming you have a delete endpoint
+                                          data: JSON.stringify({
+                                              uuidSessionToken: sessionStorage.getItem('SimpleSession'),
+                                              intReminderID: info.event.id // Send the event ID for deletion
+                                          }),
+                                          contentType: 'application/json',
+                                          success: function () {
+                                              SweetAlert.fire({
+                                                  title: 'Event deleted successfully!',
+                                                  icon: 'success',
+                                                  showCancelButton: false,
+                                                  showConfirmButton: false,
+                                                  width: '500px',
+                                                  timer: 1500
+                                              });
+                                              setTimeout(() => {
+                                                location.reload();
+                                              }, 1000*2);
+                                          },
+                                          error: function () {
+                                              SweetAlert.fire({
+                                                  title: 'Failed to delete the event.',
+                                                  icon: 'error',
+                                                  showCancelButton: false,
+                                                  showConfirmButton: false,
+                                                  width: '500px',
+                                                  timer: 1500
+                                              });
+                                          }
+
+                                          
+                                      });
+                                  }
+                              });
+                              
+                          });
+
+                          
+                    },
                     });
 
                     calendar.render();  // Render calendar after initializing it
+
                 }
             });
 
 
+            // Recent activity module
+
             // The hex code for the icons is #3A6EA1
             const recentActivityList = document.getElementById("recentActivityList");
+
             $.ajax({
                 type: 'POST',
                 url: `${apiCall}/getActivity`,
@@ -224,31 +393,60 @@
                     console.log(results);
                     results.Activity.forEach(activity => {
                         let listItem = '';
-                        if (activity.ActivityDescription.includes('Deleted')) {
-                            listItem = `
-                            <li class="list-group-item">
-                                <img src="assets/icons/trash-solid.svg" alt="Trash Icon" style="width: 16px; height: 16px; margin-right: 8px;">
+                        let activityUrl = '#'; // Default URL
+                        let iconPath = ''; // Icon path variable
+
+                        const description = activity.ActivityDescription.toLowerCase();
+                        const argument = activity.ActivityArgument;
+
+                        // Assign icons based on activity description
+                        if (description.includes('deleted')) {
+                            iconPath = "assets/icons/trash-solid.svg";
+                        } else if (description.includes('added')) {
+                            iconPath = "assets/icons/plus-solid.svg";
+                        } else {
+                            iconPath = "assets/icons/user-pen-solid.svg";
+                        }
+
+                        // Assign relative URLs based on activity description and argument
+                        if (description.includes('po')) {
+                            activityUrl = description.includes('deleted')
+                                ? `index.html?table=purchaseOrders`
+                                : `pages/viewPO.html?POID=${argument}`;
+                        } else if (description.includes('vendor')) {
+                            activityUrl = description.includes('deleted')
+                                ? `index.html?table=vendors`
+                                : `pages/viewVendor.html?VendorName=${argument}`;
+                        } else if (description.includes('account')) {
+                            activityUrl = description.includes('deleted')
+                                ? `index.html?table=accounts`
+                                : `pages/viewAccount.html?AccountID=${argument}`;
+                        }
+
+                        // Build the list item HTML
+                        listItem = `
+                            <li class="list-group-item activity-item" data-url="${activityUrl}">
+                                <img src="${iconPath}" alt="Icon" style="width: 16px; height: 16px; margin-right: 8px;">
                                 ${activity.ResponsibleUser} ${activity.ActivityDescription}
                             </li>`;
-                        }
-                        else if (activity.ActivityDescription.includes('Added')) {
-                            listItem = `
-                            <li class="list-group-item">
-                                <img src="assets/icons/plus-solid.svg" alt="Trash Icon" style="width: 16px; height: 16px; margin-right: 8px;">
-                                ${activity.ResponsibleUser} ${activity.ActivityDescription}
-                            </li>`;
-                        }
-                        else {
-                            listItem = `
-                            <li class="list-group-item">
-                                <img src="assets/icons/user-pen-solid.svg" alt="Trash Icon" style="width: 16px; height: 16px; margin-right: 8px;">
-                                ${activity.ResponsibleUser} ${activity.ActivityDescription}
-                            </li>`;
-                        }
+
+                        // Append the list item to the list
                         $('#recentActivityList').append(listItem);
                     });
+
+                    // Add click event listener for each activity item
+                    document.querySelectorAll('.activity-item').forEach(item => {
+                        item.addEventListener('click', function () {
+                            const url = this.getAttribute('data-url');
+                            if (url && url !== '#') {
+                                window.location.href = url; // Navigate to the specified URL
+                            }
+                        });
+                    });
                 }
-            })
+            });
+
+
             // Chart 1: Doughnut chart
             // Use asynchronous function to fill the donut chart (avoids error if the data is not ready as soon as the page loads)
             async function fillDonutChart() {
@@ -480,6 +678,65 @@
                 }
             });
         });
+
+
+    $('#btnEdit').click(function () {
+        // Close the modal first
+        $('#eventDetailsPopup').modal('hide');
+
+        // Retrieve values from the input fields
+        var strName = $('#txtEditTitle').val();
+        var strDate = $('#txtEditDate').val();
+        var strNotes = $('#txtEditNotes').val();
+
+        // Make an AJAX request to update the event on the server
+        $.ajax({
+          type: 'PUT',
+          url: `${apiCall}/updateReminder`,
+          data: JSON.stringify({
+              uuidSessionToken: sessionStorage.getItem('SimpleSession'),
+              strName: strName,
+              strDueDate: strDate,
+              strNotes: strNotes,
+              strID: selectedEvent.id
+          }),
+          contentType: 'application/json',
+          success: function (response) {
+              console.log('Update Success:', response);
+                location.reload();
+                // Update the event in FullCalendar
+                selectedEvent.setProp('title', strName);
+                selectedEvent.setStart(strDate);
+                selectedEvent.setEnd(null); // For single-day events
+                selectedEvent.setExtendedProp('strNotes', strNotes);
+
+                // Optionally, refetch events
+                calendar.refetchEvents();
+
+              SweetAlert.fire({
+                  title: 'Event updated successfully!',
+                  icon: 'success',
+                  showCancelButton: false,
+                  showConfirmButton: false,
+                  width: '500px',
+                  timer: 1500
+              });
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+              console.error('Update Failed:', textStatus, errorThrown);
+              console.error('Response:', jqXHR.responseText);
+              SweetAlert.fire({
+                  title: 'Failed to update the event.',
+                  icon: 'error',
+                  showCancelButton: false,
+                  showConfirmButton: false,
+                  width: '500px',
+                  timer: 1500
+              });
+          },
+        });
+    });
+
         
     </script>
 </body>

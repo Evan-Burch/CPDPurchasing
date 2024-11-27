@@ -401,10 +401,12 @@
                                 { data: "PriceEach", title: "Price Each" },
                                 { data: "Price", title: "Total Price", footer: "Total" },
                                 { data: "ID", title: "Action", render: function (data) {
-                                        return `
-                                                <button type="button" class="btn btn-primary btn-edit text-nowrap" value="${data}">Edit</button>
-                                                <button type="button" class="btn btn-danger btn-delete text-nowrap" value="${data}">Delete</button>
-                                            `;
+                                        return `<div class="row">
+                                                    <div class="col-12 d-flex flex-column flex-sm-row align-items-center">
+                                                        <button type="button" class="btn btn-primary btn-edit text-nowrap mb-1 mb-sm-0 w-100 w-sm-auto screen-only" value="${data}">Edit</button>
+                                                        <button type="button" class="btn btn-danger btn-delete text-nowrap mb-1 mb-sm-0 w-100 w-sm-auto screen-only" value="${data}">Delete</button>
+                                                    </div>
+                                                </div>`;
                                     }}
                             ],
                             rowCallback: function (row, data, dataIndex) {
@@ -449,7 +451,7 @@
                                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), intItemID: rowData.ID, strPurchaseOrderID: PurchaseOrderID }),
                                 contentType: 'application/json',
                                 success: function (results) {
-                                    Swal.fire({
+                                    SweetAlert.fire({
                                         showCancelButton: false,
                                         showConfirmButton: false,
                                         width: '500px',
@@ -589,7 +591,7 @@
         });
 
         $('#btnDelete').on('click', function () {
-            Swal.fire({
+            SweetAlert.fire({
                 title: 'Are you sure?',
                 icon: 'warning',
                 showCancelButton: true,
@@ -600,11 +602,11 @@
                 if (result.isConfirmed) {
                     $.ajax({ // Delete PO
                         type: 'DELETE',
-                        url: `${apiCall}/deletePO`,
+                        url: `${apiCall}/softDeletePO`,
                         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID }),
                         contentType: 'application/json',
                         success: function (results) {
-                            Swal.fire({
+                            SweetAlert.fire({
                                 showCancelButton: false,
                                 showConfirmButton: false,
                                 width: '500px',
@@ -778,7 +780,7 @@
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID}),
                 contentType: 'application/json',
                 success: function(){
-                    Swal.fire({
+                    SweetAlert.fire({
                             showCancelButton: false,
                             showConfirmButton: false,
                             width: '500px',
@@ -786,7 +788,7 @@
                             text: 'Purchase Order Approved'
                         });
                         setTimeout(() => {
-                            Swal.close();
+                            SweetAlert.close();
                             window.location.reload();
                         }, 1000*2);
                 }
@@ -800,7 +802,7 @@
                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strPurchaseOrderID: PurchaseOrderID}),
                 contentType: 'application/json',
                 success: function(){
-                    Swal.fire({
+                    SweetAlert.fire({
                             showCancelButton: false,
                             showConfirmButton: false,
                             width: '500px',
@@ -808,7 +810,7 @@
                             text: 'Purchase Order Rejected'
                         });
                         setTimeout(() => {
-                            Swal.close();
+                            SweetAlert.close();
                             window.location.reload();
                         }, 1000*2);
                 }
@@ -865,7 +867,7 @@
                     data: JSON.stringify(editObject),
                     contentType: 'application/json',
                     success: function (results) {
-                        Swal.fire({
+                        SweetAlert.fire({
                             showCancelButton: false,
                             showConfirmButton: false,
                             width: '500px',
@@ -873,7 +875,7 @@
                             text: 'PO successfully edited'
                         });
                         setTimeout(() => {
-                            Swal.close();
+                            SweetAlert.close();
                             $('#editPO').modal('hide');
                             window.location.reload();
                         }, 1000*2);
@@ -908,7 +910,7 @@
                     data: JSON.stringify(addObject),
                     contentType: 'application/json',
                     success: function (results) {
-                        Swal.fire({
+                        SweetAlert.fire({
                             showCancelButton: false,
                             showConfirmButton: false,
                             width: '500px',
@@ -916,7 +918,7 @@
                             text: 'PO Item successfully added'
                         });
                         setTimeout(() => {
-                            Swal.close();
+                            SweetAlert.close();
                             $('#addPOItem').modal('hide');
                             window.location.reload();
                         }, 1000*2);
@@ -968,7 +970,7 @@
                     data: JSON.stringify(editObject),
                     contentType: 'application/json',
                     success: function (results) {
-                        Swal.fire({
+                        SweetAlert.fire({
                             showCancelButton: false,
                             showConfirmButton: false,
                             width: '500px',
@@ -976,7 +978,7 @@
                             text: 'PO Item successfully edited'
                         });
                         setTimeout(() => {
-                            Swal.close();
+                            SweetAlert.close();
                             $('#editPOItem').modal('hide');
                             window.location.reload();
                         }, 1000*2);

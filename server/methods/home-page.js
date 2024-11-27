@@ -140,23 +140,64 @@ router.post("/fillBarChart", async (req, res) => {
 });
 
 // Getting activity to display on homepage
+// Updated API call to check existence of related items
 router.post("/getActivity", async (req, res) => {
-	const dbConnection = await db_pool.getConnection();
-	const uuidSessionToken = clean(req.body.uuidSessionToken);
-	const intLimit = (req.body.intLimit == undefined) ? 10 : clean(req.body.intLimit);
+    const dbConnection = await db_pool.getConnection();
+    const uuidSessionToken = clean(req.body.uuidSessionToken);
+    const intLimit = (req.body.intLimit == undefined) ? 10 : clean(req.body.intLimit);
 
-	try {  // Checks to see if user is logged in correctly
-		var userID = await getUserIDBySessionToken(uuidSessionToken);
-		if (userID == -1) {
-			return res.status(400).json({ "message": "You must be logged in to do that" });
-		}
+    try {
+        // Validate session
+        const userID = await getUserIDBySessionToken(uuidSessionToken);
+        if (userID == -1) {
+            return res.status(400).json({ "message": "You must be logged in to do that" });
+        }
 
-		var Activity = await dbConnection.query("select ActivityDescription, ActivityArgument, Time, tblUser.DisplayName as ResponsibleUser from tblActivityLog left join tblUser on tblActivityLog.ResponsibleUser = tblUser.EmployeeID order by ActivityID desc limit ?;", [intLimit]);
-		res.status(200).json({ "message": "OK", "Activity": Activity });
+        // Query recent activity
+        const activityQuery = `
+            SELECT 
+                ActivityDescription, 
+                ActivityArgument, 
+                Time, 
+                tblUser.DisplayName AS ResponsibleUser 
+            FROM 
+                tblActivityLog 
+            LEFT JOIN 
+                tblUser 
+            ON 
+                tblActivityLog.ResponsibleUser = tblUser.EmployeeID 
+            ORDER BY 
+                ActivityID DESC 
+            LIMIT ?;
+        `;
+        const activities = await dbConnection.query(activityQuery, [intLimit]);
 
-	} finally {
-		await dbConnection.close();
-	}
+        // Check existence of related entities
+        for (const activity of activities) {
+            const description = activity.ActivityDescription.toLowerCase();
+            const argument = activity.ActivityArgument;
+
+            // Default flag for item existence
+            activity.exists = true;
+
+            // Check for missing items based on activity type
+            if (description.includes('vendor')) {
+                const [vendor] = await dbConnection.query("SELECT 1 FROM tblVendor WHERE VendorName = ?", [argument]);
+                activity.exists = !!vendor;
+            } else if (description.includes('account')) {
+                const [account] = await dbConnection.query("SELECT 1 FROM tblAccount WHERE AccountID = ?", [argument]);
+                activity.exists = !!account;
+            } else if (description.includes('po')) {
+                const [po] = await dbConnection.query("SELECT 1 FROM tblPurchaseOrder WHERE PurchaseOrderID = ?", [argument]);
+                activity.exists = !!po;
+            }
+        }
+
+        res.status(200).json({ "message": "OK", "Activity": activities });
+    } finally {
+        await dbConnection.close();
+    }
 });
+
 
 module.exports = router;

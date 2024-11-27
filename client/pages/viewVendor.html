@@ -317,10 +317,12 @@
                                 { data: "MobilePhone", title: "Mobile Phone" },
                                 { data: "Email", title: "Email" },
                                 { data: "ID", title: "Action", render: function (data) {
-                                        return `<div class="row col-12">
-                                                <button type="button" class="btn btn-primary btn-edit text-nowrap" value="${data}">Edit</button>
-                                                <button type="button" class="btn btn-danger btn-delete text-nowrap" value="${data}">Delete</button>
-                                            </div>`;
+                                        return `<div class="row">
+                                                    <div class="col-12 d-flex flex-column flex-sm-row align-items-center">
+                                                        <button type="button" class="btn btn-primary btn-edit text-nowrap mb-1 mb-sm-0 w-100 w-sm-auto" value="${data}">Edit</button>
+                                                        <button type="button" class="btn btn-danger btn-delete text-nowrap mb-1 mb-sm-0 w-100 w-sm-auto" value="${data}">Delete</button>
+                                                    </div>
+                                                </div>`;
                                     }}
                             ],
                             autowidth: false,
@@ -341,7 +343,7 @@
                                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), editID: editID }),
                                 contentType: 'application/json',
                                 success: function (results) {
-                                    Swal.fire({
+                                    SweetAlert.fire({
                                         showCancelButton: false,
                                         showConfirmButton: false,
                                         width: '500px',
@@ -366,7 +368,7 @@
                                 data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), editID: editID }),
                                 contentType: 'application/json',
                                 success: function (results) {
-                                    Swal.fire({
+                                    SweetAlert.fire({
                                         showCancelButton: false,
                                         showConfirmButton: false,
                                         width: '500px',
@@ -404,7 +406,9 @@
                                 { data: "PurchaseOrderID", title: "Purchase Order ID" },
                                 { data: "CreatedDate", title: "Date" },
                                 { data: "DisplayName", title: "Created By" },
-                                { data: "FiscalYear", title: "Fiscal Year" }
+                                { data: null, defaultContent: "", title: "Fiscal Year", render: function(data) {
+                                    return getFiscalYear(new Date(data.CreatedDate));
+                                }}
                             ],
                             autowidth: false,
                             responsive: true,
@@ -474,7 +478,7 @@
                     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strEditName: strEditName, strEditLink: strEditLink, strVendorName: VendorName }),
                     contentType: 'application/json',
                     success: function (results) {
-                        Swal.fire({
+                        SweetAlert.fire({
                             showCancelButton: false,
                             showConfirmButton: false,
                             width: '500px',
@@ -543,7 +547,7 @@
                     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName, strContactName: strContactName, strStreetAddress1: strStreetAddress1, strStreetAddress2: strStreetAddress2, strCity: strCity, strState: strState, strZip: strZip, strOfficePhone: strOfficePhone, strMobilePhone: strMobilePhone, strEmail: strEmail, strFax: strFax, chkPrimary: chkPrimary, intCreatedBy: intCreatedBy }),
                     contentType: 'application/json',
                     success: function (results) {
-                        Swal.fire({
+                        SweetAlert.fire({
                             showCancelButton: false,
                             showConfirmButton: false,
                             width: '500px',
@@ -551,7 +555,7 @@
                             text: 'Contact successfully added'
                         });
                         setTimeout(() => {
-                            Swal.close();
+                            SweetAlert.close();
                             $('#addContact').modal('hide');
                             window.location.reload();
                         }, 1000 * 2);
@@ -611,7 +615,7 @@
                     data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strContactName: strContactName, strStreetAddress1: strStreetAddress1, strStreetAddress2: strStreetAddress2, strCity: strCity, strState: strState, strZip: strZip, strOfficePhone: strOfficePhone, strMobilePhone: strMobilePhone, strEmail: strEmail, strFax: strFax, chkPrimary: chkPrimary, editID: editID }),
                     contentType: 'application/json',
                     success: function (results) {
-                        Swal.fire({
+                        SweetAlert.fire({
                             showCancelButton: false,
                             showConfirmButton: false,
                             width: '500px',
@@ -631,7 +635,7 @@
 
         $('#btnDelete').on('click', function () {
             // Confirm delete
-            Swal.fire({
+            SweetAlert.fire({
                 title: 'Are you sure?',
                 icon: 'warning',
                 showCancelButton: true,
@@ -646,7 +650,7 @@
                         data: JSON.stringify({ uuidSessionToken: sessionStorage.getItem('SimpleSession'), strVendorName: VendorName }),
                         contentType: 'application/json',
                         success: function (results) {
-                            Swal.fire({
+                            SweetAlert.fire({
                                 showCancelButton: false,
                                 showConfirmButton: false,
                                 width: '500px',

@@ -59,76 +59,78 @@
       </div>
     </nav>
 
+      <!-- Settings Modal -->
+      <div class="modal fade" id="settings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+      aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">Settings</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form>
+            <div class="modal-body">
+              Switch Theme <br>
+              <input type="checkbox" id="btnSwitch">
+              <label for="btnSwitch" class="toggleSwitch">
+              </label> <br> <br>
+
+              <button id="btnChangePassword" type="button" class="btn btn-primary col-4" data-bs-toggle="modal" data-bs-target="#ChangePassword">Change Password</button>
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                aria-label="Close Settings modal">Close</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="ChangePassword" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+      aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">Change Password</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form>
+            <div class="modal-body">
+              <label for="txtCurrentPassword" class="form-label">Current Password</label>
+              <input type="text" class="form-control req" id="txtCurrentPassword" placeholder="Current Password" required>
+
+              <label for="txtNewPassword" class="form-label">New Password</label>
+              <input type="text" class="form-control req" id="txtNewPassword" placeholder="New Password" required>
+
+              <label for="txtConfirmPassword" class="form-label">Confirm New Password</label>
+              <input type="text" class="form-control req" id="txtConfirmPassword" placeholder="Confirm New Password"
+                required>
+
+            </div>
+            <!--Error messages. Default Hidden-->
+            <div id="WarningErrorMessagePopUp" class="alert alert-warning" style="display:none;">
+              <h4 class="alert-heading">Warning!</h4>
+              <p class="mb-0" id="txtErrorMsg"></p>
+            </div>
+            <div class="modal-footer">
+              <button id="btnSendChangedPassword" type="button" class="btn btn-success"
+                aria-label="Change password">Change</button>
+              <button onclick="refreshPage()" type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                aria-label="Close change password modal">Close</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
     <div id="divMain">
       <!-- Main content area, will load dynamically based on the user's selection -->
     </div>
   </div>
 
-  <!-- Settings Modal -->
-  <div class="modal fade" id="settings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="staticBackdropLabel">Settings</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <form>
-          <div class="modal-body">
-            Switch Theme <br>
-            <input type="checkbox" id="btnSwitch">
-            <label for="btnSwitch" class="toggleSwitch">
-            </label> <br> <br>
-
-            <button id="btnChangePassword" type="button" class="btn btn-primary col-4" data-bs-toggle="modal" data-bs-target="#ChangePassword">Change Password</button>
-
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-              aria-label="Close Settings modal">Close</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- Change Password Modal -->
-  <div class="modal fade" id="ChangePassword" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="staticBackdropLabel">Change Password</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <form>
-          <div class="modal-body">
-            <label for="txtCurrentPassword" class="form-label">Current Password</label>
-            <input type="text" class="form-control req" id="txtCurrentPassword" placeholder="Current Password" required>
-
-            <label for="txtNewPassword" class="form-label">New Password</label>
-            <input type="text" class="form-control req" id="txtNewPassword" placeholder="New Password" required>
-
-            <label for="txtConfirmPassword" class="form-label">Confirm New Password</label>
-            <input type="text" class="form-control req" id="txtConfirmPassword" placeholder="Confirm New Password"
-              required>
-
-          </div>
-          <!--Error messages. Default Hidden-->
-          <div id="WarningErrorMessagePopUp" class="alert alert-warning" style="display:none;">
-            <h4 class="alert-heading">Warning!</h4>
-            <p class="mb-0" id="txtErrorMsg"></p>
-          </div>          
-          <div class="modal-footer">
-            <button id="btnSendChangedPassword" type="button" class="btn btn-success"
-              aria-label="Change password">Change</button>
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-              aria-label="Close change password modal">Close</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
 
   <!-- JS Libraries -->
   <script src="./assets/js/jquery-3.7.1.min.js"></script>
@@ -270,7 +272,11 @@
         }
       });
     });
-    
+
+    function refreshPage(){
+      window.location.reload();
+    } 
+
   </script>
 </body>
 

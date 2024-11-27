@@ -9,7 +9,15 @@
     <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/css/login.css" rel="stylesheet">
 </head>
-
+<style>
+    button:disabled {
+      background-color: #ccc; /* Light gray background */
+      color: #666; /* Dark gray text */
+      cursor: not-allowed; /* Show 'not-allowed' cursor */
+      opacity: 0.6; /* Slightly faded look */
+      border: 1px solid #999; /* Light gray border */
+    }
+  </style>
 <body
     style="background-image: url(../assets/images/pd-hero-image.jpg); background-repeat:no-repeat; background-size:cover;">
     <div class="d-flex vh-100 vw-100 justify-content-center align-items-center">
@@ -31,7 +39,7 @@
                     <input class="req" type="password" id="txtPassword" placeholder="password" aria-label="Password"
                         required>
                     <button type="button" class="mb-1 col-5" id="btnLogin" aria-label="Login">login</button>
-                    <button type="button" class="col-5" id="btnSAMLLogin" aria-label="Login with SAML">SAML</button>
+                    <!-- <button type="button" class="col-5" id="btnSAMLLogin" aria-label="Login with SAML" disabled>SAML</button> -->
                 </form>
             </div>
         </div>

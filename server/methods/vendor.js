@@ -189,7 +189,7 @@ router.post("/fillVendorPOTable", async (req, res) => {
 
 		console.log("Filling the Vendor POs Table");
 
-		const VendorPOTable = await dbConnection.query("select distinct po.PurchaseOrderID, DATE_FORMAT(po.CreatedDateTime, '%m/%d/%Y %h:%i %p') as CreatedDate, usr.DisplayName, actt.FiscalYear from tblPurchaseOrder po left join tblUser usr on po.CreatedBy = usr.EmployeeID left join tblPurchaseOrderItem poi on po.PurchaseOrderID = poi.PurchaseOrderID left join tblAccountTransaction actt on poi.AccountID = actt.AccountID where actt.FiscalYear - YEAR(po.CreatedDateTime) = 1 and po.VendorID=?;", [strVendorID]);
+		const VendorPOTable = await dbConnection.query("select distinct po.PurchaseOrderID, DATE_FORMAT(po.CreatedDateTime, '%m/%d/%Y %h:%i %p') as CreatedDate, usr.DisplayName from tblPurchaseOrder po left join tblUser usr on po.CreatedBy = usr.EmployeeID left join tblPurchaseOrderItem poi on po.PurchaseOrderID = poi.PurchaseOrderID left join tblAccountTransaction actt on poi.AccountID = actt.AccountID where po.VendorID=?;", [strVendorID]);
 
 		if (VendorPOTable.length == 0) {
 			return res.status(500).json({ "message": "There are no POs for this vendor." });

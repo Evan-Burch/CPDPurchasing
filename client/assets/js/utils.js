@@ -1,3 +1,5 @@
+const Swal = window.Swal;
+
 function handleBrowserNav() {
     history.pushState(null, document.title, location.href);
     window.addEventListener("popstate", function (e) {
@@ -62,13 +64,13 @@ function getUserSettings() {
 }
 
 // Variables for automatic logout
-var swalTimeout = Swal.mixin({
+var swalTimeout = SweetAlert.mixin({
     showCancelButton: false,
     showConfirmButton: false,
     width: '300px'
 });
 
-var normalSwal = Swal.mixin({
+var normalSwal = SweetAlert.mixin({
     title: 'Are you sure?',
     icon: 'warning',
     showCancelButton: true,
@@ -144,4 +146,11 @@ function idleTimeout() { // Auto logs out users after 2 seconds
             }
         });
     }, 1000*2);
+}
+
+function getFiscalYear(date, opt_monthStart) {
+    // TODO: When does their fiscal year actually start?
+    opt_monthStart = opt_monthStart == undefined ? 3 : opt_monthStart;
+    var month = date.getMonth(), year = date.getFullYear(), yearOffset = Math.floor((month - ((opt_monthStart % 12) || 12)) / 12) + 1;
+    return yearOffset + year;
 }

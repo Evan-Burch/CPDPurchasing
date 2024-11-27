@@ -4,8 +4,8 @@ var router = express.Router();
 var db_pool = require("./db.js");
 var { clean, getUserIDBySessionToken, getUserNameBySessionToken, updateActivityLog } = require("./helper.js");
 
-const POInfoQuery = "select tblPurchaseOrder.PurchaseOrderID, tblPurchaseOrder.VendorID, tblPurchaseOrder.Status, rf.DisplayName as RequestedFor, DATE_FORMAT(tblPurchaseOrder.CreatedDateTime, '%m/%d/%Y %h:%i %p') as CreatedDateTime, cb.DisplayName as CreatedBy, tblPurchaseOrder.Notes, tblPurchaseOrder.Amount, tblVendor.VendorName, IFNULL(tblPOApprovals.IsApproved, 0) as IsApproved, fa.DisplayName as FiscalAuthority from tblPurchaseOrder left join tblUser rf on tblPurchaseOrder.RequestedFor = rf.EmployeeID left join tblUser cb on tblPurchaseOrder.CreatedBy = cb.EmployeeID left join tblVendor on tblPurchaseOrder.VendorID = tblVendor.VendorID left join tblPOApprovals on tblPurchaseOrder.PurchaseOrderID = tblPOApprovals.PurchaseOrderID left join tblUser fa on tblPOApprovals.FiscalAuthority = fa.EmployeeID";
-
+const POInfoQuery = "select tblPurchaseOrder.PurchaseOrderID, tblPurchaseOrder.VendorID, tblPurchaseOrder.Status, rf.DisplayName as RequestedFor, DATE_FORMAT(tblPurchaseOrder.CreatedDateTime, '%m/%d/%Y %h:%i %p') as CreatedDateTime, cb.DisplayName as CreatedBy, tblPurchaseOrder.Notes, tblPurchaseOrder.Amount, tblVendor.VendorName, IFNULL(tblPOApprovals.IsApproved, 0) as IsApproved, fa.DisplayName as FiscalAuthority from tblPurchaseOrder left join tblUser rf on tblPurchaseOrder.RequestedFor = rf.EmployeeID left join tblUser cb on tblPurchaseOrder.CreatedBy = cb.EmployeeID left join tblVendor on tblPurchaseOrder.VendorID = tblVendor.VendorID left join tblPOApprovals on tblPurchaseOrder.PurchaseOrderID = tblPOApprovals.PurchaseOrderID left join tblUser fa on tblPOApprovals.FiscalAuthority = fa.EmployeeID WHERE tblPurchaseOrder.isArchived=0";
+ 
 // Call for adding a new PO
 router.post("/addPO", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
@@ -43,7 +43,7 @@ router.post("/addPO", async (req, res) => {
 
 		console.log("Creating a new PO");
 
-		await dbConnection.query("INSERT INTO tblPurchaseOrder (VendorID, Status, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, NOW(), ?, ?, 0);", [strVendorName, intStatus, strRequestedFor, intCreatedBy, strNotes]);
+		await dbConnection.query("INSERT INTO tblPurchaseOrder (VendorID, Status, isArchived, RequestedFor, CreatedDateTime, CreatedBy, Notes, Amount) VALUES (?, ?, ?, ?, NOW(), ?, ?, 0);", [strVendorName, intStatus,0, strRequestedFor, intCreatedBy, strNotes]);
 
 		var poIDQuery = await dbConnection.query("select PurchaseOrderID from tblPurchaseOrder where CreatedDateTime=NOW();"); // this might fail
 
@@ -122,7 +122,7 @@ router.post("/getPOInfo", async (req, res) => {
 
 		console.log("Getting PO Info for " + strPurchaseOrderID);
 
-		const POInfo = await dbConnection.query(POInfoQuery + " where tblPurchaseOrder.PurchaseOrderID=?;", [strPurchaseOrderID]);
+		const POInfo = await dbConnection.query(POInfoQuery + " AND tblPurchaseOrder.PurchaseOrderID=?;", [strPurchaseOrderID]);
 
 		if (POInfo.length == 0) {
 			return res.status(500).json({ "message": "There is no purchase order with that ID." });
@@ -182,6 +182,8 @@ router.put("/updatePO", async (req, res) => {
 	}
 });
 
+// Call for deleting PO (changed from delete to softDelete archive 
+//    to avoid duplicate purchase orders with the same number)
 router.post("/approvePO", async (req, res) => {
 	const dbConnection = await db_pool.getConnection();
 	const uuidSessionToken = clean(req.body.uuidSessionToken);
@@ -268,11 +270,41 @@ router.delete("/deletePO", async (req, res) => {
 		// delete approval information
 		await dbConnection.query("delete from tblPOApprovals where PurchaseOrderID=?;", [strPurchaseOrderID]);
     
-		console.log("Deleting PO " + strPurchaseOrderID);
+		console.log("Archiving PO " + strPurchaseOrderID);
 
 		await dbConnection.query("DELETE FROM tblPurchaseOrder WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
 
-		await updateActivityLog(uuidSessionToken, "Deleted PO " + strPurchaseOrderID + ".", strPurchaseOrderID);
+		await updateActivityLog(uuidSessionToken, "Archived PO " + strPurchaseOrderID + ".", strPurchaseOrderID);
+
+		res.status(200).json({ "message": "Success." });
+	} finally {
+		await dbConnection.close();
+	}
+});
+
+// Call for deleting PO (changed from delete to archive 
+//    to avoid duplicate purchase orders with the same number)
+router.delete("/softDeletePO", async (req, res) => {
+	const dbConnection = await db_pool.getConnection();
+	const uuidSessionToken = clean(req.body.uuidSessionToken);
+	const strPurchaseOrderID = clean(req.body.strPurchaseOrderID);
+
+	try { // Checks to see if user is logged in correctly
+		var userID = await getUserIDBySessionToken(uuidSessionToken);
+		if (userID == -1) {
+			return res.status(400).json({ "message": "You must be logged in to do that" });
+		}
+
+    console.log("Deleting items for PO " + strPurchaseOrderID);
+
+		// Delete associated items from tblPurchaseOrderItem first
+		await dbConnection.query("DELETE FROM tblPurchaseOrderItem WHERE PurchaseOrderID = ?;", [strPurchaseOrderID]);
+    
+		console.log("Archiving PO " + strPurchaseOrderID);
+
+		await dbConnection.query("UPDATE tblPurchaseOrder SET isArchived=1 WHERE PurchaseOrderID=?;", [strPurchaseOrderID]);
+
+		await updateActivityLog(uuidSessionToken, "Archived PO " + strPurchaseOrderID + ".", strPurchaseOrderID);
 
 		res.status(200).json({ "message": "Success." });
 	} finally {

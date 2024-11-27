@@ -120,7 +120,7 @@
 
                     $('#btnDeleteUser').on('click', function () {
                         event.preventDefault();
-                        Swal.fire({
+                        SweetAlert.fire({
                             title: 'Are you sure?',
                             icon: 'warning',
                             showCancelButton: true,
@@ -159,7 +159,7 @@
                             updateObject.intIsAdmin = isAdmin;
                         }
                         if (strPassword != $("#txtConfirmPassword").val()) {
-                            Swal.fire({
+                            SweetAlert.fire({
                                 showConfirmButton: true,
                                 width: '500px',
                                 icon: 'error',
